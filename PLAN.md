@@ -84,3 +84,28 @@ curl -H "Authorization: Bearer $HUGGINGFACE_API_KEY" https://huggingface.co/api/
 - `verified`: mimarinin canlı HF config'inden teyit edildiğini gösterir. `false` = gated/404 (preset fallback). Keşif satırları her zaman `true`.
 - Keşif yalnızca INSERT (yeni) + UPDATE (mevcut) yapar; silme yapmaz — katalogdan çıkarmak istediğin keşif satırlarını elle `DELETE ... WHERE NOT curated` ile temizle.
 - `.env`'de `HUGGINGFACE_API_KEY` var; `hfClient` hem `HF_TOKEN` hem `HUGGINGFACE_API_KEY` okur.
+
+## Tamamlanan oturum özeti (2026-08-20, bulut hazırlığı)
+
+**Amaç:** Fiyatlar/ekran kartları ve model kataloğu güncel olduğundan uygulama buluta alınıp serve edilecek; hem modeller hem GPU fiyatları **admin istediğinde on-demand** güncellenebilir olacak. Kararlar: Render (PaaS) + yönetilen Postgres + uygulama içi admin endpoint'ler.
+
+### Yapılanlar
+- **Port/env** (`server.ts`, `package.json`): `PORT = process.env.PORT || 3000`; `start` → `NODE_ENV=production node dist/server.cjs`.
+- **Admin koruması** (`auth.ts`, `hfModels.ts`): `ADMIN_EMAILS` env allowlist + `isAdminEmail()` + `requireAdmin` middleware (401 oturum yok / 403 admin değil). `AuthUser.isAdmin` eklendi, `/api/auth/me` döndürüyor. `POST /api/models/refresh` artık `requireAdmin` ile korumalı.
+- **GPU scraper Node portu** (`src/server/gpuScraper.ts`, `gpuPrices.ts`): Python scraper'lar (`common.py` + runpod/modal/lambda) Node'a taşındı — `GPU_SLUG_PATTERNS`/`normalize_gpu_name`/`parse_price_usd` portları, JSON-LD (RunPod), `.line-item` (Modal, ×3600), tablo + `data-plan` + en-düşük fiyat (Lambda). İnternet olmadığı için cheerio kurulamadı → tamamen regex/built-in fetch tabanlı. `POST /api/gpu-prices/refresh` (requireAdmin, concurrency 409, sağlayıcı-bazlı hata). Python scriptler referans olarak `scripts/scraper/` içinde kaldı.
+- **Admin UI** (`AdminPanel.tsx`, `Header.tsx`, `App.tsx`, `AuthContext.tsx`): sadece admin'e görünen "Yönetim" butonu → modal; "Modelleri Güncelle" ve "GPU Fiyatlarını Güncelle" butonları, sonuç özetleri (fetched/mirrored/discovered, provider başına fiyat satırı), sonrasında `refetchModels()`/`refetchPrices()`.
+- **SSL/DB** (`db.ts`): yerel olmayan DATABASE_URL'lerde (`sslmode` yoksa ve localhost değilse) `ssl:{rejectUnauthorized:false}` — yönetilen Postgres (Render/Neon/Supabase) uyumu.
+- **`render.yaml`** blueprint'i (web service + postgres + env şeması, `DATABASE_URL` otomatik bağlanır) ve `.env.example` güncellemesi (PORT, HUGGINGFACE_API_KEY, ADMIN_EMAILS).
+- **Git/Render hazırlığı**: repo `git init` + ilk commit; GitHub'a push edildi → `https://github.com/UmuT5513/llm-inference-calculator` (private). `gh` oturumu hazır.
+
+### Doğrulama (2026-08-20)
+- `npm run lint` ✅, `npm run build` ✅.
+- Scraper portu çevrimdışı fixture'lar ile test edildi (fetch stub'lanarak gerçek regex/extraction kodu koşuldu): runpod 3 satır (H100 SXM→$2.29, RTX 4090→$0.69, A100 80GB→$1.50), modal 2 satır (×3600 dönüşümü doğru), lambda 2 satır (en-düşük fiyat seçimi: B200 $2.49). Python davranışıyla birebir.
+- Prod sunucu (PORT=3111, NODE_ENV=production): `/api/auth/me` → `{user:null}`, `POST /api/models/refresh` ve `POST /api/gpu-prices/refresh` → **401** (middleware bağlı), `/api/models` → 200, `/` → 200 (statik serve + migration + 124 curated seed).
+
+### KALAN (sonraki oturum: Render deploy)
+1. Render dashboard: repo'yu import et (veya `render.yaml` blueprint'ini kullan).
+2. Secret env'ler: `APP_URL`=`https://<app>.onrender.com`, `GOOGLE_CALLBACK_URL` (Google Console'a "Authorized redirect URIs" olarak da ekle), `GOOGLE_CLIENT_ID/SECRET`, `SESSION_SECRET` (`openssl rand -base64 32`), `GEMINI_API_KEY`, `HUGGINGFACE_API_KEY`, `ADMIN_EMAILS`=senin Google email'in.
+3. Postgres: blueprint `llm-calc-db` otomatik oluşturur; `DATABASE_URL` web servisine otomatik bağlanır (SSL kodu hazır).
+4. Deploy sonrası uçtan uca: OAuth ile giriş → `isAdmin` görünür → "Yönetim" → iki güncelleme butonu; `/api/gpu-prices` ve `/api/models` canlı.
+5. Not: free tier 15 dk uyur; `starter` ($7/ay) önerilir. Scraper'lar sayfa yapısına bağımlı (değişirse provider-bazlı hata döner, 500 değil).

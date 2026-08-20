@@ -4,10 +4,19 @@ let pool: Pool | null = null;
 
 export function getPool(): Pool {
   if (!pool) {
+    const connectionString = process.env.DATABASE_URL;
+    // Managed providers (Render/Neon/Supabase) require SSL. node-postgres
+    // honors an explicit ?sslmode= in the URL; for hosts without it we enable
+    // SSL for anything that is not a local database.
+    const useSsl =
+      !!connectionString &&
+      !/sslmode/.test(connectionString) &&
+      !/localhost|127\.0\.0\.1/.test(connectionString);
     pool = new Pool({
-      connectionString: process.env.DATABASE_URL,
+      connectionString,
       max: 10,
       idleTimeoutMillis: 30000,
+      ...(useSsl ? { ssl: { rejectUnauthorized: false } } : {}),
     });
     pool.on('error', (err) => {
       console.error('PostgreSQL pool error:', err);
