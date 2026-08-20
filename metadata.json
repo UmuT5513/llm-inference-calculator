@@ -1,0 +1,6 @@
+{
+  "name": "LLM Inference Calculator",
+  "description": "LLM çıkarım ve fine-tuning bellek gereksinimleri, Unsloth hızlandırması, Google Colab ve bulut GPU maliyeti hesaplama aracı.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
