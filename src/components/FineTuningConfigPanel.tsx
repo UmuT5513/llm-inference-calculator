@@ -233,7 +233,7 @@ export const FineTuningConfigPanel: React.FC<FineTuningConfigPanelProps> = ({ co
                 <Field label="Eğitim Turu (Epoch)">
                   <Select
                     value={config.epochs}
-                    onChange={(val) => onChangeConfig((prev) => ({ ...prev, epochs: val }))}
+                    onChange={(val) => onChangeConfig((prev) => ({ ...prev, epochs: Number(val) }))}
                     options={[
                       { value: 1, label: '1 Epoch' },
                       { value: 2, label: '2 Epoch' },
@@ -433,7 +433,7 @@ export const FineTuningConfigPanel: React.FC<FineTuningConfigPanelProps> = ({ co
                     <Select
                       value={config.perDeviceBatchSize}
                       onChange={(val) =>
-                        onChangeConfig((prev) => ({ ...prev, perDeviceBatchSize: val, autoOptimizeHyperparams: false }))
+                        onChangeConfig((prev) => ({ ...prev, perDeviceBatchSize: Number(val), autoOptimizeHyperparams: false }))
                       }
                       options={[
                         { value: 1, label: '1 (Min VRAM)' },
@@ -448,7 +448,7 @@ export const FineTuningConfigPanel: React.FC<FineTuningConfigPanelProps> = ({ co
                     <Select
                       value={config.gradientAccumulationSteps}
                       onChange={(val) =>
-                        onChangeConfig((prev) => ({ ...prev, gradientAccumulationSteps: val, autoOptimizeHyperparams: false }))
+                        onChangeConfig((prev) => ({ ...prev, gradientAccumulationSteps: Number(val), autoOptimizeHyperparams: false }))
                       }
                       options={[
                         { value: 2, label: '2' },
@@ -464,7 +464,7 @@ export const FineTuningConfigPanel: React.FC<FineTuningConfigPanelProps> = ({ co
                     <Select
                       value={config.loraRank}
                       onChange={(val) =>
-                        onChangeConfig((prev) => ({ ...prev, loraRank: val, loraAlpha: val * 2 }))
+                        onChangeConfig((prev) => ({ ...prev, loraRank: Number(val), loraAlpha: Number(val) * 2 }))
                       }
                       options={[
                         { value: 8, label: 'r = 8' },
