@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Download, Copy, Check, Terminal, FileCode, FileText } from 'lucide-react';
+import { Download, Copy, Check } from 'lucide-react';
 import { CalculatorConfig, CalculationResults } from '../types';
+import { Tabs } from './ui/Tabs';
 
 interface ExportModalProps {
   isOpen: boolean;
@@ -9,13 +10,15 @@ interface ExportModalProps {
   results: CalculationResults;
 }
 
+type ExportTab = 'cli' | 'k8s' | 'json' | 'markdown';
+
 export const ExportModal: React.FC<ExportModalProps> = ({
   isOpen,
   onClose,
   config,
   results,
 }) => {
-  const [activeTab, setActiveTab] = useState<'cli' | 'k8s' | 'json' | 'markdown'>('cli');
+  const [activeTab, setActiveTab] = useState<ExportTab>('cli');
   const [copied, setCopied] = useState<boolean>(false);
 
   if (!isOpen) return null;
@@ -154,6 +157,13 @@ ${results.cloudCosts.map((c) => `- **${c.providerName}:** $${c.totalHourlyCostUs
   if (activeTab === 'json') displayContent = jsonExport;
   if (activeTab === 'markdown') displayContent = markdownReport;
 
+  const EXPORT_TABS: { id: ExportTab; label: string }[] = [
+    { id: 'cli', label: `${results.engineName} CLI` },
+    { id: 'k8s', label: 'K8s YAML' },
+    { id: 'markdown', label: 'Markdown' },
+    { id: 'json', label: 'JSON' },
+  ];
+
   const handleCopy = () => {
     navigator.clipboard.writeText(displayContent);
     setCopied(true);
@@ -161,104 +171,61 @@ ${results.cloudCosts.map((c) => `- **${c.providerName}:** $${c.totalHourlyCostUs
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-white border border-slate-200 rounded-2xl max-w-xl w-full flex flex-col shadow-xl overflow-hidden">
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+      <div className="bg-surface border border-border rounded-md max-w-xl w-full max-h-[85vh] overflow-y-auto">
         {/* Modal Header */}
-        <div className="p-4 bg-slate-50/80 border-b border-slate-200 flex items-center justify-between">
-          <div className="flex items-center gap-2 text-slate-800 font-bold text-xs uppercase tracking-wider">
-            <Download className="w-4 h-4 text-indigo-600" />
+        <div className="flex items-center justify-between gap-3 border-b border-border px-3.5 py-2">
+          <div className="flex items-center gap-2 text-text font-bold text-[11px] font-mono uppercase tracking-wider">
+            <Download className="w-4 h-4 text-accent" />
             Dışa Aktar & Dağıtım Konfigürasyonları
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-700 text-sm font-bold w-7 h-7 flex items-center justify-center rounded-lg hover:bg-slate-200/60 transition"
+            className="text-muted hover:text-text text-sm font-bold w-7 h-7 flex items-center justify-center rounded-md hover:bg-surface-2 transition shrink-0"
           >
             ✕
           </button>
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-slate-200 bg-slate-50/50 p-2 gap-1.5 overflow-x-auto">
-          <button
-            onClick={() => setActiveTab('cli')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-medium rounded-lg transition ${
-              activeTab === 'cli'
-                ? 'bg-indigo-600 text-white shadow-2xs'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
-            }`}
-          >
-            <Terminal className="w-3.5 h-3.5" />
-            {results.engineName} CLI
-          </button>
-
-          <button
-            onClick={() => setActiveTab('k8s')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-medium rounded-lg transition ${
-              activeTab === 'k8s'
-                ? 'bg-indigo-600 text-white shadow-2xs'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
-            }`}
-          >
-            <FileCode className="w-3.5 h-3.5" />
-            K8s YAML
-          </button>
-
-          <button
-            onClick={() => setActiveTab('markdown')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-medium rounded-lg transition ${
-              activeTab === 'markdown'
-                ? 'bg-indigo-600 text-white shadow-2xs'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
-            }`}
-          >
-            <FileText className="w-3.5 h-3.5" />
-            Markdown
-          </button>
-
-          <button
-            onClick={() => setActiveTab('json')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-medium rounded-lg transition ${
-              activeTab === 'json'
-                ? 'bg-indigo-600 text-white shadow-2xs'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
-            }`}
-          >
-            <FileCode className="w-3.5 h-3.5" />
-            JSON
-          </button>
-        </div>
+        <Tabs
+          tabs={EXPORT_TABS}
+          active={activeTab}
+          onChange={(id) => setActiveTab(id as ExportTab)}
+          className="mt-2"
+        />
 
         {/* Code Content */}
-        <div className="p-4 bg-slate-50/30 space-y-2.5">
+        <div className="p-4 space-y-2.5">
           <div className="flex justify-end">
             <button
               onClick={handleCopy}
-              className="flex items-center gap-1.5 px-3 py-1 text-xs font-medium text-slate-700 bg-white hover:bg-slate-100 border border-slate-300 rounded-lg shadow-2xs transition"
+              className="flex items-center gap-1.5 px-3 py-1 text-[11px] font-medium text-text bg-surface-2 hover:bg-surface border border-border rounded-md transition cursor-pointer"
             >
               {copied ? (
                 <>
-                  <Check className="w-3.5 h-3.5 text-emerald-600" />
-                  <span className="text-emerald-700 font-bold">Kopyalandı</span>
+                  <Check className="w-3.5 h-3.5 text-ok" />
+                  <span className="text-ok font-bold">Kopyalandı</span>
                 </>
               ) : (
                 <>
-                  <Copy className="w-3.5 h-3.5 text-slate-500" />
+                  <Copy className="w-3.5 h-3.5 text-muted" />
                   <span>Kopyala</span>
                 </>
               )}
             </button>
           </div>
 
-          <pre className="p-3.5 bg-slate-900 border border-slate-800 rounded-xl font-mono text-[11px] text-indigo-300 overflow-x-auto max-h-64 whitespace-pre-wrap leading-relaxed shadow-inner">
+          <pre className="bg-surface-2 border border-border rounded p-3 text-[11px] font-mono text-text overflow-x-auto max-h-64 whitespace-pre-wrap leading-relaxed">
             {displayContent}
           </pre>
         </div>
 
         {/* Modal Footer */}
-        <div className="p-3 bg-slate-50 border-t border-slate-200 flex justify-end">
+        <div className="p-3 bg-surface-2 border-t border-border flex justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white text-xs font-medium rounded-lg transition"
+            className="px-4 py-2 bg-surface-2 border border-border text-text hover:bg-surface text-xs font-medium rounded-md transition cursor-pointer"
           >
             Kapat
           </button>

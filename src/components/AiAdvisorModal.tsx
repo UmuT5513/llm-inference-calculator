@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, Bot, AlertTriangle, CheckCircle2, Copy, Check, Terminal, Cpu } from 'lucide-react';
+import { Sparkles, AlertTriangle, Copy, Check } from 'lucide-react';
 import { CalculationResults, CalculatorConfig } from '../types';
 
 interface AiAdvisorModalProps {
@@ -72,19 +72,19 @@ export const AiAdvisorModal: React.FC<AiAdvisorModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-white border border-slate-200 rounded-2xl max-w-2xl w-full max-h-[85vh] flex flex-col shadow-xl overflow-hidden">
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+      <div className="bg-surface border border-border rounded-md max-w-2xl w-full max-h-[85vh] overflow-y-auto">
         {/* Header */}
-        <div className="p-4 bg-slate-50/80 border-b border-slate-200 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="p-2 bg-indigo-50 text-indigo-700 rounded-xl border border-indigo-200">
-              <Sparkles className="w-4 h-4 text-indigo-600" />
+        <div className="flex items-center justify-between gap-3 border-b border-border px-3.5 py-2">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="p-1.5 bg-surface-2 text-accent border border-border rounded-md shrink-0">
+              <Sparkles className="w-4 h-4" />
             </div>
-            <div>
-              <h2 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+            <div className="min-w-0">
+              <h2 className="text-[11px] font-bold font-mono uppercase tracking-wider text-text">
                 AI Architect & Advisor
               </h2>
-              <p className="text-[11px] text-slate-500">
+              <p className="text-[11px] text-muted mt-0.5">
                 vLLM / TensorRT-LLM optimize dağıtım parametreleri ve darboğaz analizi
               </p>
             </div>
@@ -92,33 +92,33 @@ export const AiAdvisorModal: React.FC<AiAdvisorModalProps> = ({
 
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-700 text-sm font-bold w-7 h-7 flex items-center justify-center rounded-lg hover:bg-slate-200/60 transition"
+            className="text-muted hover:text-text text-sm font-bold w-7 h-7 flex items-center justify-center rounded-md hover:bg-surface-2 transition shrink-0"
           >
             ✕
           </button>
         </div>
 
         {/* Content Body */}
-        <div className="p-5 overflow-y-auto flex-1 space-y-3 font-sans text-slate-800 text-xs leading-relaxed">
+        <div className="p-5 space-y-3 font-sans text-text text-xs leading-relaxed">
           {loading && (
             <div className="py-10 flex flex-col items-center justify-center space-y-3">
-              <div className="w-8 h-8 border-3 border-indigo-600 border-t-transparent rounded-full animate-spin" />
-              <p className="text-xs font-medium text-indigo-900 animate-pulse">
+              <div className="w-8 h-8 border-3 border-accent border-t-transparent rounded-full animate-spin" />
+              <p className="text-xs font-medium text-muted animate-pulse">
                 Gemini mimari ve vLLM konfigürasyonunu analiz ediyor...
               </p>
             </div>
           )}
 
           {error && (
-            <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 space-y-2">
+            <div className="p-4 bg-surface-2 border border-danger/40 rounded-md text-xs text-danger space-y-2">
               <div className="font-bold flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 text-rose-600" />
+                <AlertTriangle className="w-4 h-4 text-danger" />
                 Hata Oluştu
               </div>
-              <p className="text-[11px] text-rose-700">{error}</p>
+              <p className="text-[11px] text-muted">{error}</p>
               <button
                 onClick={fetchAdvice}
-                className="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg font-bold text-[11px]"
+                className="px-3 py-1.5 bg-surface-2 border border-border text-text hover:bg-surface rounded-md font-bold text-[11px] transition cursor-pointer"
               >
                 Yeniden Dene
               </button>
@@ -130,16 +130,16 @@ export const AiAdvisorModal: React.FC<AiAdvisorModalProps> = ({
               <div className="flex justify-end">
                 <button
                   onClick={copyToClipboard}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-lg transition"
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-medium text-text bg-surface-2 hover:bg-surface border border-border rounded-md transition cursor-pointer"
                 >
                   {copied ? (
                     <>
-                      <Check className="w-3.5 h-3.5 text-emerald-600" />
-                      <span className="text-emerald-700 font-bold">Kopyalandı</span>
+                      <Check className="w-3.5 h-3.5 text-ok" />
+                      <span className="text-ok font-bold">Kopyalandı</span>
                     </>
                   ) : (
                     <>
-                      <Copy className="w-3.5 h-3.5 text-slate-600" />
+                      <Copy className="w-3.5 h-3.5 text-muted" />
                       <span>Raporu Kopyala</span>
                     </>
                   )}
@@ -147,7 +147,7 @@ export const AiAdvisorModal: React.FC<AiAdvisorModalProps> = ({
               </div>
 
               {/* Rendered Advice Markdown Block */}
-              <div className="prose prose-slate prose-xs max-w-none bg-slate-50 p-4 border border-slate-200 rounded-xl whitespace-pre-wrap font-mono text-[11px] leading-relaxed text-slate-800">
+              <div className="whitespace-pre-wrap font-mono text-[13px] leading-relaxed text-text [&_pre]:bg-surface-2 [&_pre]:border [&_pre]:border-border [&_pre]:font-mono [&_pre]:text-xs [&_code]:bg-surface-2 [&_code]:border [&_code]:border-border [&_code]:font-mono [&_code]:text-xs">
                 {advice}
               </div>
             </div>
@@ -155,10 +155,10 @@ export const AiAdvisorModal: React.FC<AiAdvisorModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="p-3 bg-slate-50 border-t border-slate-200 flex justify-end">
+        <div className="p-3 bg-surface-2 border-t border-border flex justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white text-xs font-medium rounded-lg transition"
+            className="px-4 py-2 bg-surface-2 border border-border text-text hover:bg-surface text-xs font-medium rounded-md transition cursor-pointer"
           >
             Kapat
           </button>
