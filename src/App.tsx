@@ -5,18 +5,13 @@ import { QuantizationSelector } from './components/QuantizationSelector';
 import { InferenceEngineSelector } from './components/InferenceEngineSelector';
 import { GpuConfigurator } from './components/GpuConfigurator';
 import { WorkloadConfigurator } from './components/WorkloadConfigurator';
-import { VramBreakdownCard } from './components/VramBreakdownCard';
-import { PerformanceCard } from './components/PerformanceCard';
-import { CostAnalysisCard } from './components/CostAnalysisCard';
-import { CloudCostComparisonCard } from './components/CloudCostComparisonCard';
-import { OnPremisesTcoCard } from './components/OnPremisesTcoCard';
 import { FineTuningDashboard } from './components/FineTuningDashboard';
 import { AiAdvisorModal } from './components/AiAdvisorModal';
 import { ExportModal } from './components/ExportModal';
 import { ScenarioModal } from './components/ScenarioModal';
 import { ScenarioComparisonModal } from './components/ScenarioComparisonModal';
-import { GpuPricesCard } from './components/GpuPricesCard';
 import { AdminPanel } from './components/AdminPanel';
+import { ResultsPanel } from './components/ResultsPanel';
 
 import { CalculatorConfig, PresetScenario, FineTuningConfig } from './types';
 import { DEFAULT_CUSTOM_MODEL, DEFAULT_CUSTOM_GPU, DEFAULT_USER_PROFILES, GPU_PRESETS, MODEL_PRESETS } from './data/presets';
@@ -25,7 +20,6 @@ import { calculateFineTuningMetrics } from './utils/fineTuningCalculator';
 import { useLiveGpuPrices } from './hooks/useLiveGpuPrices';
 import { useLiveModels } from './hooks/useLiveModels';
 import { useAuth } from './auth/AuthContext';
-import { Sparkles, Cpu } from 'lucide-react';
 
 export default function App() {
   const { user, login, logout } = useAuth();
@@ -258,12 +252,9 @@ export default function App() {
       )}
 
       {/* Main Container */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 space-y-6">
-        {/* Active Tab View */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
         {activeTab === 'finetuning' ? (
-          /* ================= FINE-TUNING WORKSPACE ================= */
           <div className="space-y-5">
-            {/* Global Shared Model Selector */}
             <ModelSelector
               selectedModelId={ftConfig.modelId}
               customModel={ftConfig.customModel}
@@ -274,8 +265,6 @@ export default function App() {
               }}
               models={modelCatalog}
             />
-
-            {/* Fine Tuning Dashboard Component */}
             <FineTuningDashboard
               config={ftConfig}
               results={ftResults}
@@ -284,54 +273,8 @@ export default function App() {
             />
           </div>
         ) : (
-          /* ================= INFERENCE WORKSPACE ================= */
-          <>
-            {/* Top Summary Banner */}
-            <div className="bg-white border border-slate-200/90 rounded-xl p-4 sm:p-5 shadow-xs flex flex-wrap items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-indigo-50 text-indigo-600 rounded-lg border border-indigo-100">
-                  <Cpu className="w-6 h-6" />
-                </div>
-                <div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-base font-bold text-slate-900">{results.modelName}</span>
-                    <span className="text-xs font-mono font-semibold text-indigo-700 bg-indigo-50 border border-indigo-200 px-2 py-0.5 rounded">
-                      {results.totalParamsB}B Params
-                    </span>
-                    <span className="text-xs font-mono text-cyan-800 bg-cyan-50 border border-cyan-200 px-2 py-0.5 rounded font-bold">
-                      {results.engineName} ({results.engineBadge})
-                    </span>
-                    <span className="text-xs font-mono text-slate-700 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded">
-                      {config.quantId.toUpperCase()}
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-500 mt-1">
-                    Donanım: <strong className="text-slate-800">{config.gpuCount}x {results.gpuName}</strong> ({results.totalVramAvailableGB} GB VRAM) • Yük: <strong className="text-slate-800">{results.activeTotalUsers} Eşzamanlı Kullanıcı</strong> ({results.effectivePromptLen.toLocaleString()} in / {results.effectiveGenLen.toLocaleString()} out)
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-4 text-right">
-                <div>
-                  <div className="text-[11px] text-slate-500 font-medium">Toplam Gerekli VRAM</div>
-                  <div className={`text-xl font-bold font-mono ${results.isOom ? 'text-rose-600' : 'text-emerald-600'}`}>
-                    {results.totalVramNeededGB.toFixed(1)} GB <span className="text-sm font-normal text-slate-400">/ {results.totalVramAvailableGB} GB</span>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => setIsAiModalOpen(true)}
-                  className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-xs transition active:scale-95"
-                >
-                  <Sparkles className="w-4 h-4 text-indigo-100" />
-                  <span>Analiz Et</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Configuration Step Cards */}
-            <div className="space-y-5">
-              {/* 1. Model Selection */}
+          <div className="lg:grid lg:grid-cols-[1fr_460px] lg:gap-6 lg:items-start">
+            <div className="space-y-4">
               <ModelSelector
                 selectedModelId={config.modelId}
                 customModel={config.customModel}
@@ -342,22 +285,16 @@ export default function App() {
                 }}
                 models={modelCatalog}
               />
-
-              {/* 2. Quantization Selection */}
               <QuantizationSelector
                 selectedQuantId={config.quantId}
                 selectedKvCacheQuantId={config.kvCacheQuantId}
                 onSelectQuant={(quantId) => setConfig((prev) => ({ ...prev, quantId }))}
                 onSelectKvCacheQuant={(kvCacheQuantId) => setConfig((prev) => ({ ...prev, kvCacheQuantId }))}
               />
-
-              {/* 3. Inference Engine Selector */}
               <InferenceEngineSelector
                 selectedEngineId={config.engineId}
                 onSelectEngine={(engineId) => setConfig((prev) => ({ ...prev, engineId }))}
               />
-
-              {/* 4. GPU Hardware Configuration */}
               <GpuConfigurator
                 selectedGpuId={config.gpuId}
                 gpuCount={config.gpuCount}
@@ -368,8 +305,6 @@ export default function App() {
                 onChangeTp={(tensorParallelism) => setConfig((prev) => ({ ...prev, tensorParallelism }))}
                 onUpdateCustomGpu={(customGpu) => setConfig((prev) => ({ ...prev, customGpu }))}
               />
-
-              {/* 5. Workload & User Personas Configuration */}
               <WorkloadConfigurator
                 promptLen={config.promptLen}
                 genLen={config.genLen}
@@ -392,85 +327,21 @@ export default function App() {
               />
             </div>
 
-            {/* Primary Results Section */}
-            <div className="pt-2 space-y-5">
-              <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
-                <h2 className="text-base font-bold text-slate-900">Hesaplama ve Performans Sonuçları</h2>
-              </div>
-
-              {/* Live Scraped GPU Prices */}
-              <GpuPricesCard
-                gpuId={config.gpuId}
-                gpuName={results.gpuName}
+            <div className="lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto">
+              <ResultsPanel
+                results={results}
+                config={config}
+                gpuVramGB={activeGpu.vramGB}
                 prices={livePrices}
                 overrides={liveOverrides}
                 lastUpdated={lastUpdated}
-                loading={pricesLoading}
-                onRefresh={refetchPrices}
-              />
-
-              {/* VRAM Breakdown & Fit Analysis */}
-              <VramBreakdownCard
-                results={results}
-                gpuCount={config.gpuCount}
-                gpuVramGB={activeGpu.vramGB}
-              />
-
-              {/* Performance & Throughput */}
-              <PerformanceCard results={results} />
-
-              {/* Financial & Cost Metrics */}
-              <CostAnalysisCard
-                results={results}
-                gpuCount={config.gpuCount}
-                gpuName={results.gpuName}
-              />
-
-              {/* Cloud GPU Providers Comparison Matrix */}
-              <CloudCostComparisonCard
-                results={results}
-                gpuCount={config.gpuCount}
-              />
-
-              {/* On-Premise TCO & Turkey Electricity Cost Card */}
-              <OnPremisesTcoCard
-                onPremTco={results.onPremTco}
-                results={results}
-                gpuCount={config.gpuCount}
-                electricityRateTryPerKwh={config.electricityRateTryPerKwh}
-                usdToTryRate={config.usdToTryRate}
-                pueRatio={config.pueRatio}
-                serverDutyCyclePct={config.serverDutyCyclePct}
-                customGpuUnitPriceUsd={config.customGpuUnitPriceUsd}
-                customSystemBasePriceUsd={config.customSystemBasePriceUsd}
-                customAnnualElectricityUsd={config.customAnnualElectricityUsd}
-                customAnnualCoolingUsd={config.customAnnualCoolingUsd}
-                customAnnualMaintenanceUsd={config.customAnnualMaintenanceUsd}
-                customAnnualOtherExpensesUsd={config.customAnnualOtherExpensesUsd}
-                onChangeElectricityRate={(val) => setConfig((prev) => ({ ...prev, electricityRateTryPerKwh: val }))}
-                onChangeUsdToTryRate={(val) => setConfig((prev) => ({ ...prev, usdToTryRate: val }))}
-                onChangePueRatio={(val) => setConfig((prev) => ({ ...prev, pueRatio: val }))}
-                onChangeDutyCycle={(val) => setConfig((prev) => ({ ...prev, serverDutyCyclePct: val }))}
-                onChangeCustomGpuUnitPrice={(val) => setConfig((prev) => ({ ...prev, customGpuUnitPriceUsd: val }))}
-                onChangeCustomSystemBasePrice={(val) => setConfig((prev) => ({ ...prev, customSystemBasePriceUsd: val }))}
-                onChangeCustomAnnualElectricity={(val) => setConfig((prev) => ({ ...prev, customAnnualElectricityUsd: val }))}
-                onChangeCustomAnnualCooling={(val) => setConfig((prev) => ({ ...prev, customAnnualCoolingUsd: val }))}
-                onChangeCustomAnnualMaintenance={(val) => setConfig((prev) => ({ ...prev, customAnnualMaintenanceUsd: val }))}
-                onChangeCustomAnnualOtherExpenses={(val) => setConfig((prev) => ({ ...prev, customAnnualOtherExpensesUsd: val }))}
-                onResetAllCustomCosts={() =>
-                  setConfig((prev) => ({
-                    ...prev,
-                    customGpuUnitPriceUsd: null,
-                    customSystemBasePriceUsd: null,
-                    customAnnualElectricityUsd: null,
-                    customAnnualCoolingUsd: null,
-                    customAnnualMaintenanceUsd: null,
-                    customAnnualOtherExpensesUsd: null,
-                  }))
-                }
+                pricesLoading={pricesLoading}
+                onRefreshPrices={refetchPrices}
+                onOpenAiAdvisor={() => setIsAiModalOpen(true)}
+                onChangeConfig={(updater) => setConfig(updater)}
               />
             </div>
-          </>
+          </div>
         )}
       </main>
 
