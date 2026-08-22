@@ -160,7 +160,7 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
                           min={1}
                           max={200}
                           onChange={(v) =>
-                            handleUpdateProfileField(profile.id, 'userCount', Math.max(1, v || 1))
+                            handleUpdateProfileField(profile.id, 'userCount', Math.max(1, Math.round(v) || 1))
                           }
                         />
                       </div>

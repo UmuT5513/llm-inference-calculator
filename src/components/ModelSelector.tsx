@@ -628,7 +628,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
                 <NumberInput
                   value={customModel.numLayers}
                   onChange={(v) =>
-                    onUpdateCustomModel({ ...customModel, numLayers: v || 32 })
+                    onUpdateCustomModel({ ...customModel, numLayers: Math.round(v) || 32 })
                   }
                 />
               </Field>
@@ -637,7 +637,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
                 <NumberInput
                   value={customModel.numHeads}
                   onChange={(v) =>
-                    onUpdateCustomModel({ ...customModel, numHeads: v || 32 })
+                    onUpdateCustomModel({ ...customModel, numHeads: Math.round(v) || 32 })
                   }
                 />
               </Field>
@@ -646,7 +646,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
                 <NumberInput
                   value={customModel.numKvHeads}
                   onChange={(v) =>
-                    onUpdateCustomModel({ ...customModel, numKvHeads: v || 8 })
+                    onUpdateCustomModel({ ...customModel, numKvHeads: Math.round(v) || 8 })
                   }
                 />
               </Field>
@@ -655,7 +655,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
                 <NumberInput
                   value={customModel.headDim}
                   onChange={(v) =>
-                    onUpdateCustomModel({ ...customModel, headDim: v || 128 })
+                    onUpdateCustomModel({ ...customModel, headDim: Math.round(v) || 128 })
                   }
                 />
               </Field>
@@ -664,7 +664,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
                 <NumberInput
                   value={customModel.hiddenSize}
                   onChange={(v) =>
-                    onUpdateCustomModel({ ...customModel, hiddenSize: v || 4096 })
+                    onUpdateCustomModel({ ...customModel, hiddenSize: Math.round(v) || 4096 })
                   }
                 />
               </Field>
@@ -673,7 +673,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
                 <NumberInput
                   value={customModel.maxContextLen}
                   onChange={(v) =>
-                    onUpdateCustomModel({ ...customModel, maxContextLen: v || 32768 })
+                    onUpdateCustomModel({ ...customModel, maxContextLen: Math.round(v) || 32768 })
                   }
                 />
               </Field>

@@ -12,14 +12,15 @@ interface TcoTabProps {
   onChangeConfig: (updater: (prev: CalculatorConfig) => CalculatorConfig) => void;
 }
 
-interface OpexSegment {
+interface TcoSegment {
   label: string;
   field: keyof OnPremisesTco;
   tryField: keyof OnPremisesTco;
   cls: string;
 }
 
-const OPEX_SEGMENTS: OpexSegment[] = [
+const TCO_SEGMENTS: TcoSegment[] = [
+  { label: 'Donanım (CAPEX)', field: 'hardwareCapexUsd', tryField: 'hardwareCapexTry', cls: 'bg-[#8e8b8b]' },
   { label: 'Elektrik', field: 'annualElectricityCostUsd', tryField: 'annualElectricityCostTry', cls: 'bg-accent' },
   { label: 'Soğutma', field: 'annualCoolingCostUsd', tryField: 'annualCoolingCostTry', cls: 'bg-[#5aa7ff]' },
   { label: 'Bakım', field: 'annualMaintenanceUsd', tryField: 'annualMaintenanceTry', cls: 'bg-ok' },
@@ -68,7 +69,7 @@ export const TcoTab: React.FC<TcoTabProps> = ({ results, config, onChangeConfig 
       customAnnualOtherExpensesUsd: null,
     }));
 
-  const opexTotal = Math.max(1, onPremTco.annualOpexTotalUsd);
+  const tcoTotal = Math.max(1, onPremTco.totalFirstYearCostUsd);
 
   return (
     <div className="space-y-3">
@@ -126,24 +127,24 @@ export const TcoTab: React.FC<TcoTabProps> = ({ results, config, onChangeConfig 
             1. Yıl Maliyet Bileşenleri Dağılımı (TCO Kırılımı)
           </span>
           <span className="text-[10px] font-mono text-muted">
-            Toplam: {formatMoney(onPremTco.annualOpexTotalUsd, onPremTco.annualOpexTotalTry)}
+            Toplam: {formatMoney(onPremTco.totalFirstYearCostUsd, onPremTco.totalFirstYearCostTry)}
           </span>
         </div>
         <div className="flex h-2.5 w-full overflow-hidden rounded bg-surface-2 border border-border">
-          {OPEX_SEGMENTS.map((s) => {
+          {TCO_SEGMENTS.map((s) => {
             const usdVal = onPremTco[s.field] as number;
             return (
               <div
                 key={s.label}
                 className={s.cls}
-                style={{ width: `${(usdVal / opexTotal) * 100}%` }}
+                style={{ width: `${(usdVal / tcoTotal) * 100}%` }}
                 title={`${s.label}: ${formatMoney(usdVal, onPremTco[s.tryField] as number)}`}
               />
             );
           })}
         </div>
         <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 mt-1.5">
-          {OPEX_SEGMENTS.map((s) => {
+          {TCO_SEGMENTS.map((s) => {
             const usdVal = onPremTco[s.field] as number;
             return (
               <div key={s.label} className="flex items-center justify-between text-[10px] font-mono">
@@ -152,7 +153,7 @@ export const TcoTab: React.FC<TcoTabProps> = ({ results, config, onChangeConfig 
                   {s.label}
                 </span>
                 <span className="text-text">
-                  {formatMoney(usdVal, onPremTco[s.tryField] as number)} (%{((usdVal / opexTotal) * 100).toFixed(0)})
+                  {formatMoney(usdVal, onPremTco[s.tryField] as number)} (%{((usdVal / tcoTotal) * 100).toFixed(0)})
                 </span>
               </div>
             );

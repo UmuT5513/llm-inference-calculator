@@ -294,7 +294,7 @@ export const GpuConfigurator: React.FC<GpuConfiguratorProps> = ({
               <Field label="VRAM Kapasitesi (GB)">
                 <NumberInput
                   value={customGpu.vramGB}
-                  onChange={(v) => onUpdateCustomGpu({ ...customGpu, vramGB: v || 16 })}
+                  onChange={(v) => onUpdateCustomGpu({ ...customGpu, vramGB: Math.round(v) || 16 })}
                 />
               </Field>
 
