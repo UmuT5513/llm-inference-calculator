@@ -6,15 +6,15 @@ import { InferenceEngineSelector } from './components/InferenceEngineSelector';
 import { GpuConfigurator } from './components/GpuConfigurator';
 import { WorkloadConfigurator } from './components/WorkloadConfigurator';
 import { FineTuningConfigPanel } from './components/FineTuningConfigPanel';
+import { FineTuningResultsPanel } from './components/FineTuningResultsPanel';
+import { FineTuningPlatformCompare } from './components/FineTuningPlatformCompare';
+import { FineTuningCodeExport } from './components/FineTuningCodeExport';
 import { AiAdvisorModal } from './components/AiAdvisorModal';
 import { ExportModal } from './components/ExportModal';
 import { ScenarioModal } from './components/ScenarioModal';
 import { ScenarioComparisonModal } from './components/ScenarioComparisonModal';
 import { AdminPanel } from './components/AdminPanel';
 import { ResultsPanel } from './components/ResultsPanel';
-import { Panel } from './components/ui/Panel';
-import { SectionHeader } from './components/ui/SectionHeader';
-import { Badge } from './components/ui/Badge';
 
 import { CalculatorConfig, PresetScenario, FineTuningConfig } from './types';
 import { DEFAULT_CUSTOM_MODEL, DEFAULT_CUSTOM_GPU, DEFAULT_USER_PROFILES, GPU_PRESETS, MODEL_PRESETS } from './data/presets';
@@ -270,33 +270,12 @@ export default function App() {
                 models={modelCatalog}
               />
               <FineTuningConfigPanel config={ftConfig} results={ftResults} onChangeConfig={setFtConfig} />
+              <FineTuningPlatformCompare results={ftResults} />
+              <FineTuningCodeExport results={ftResults} />
             </div>
 
             <div className="lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto">
-              <Panel className="p-4 space-y-3">
-                <SectionHeader
-                  title="Fine-Tuning Sonuçları"
-                  description="VRAM, süre ve platform maliyet analizi"
-                />
-                <div className="space-y-2">
-                  <div className="text-sm font-bold text-text">
-                    {ftResults.modelName} Fine-Tuning
-                  </div>
-                  <div className="flex flex-wrap items-center gap-1.5">
-                    <Badge tone="accent">{ftResults.methodBadge}</Badge>
-                    <Badge tone="default">{ftResults.frameworkName}</Badge>
-                  </div>
-                  <div className="flex items-center justify-between bg-surface-2 border border-border rounded-md p-3">
-                    <span className="text-[11px] text-muted">Gereken Minimum VRAM</span>
-                    <span className="text-lg font-bold font-mono text-accent">
-                      {ftResults.recommendedMinVramGB} GB
-                    </span>
-                  </div>
-                  <p className="text-[10px] text-muted">
-                    Toplam gereken: {ftResults.totalVramNeededGB.toFixed(1)} GB (Min {ftResults.recommendedMinVramGB} GB) • En hızlı: {ftResults.fastestPlatform?.estimatedTimeFormatted || ftResults.trainingTimeFormatted}
-                  </p>
-                </div>
-              </Panel>
+              <FineTuningResultsPanel results={ftResults} />
             </div>
           </div>
         ) : (
