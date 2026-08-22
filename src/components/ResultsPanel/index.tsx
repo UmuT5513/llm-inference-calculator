@@ -7,6 +7,8 @@ import { Stat } from '../ui/Stat';
 import { Tabs } from '../ui/Tabs';
 import { Sparkles } from 'lucide-react';
 import { VramTab } from './VramTab';
+import { PerfTab } from './PerfTab';
+import { CostTab } from './CostTab';
 
 export interface ResultsPanelProps {
   results: CalculationResults;
@@ -101,8 +103,8 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
 
       <div className="p-3.5">
         {tab === 'vram' && <VramTab results={results} gpuCount={config.gpuCount} gpuVramGB={gpuVramGB} />}
-        {tab === 'perf' && null}
-        {tab === 'cost' && null}
+        {tab === 'perf' && <PerfTab results={results} />}
+        {tab === 'cost' && <CostTab results={results} gpuCount={config.gpuCount} gpuName={results.gpuName} />}
         {tab === 'cloud' && null}
         {tab === 'tco' && null}
       </div>
