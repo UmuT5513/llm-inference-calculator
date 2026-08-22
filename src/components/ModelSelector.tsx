@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from 'react';
 import {
-  Cpu,
   Edit3,
   Layers,
   Sliders,
@@ -20,6 +19,11 @@ import {
 } from 'lucide-react';
 import { ModelPreset, ModelRecommendationResult } from '../types';
 import { MODEL_PRESETS, DEFAULT_CUSTOM_MODEL } from '../data/presets';
+import { Panel } from './ui/Panel';
+import { SectionHeader } from './ui/SectionHeader';
+import { Badge } from './ui/Badge';
+import { Field } from './ui/Field';
+import { NumberInput } from './ui/NumberInput';
 
 interface ModelSelectorProps {
   selectedModelId: string;
@@ -164,31 +168,31 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
     switch (env) {
       case 'edge':
         return (
-          <span className="inline-flex items-center gap-1 text-[9px] font-medium px-1.5 py-0.5 rounded bg-teal-50 text-teal-700 border border-teal-200" title="Mobil / NPU / on-device cihazlarda çalıştırmaya elverişli">
+          <Badge tone="default" title="Mobil / NPU / on-device cihazlarda çalıştırmaya elverişli">
             <Laptop className="w-2.5 h-2.5" />
             Edge
-          </span>
+          </Badge>
         );
       case 'local':
         return (
-          <span className="inline-flex items-center gap-1 text-[9px] font-medium px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200" title="Yerel PC, Mac veya tek GPU ile çalıştırmaya elverişli">
+          <Badge tone="default" title="Yerel PC, Mac veya tek GPU ile çalıştırmaya elverişli">
             <Laptop className="w-2.5 h-2.5" />
             Yerel / PC
-          </span>
+          </Badge>
         );
       case 'hybrid':
         return (
-          <span className="inline-flex items-center gap-1 text-[9px] font-medium px-1.5 py-0.5 rounded bg-sky-50 text-sky-700 border border-sky-200" title="İş istasyonu (24GB-48GB VRAM) veya 2x GPU için uygun">
+          <Badge tone="default" title="İş istasyonu (24GB-48GB VRAM) veya 2x GPU için uygun">
             <Zap className="w-2.5 h-2.5" />
             İş İstasyonu
-          </span>
+          </Badge>
         );
       case 'server':
         return (
-          <span className="inline-flex items-center gap-1 text-[9px] font-medium px-1.5 py-0.5 rounded bg-purple-50 text-purple-700 border border-purple-200" title="Veri merkezi, 80GB H100/A100 veya GPU kümesi gerektirir">
+          <Badge tone="default" title="Veri merkezi, 80GB H100/A100 veya GPU kümesi gerektirir">
             <Server className="w-2.5 h-2.5" />
             Sunucu / Küme
-          </span>
+          </Badge>
         );
       default:
         return null;
@@ -196,67 +200,58 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
   };
 
   return (
-    <div className="bg-white border border-slate-200/90 rounded-xl p-4 shadow-xs space-y-3.5">
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 pb-2.5">
-        <div className="flex items-center gap-2">
-          <div className="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg border border-indigo-100">
-            <Cpu className="w-4 h-4" />
-          </div>
-          <div>
-            <h2 className="text-xs font-bold text-slate-800 uppercase tracking-wider">1. LLM Model Parametreleri</h2>
-            <p className="text-[11px] text-slate-500">
-              Parametre boyutu, mimari (Dense / MoE), katman ve donanım uygunluğu
-            </p>
-          </div>
-        </div>
+    <Panel className="p-3.5 space-y-3">
+      <SectionHeader
+        index="01"
+        title="LLM Model Parametreleri"
+        description="Parametre boyutu, mimari (Dense / MoE), katman ve donanım uygunluğu"
+        right={
+          <div className="flex items-center gap-2">
+            {/* Quick search input */}
+            <div className="relative">
+              <Search className="w-3.5 h-3.5 text-muted absolute left-2.5 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                placeholder="Model ara (örn: Gemma 4, Qwen 3.5)..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="bg-surface-2 border border-border rounded pl-8 pr-2.5 py-1 text-xs font-mono text-text placeholder-muted focus:outline-none focus:border-accent w-48 sm:w-60 transition"
+              />
+            </div>
 
-        <div className="flex items-center gap-2">
-          {/* Quick search input */}
-          <div className="relative">
-            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              placeholder="Model ara (örn: Gemma 4, Qwen 3.5)..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-slate-50 border border-slate-200 rounded-lg pl-8 pr-2.5 py-1 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:bg-white w-48 sm:w-60 transition"
-            />
+            {/* Custom model builder button */}
+            <button
+              onClick={() => {
+                onSelectModel('custom');
+                setShowCustomModal(true);
+              }}
+              className={`flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-md transition border ${
+                selectedModelId === 'custom'
+                  ? 'bg-accent text-bg border-accent font-bold'
+                  : 'bg-surface-2 text-text border-border hover:bg-surface'
+              }`}
+            >
+              <Edit3 className="w-3 h-3" />
+              <span>Özel Model</span>
+            </button>
           </div>
-
-          {/* Custom model builder button */}
-          <button
-            onClick={() => {
-              onSelectModel('custom');
-              setShowCustomModal(true);
-            }}
-            className={`flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-lg transition border ${
-              selectedModelId === 'custom'
-                ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs'
-                : 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200'
-            }`}
-          >
-            <Edit3 className="w-3 h-3" />
-            <span>Özel Model</span>
-          </button>
-        </div>
-      </div>
+        }
+      />
 
       {/* AI Model Recommendation Assistant Banner */}
       {showAiAdvisorBox && (
-        <div className="bg-indigo-50/70 border border-indigo-200/80 rounded-xl p-3.5 sm:p-4 shadow-xs space-y-3 relative overflow-hidden">
+        <div className="bg-surface-2 border border-border rounded-md p-3.5 sm:p-4 space-y-3 relative overflow-hidden">
           <div className="flex items-start justify-between gap-2">
             <div className="flex items-center gap-2.5">
-              <div className="p-1.5 bg-indigo-600 text-white rounded-lg shadow-xs">
-                <Sparkles className="w-4 h-4 text-indigo-100" />
+              <div className="p-1.5 bg-accent text-bg rounded-md">
+                <Sparkles className="w-4 h-4" />
               </div>
               <div>
-                <h3 className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                <h3 className="text-xs font-bold text-text flex items-center gap-1.5">
                   <span>Bu hesaplamaları ne için yapıyorsunuz? (Akıllı Model Seçimi)</span>
-                  <span className="text-[9px] bg-indigo-100 text-indigo-800 font-mono px-1.5 py-0.2 rounded border border-indigo-200 font-semibold">
-                    AI Destekli
-                  </span>
+                  <Badge tone="accent">AI Destekli</Badge>
                 </h3>
-                <p className="text-[11px] text-slate-600 mt-0.5">
+                <p className="text-[11px] text-muted mt-0.5">
                   Kullanım amacınızı seçin veya yazın; yapay zeka sağlık verileri için <strong>uzun context length</strong>, kodlama için <strong>agentic kabiliyetler</strong> ya da mantık için <strong>thinking/reasoning</strong> gücünü analiz ederek en ideal modeli otomatik seçsin.
                 </p>
               </div>
@@ -264,7 +259,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
 
             <button
               onClick={() => setShowAiAdvisorBox(false)}
-              className="text-slate-400 hover:text-slate-700 text-xs px-1.5 py-0.5 rounded-md hover:bg-indigo-100/50"
+              className="text-muted hover:text-text text-xs px-1.5 py-0.5 rounded-md hover:bg-surface"
               title="Kutuyu Gizle"
             >
               ✕
@@ -273,7 +268,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
 
           {/* Quick Scenario Chips */}
           <div className="space-y-1.5">
-            <div className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1">
+            <div className="text-[10px] font-semibold text-muted uppercase tracking-wider flex items-center gap-1">
               <span>Hızlı Senaryo Seçin:</span>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-1.5">
@@ -287,15 +282,15 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
                       setUseCaseInput(preset.query);
                       handleRecommendModel(preset.query);
                     }}
-                    className="p-2 bg-white hover:bg-indigo-50 border border-slate-200 hover:border-indigo-300 rounded-lg text-left transition flex flex-col justify-between group disabled:opacity-50 shadow-2xs"
+                    className="p-2 bg-surface hover:bg-surface-2 border border-border hover:border-accent/50 rounded-md text-left transition flex flex-col justify-between group disabled:opacity-50"
                   >
-                    <div className="flex items-center gap-1.5 text-indigo-600 mb-1">
+                    <div className="flex items-center gap-1.5 text-accent mb-1">
                       <Icon className="w-3.5 h-3.5 shrink-0" />
-                      <span className="text-[10.5px] font-bold text-slate-800 group-hover:text-indigo-900 leading-tight line-clamp-1">
+                      <span className="text-[10.5px] font-bold text-text group-hover:text-accent leading-tight line-clamp-1">
                         {preset.label}
                       </span>
                     </div>
-                    <span className="text-[9px] text-slate-500 font-mono">
+                    <span className="text-[9px] text-muted font-mono">
                       {preset.sublabel}
                     </span>
                   </button>
@@ -317,14 +312,14 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
                   }
                 }}
                 placeholder="Veya projenizi yazın: (örn: 'Sağlık sektöründe hasta epikrizleri tarayacağım' ya da 'Python agentic kod refactoring')..."
-                className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 shadow-2xs"
+                className="w-full bg-surface-2 border border-border rounded px-3 py-2 text-xs font-mono text-text placeholder-muted focus:outline-none focus:border-accent"
               />
             </div>
 
             <button
               onClick={() => handleRecommendModel(useCaseInput)}
               disabled={isRecommending || !useCaseInput.trim()}
-              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white rounded-lg text-xs font-semibold transition flex items-center justify-center gap-1.5 shadow-xs shrink-0 active:scale-95"
+              className="px-4 py-2 bg-accent hover:opacity-90 disabled:opacity-50 text-bg rounded-md text-xs font-bold transition flex items-center justify-center gap-1.5 shrink-0 active:scale-95"
             >
               {isRecommending ? (
                 <>
@@ -333,7 +328,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
                 </>
               ) : (
                 <>
-                  <Sparkles className="w-3.5 h-3.5 text-indigo-100" />
+                  <Sparkles className="w-3.5 h-3.5" />
                   <span>AI ile Modeli Öner & Seç</span>
                 </>
               )}
@@ -342,48 +337,48 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
 
           {/* Recommendation Error */}
           {recommendationError && (
-            <div className="p-2.5 bg-rose-50 border border-rose-200 rounded-lg text-rose-700 text-xs">
+            <div className="p-2.5 bg-danger/10 border border-danger/40 rounded-md text-danger text-xs">
               {recommendationError}
             </div>
           )}
 
           {/* Active AI Recommendation Highlight Banner */}
           {recommendation && (
-            <div className="bg-white border border-indigo-200 rounded-lg p-3 space-y-2 shadow-xs">
-              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-2">
+            <div className="bg-surface-2 border border-border rounded-md p-3 space-y-2">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-2">
                 <div className="flex items-center gap-2">
-                  <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded uppercase tracking-wider">
-                    <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                  <Badge tone="ok" className="text-[10px] font-bold uppercase tracking-wider">
+                    <CheckCircle2 className="w-3 h-3" />
                     Önerilen Model Otomatik Seçildi
-                  </span>
-                  <span className="text-xs font-bold text-slate-900">
+                  </Badge>
+                  <span className="text-xs font-bold text-text">
                     {recommendation.modelName}
                   </span>
-                  <span className="text-[10px] text-indigo-700 bg-indigo-50 border border-indigo-200 px-1.5 py-0.2 rounded font-medium">
+                  <span className="text-[10px] text-accent bg-surface border border-border px-1.5 py-0.2 rounded font-medium">
                     {recommendation.domainMatch}
                   </span>
                 </div>
 
-                <div className="text-[10px] text-slate-500">
+                <div className="text-[10px] text-muted">
                   İstediğiniz zaman aşağıdaki listeden başka bir model seçebilirsiniz.
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs">
                 <div className="md:col-span-2 space-y-1">
-                  <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                  <div className="text-[10px] font-bold text-muted uppercase tracking-wider">
                     💡 AI Analiz Gerekçesi:
                   </div>
-                  <p className="text-slate-700 text-[11px] leading-relaxed">
+                  <p className="text-muted text-[11px] leading-relaxed">
                     {recommendation.reason}
                   </p>
                 </div>
 
-                <div className="space-y-1 bg-slate-50 p-2 rounded-lg border border-slate-200">
-                  <div className="text-[10px] font-bold text-indigo-700 uppercase tracking-wider">
+                <div className="space-y-1 bg-surface p-2 rounded-md border border-border">
+                  <div className="text-[10px] font-bold text-accent uppercase tracking-wider">
                     🎯 Kritik Güçlü Yön:
                   </div>
-                  <p className="text-slate-800 text-[10.5px] font-semibold">
+                  <p className="text-text text-[10.5px] font-semibold">
                     {recommendation.keyHighlight}
                   </p>
                 </div>
@@ -391,8 +386,8 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
 
               {/* Alternative Recommendations */}
               {recommendation.alternativeModelIds && recommendation.alternativeModelIds.length > 0 && (
-                <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-100 text-[10px]">
-                  <span className="text-slate-500 font-semibold">Alternatif Öneriler:</span>
+                <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-border text-[10px]">
+                  <span className="text-muted font-semibold">Alternatif Öneriler:</span>
                   {recommendation.alternativeModelIds.map((altId) => {
                     const altModel = catalog.find((m) => m.id === altId);
                     if (!altModel) return null;
@@ -402,8 +397,8 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
                         onClick={() => onSelectModel(altId)}
                         className={`px-2 py-0.5 rounded-md border transition flex items-center gap-1 ${
                           selectedModelId === altId
-                            ? 'bg-indigo-600 text-white border-indigo-600'
-                            : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-indigo-400 hover:bg-white'
+                            ? 'bg-accent text-bg border-accent font-bold'
+                            : 'bg-surface text-text border-border hover:border-accent/40 hover:bg-surface-2'
                         }`}
                       >
                         <span>{altModel.name}</span>
@@ -419,19 +414,19 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
       )}
 
       {/* Deployment Suitability Filter Tabs (Yerel vs Sunucu) */}
-      <div className="flex flex-wrap items-center gap-1.5 bg-slate-50 p-1 rounded-lg border border-slate-200">
-        <span className="text-[10px] font-semibold text-slate-500 px-2 uppercase tracking-wide">Donanım Türü:</span>
+      <div className="flex flex-wrap items-center gap-1.5 bg-surface-2 p-1 rounded border border-border">
+        <span className="text-[10px] font-semibold text-muted px-2 uppercase tracking-wide">Donanım Türü:</span>
         {envFilters.map((ef) => (
           <button
             key={ef.id}
             onClick={() => setActiveEnvFilter(ef.id)}
             className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition flex items-center gap-1.5 ${
               activeEnvFilter === ef.id
-                ? 'bg-white text-indigo-700 shadow-xs border border-slate-200 font-semibold'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                ? 'bg-accent text-bg font-bold'
+                : 'text-muted hover:text-text'
             }`}
           >
-            {ef.icon && <ef.icon className="w-3 h-3 text-slate-500" />}
+            {ef.icon && <ef.icon className={`w-3 h-3 ${activeEnvFilter === ef.id ? 'text-bg' : 'text-muted'}`} />}
             <span>{ef.label}</span>
           </button>
         ))}
@@ -445,8 +440,8 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
             onClick={() => setActiveCapability(cap.id)}
             className={`px-2.5 py-1 rounded-md text-[11px] font-medium whitespace-nowrap transition ${
               activeCapability === cap.id
-                ? 'bg-indigo-600 text-white shadow-xs'
-                : 'text-slate-600 bg-slate-100 hover:bg-slate-200 hover:text-slate-900'
+                ? 'bg-accent text-bg font-bold'
+                : 'bg-surface-2 text-muted hover:text-text hover:bg-surface'
             }`}
           >
             {cap.label}
@@ -456,7 +451,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
 
       {/* Model Grid */}
       {filteredModels.length === 0 ? (
-        <div className="p-6 text-center text-slate-500 text-xs border border-dashed border-slate-200 rounded-lg">
+        <div className="p-6 text-center text-muted text-xs border border-dashed border-border rounded-md">
           Seçilen kriterlere uygun model bulunamadı. Filtreleri sıfırlamayı deneyin.
         </div>
       ) : (
@@ -469,40 +464,42 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
               <div
                 key={m.id}
                 onClick={() => onSelectModel(m.id)}
-                className={`cursor-pointer rounded-lg p-2.5 transition border text-left relative overflow-hidden flex flex-col justify-between ${
+                className={`cursor-pointer rounded-md p-2.5 transition border text-left relative overflow-hidden flex flex-col justify-between ${
                   isSelected
-                    ? 'bg-indigo-50/70 border-indigo-500 text-slate-900 shadow-xs ring-1 ring-indigo-500/40'
+                    ? 'bg-surface-2 border-accent ring-1 ring-accent/40'
                     : isAiRecommended
-                    ? 'bg-purple-50/40 border-purple-300 hover:border-purple-400 ring-1 ring-purple-300/40'
-                    : 'bg-white border-slate-200 hover:border-indigo-300 hover:bg-slate-50/60 shadow-2xs'
+                    ? 'bg-surface border-accent/40 ring-1 ring-accent/40'
+                    : 'bg-surface border-border hover:border-accent/40 hover:bg-surface-2'
                 }`}
               >
                 {/* Badges */}
                 <div className="absolute top-0 right-0 flex items-center">
                   {isAiRecommended && (
-                    <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-[8px] font-bold text-white px-1.5 py-0.5 rounded-bl shadow-xs flex items-center gap-0.5">
+                    <div className="bg-surface-2 text-muted text-[8px] font-bold px-1.5 py-0.5 rounded-bl flex items-center gap-0.5">
                       <Sparkles className="w-2 h-2" />
                       AI ÖNERİSİ
                     </div>
                   )}
                   {m.verified === false && (
-                    <div
-                      className="bg-amber-50 text-amber-700 border border-amber-200 text-[8px] font-bold px-1.5 py-0.5 rounded-bl"
+                    <Badge
+                      tone="danger"
+                      className="rounded-bl"
                       title="Bu modelin mimari bilgisi Hugging Face'ten doğrulanamadı (gated/erişim kısıtlı olabilir). Gösterilen değerler kayıtlı ön tanımlıdır."
                     >
                       HF'DEN DOĞRULANAMADI
-                    </div>
+                    </Badge>
                   )}
                   {m.source === 'mirror' && m.verified !== false && (
-                    <div
-                      className="bg-slate-50 text-slate-500 border border-slate-200 text-[8px] font-semibold px-1.5 py-0.5 rounded-bl"
+                    <Badge
+                      tone="default"
+                      className="rounded-bl"
                       title={`Mimari bilgisi üreticinin gated reposu yerine topluluk aynasından alındı: ${m.mirrorHfId || 'topluluk reposu'}`}
                     >
                       TOPLULUK AYNASI
-                    </div>
+                    </Badge>
                   )}
                   {isSelected && (
-                    <div className="bg-indigo-600 text-[8px] font-bold text-white px-1.5 py-0.5 rounded-bl">
+                    <div className="bg-accent text-bg text-[8px] font-bold px-1.5 py-0.5 rounded-bl">
                       SEÇİLİ
                     </div>
                   )}
@@ -510,33 +507,29 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
 
                 <div>
                   <div className="flex items-center justify-between gap-1 mb-1">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider line-clamp-1">
+                    <span className="text-[10px] font-bold text-muted uppercase tracking-wider line-clamp-1">
                       {m.provider}
                     </span>
                     <div className="flex items-center gap-1">
                       {getEnvBadge(m.targetEnv)}
-                      <span
-                        className={`text-[9px] font-mono px-1 py-0.2 rounded ${
-                          m.isMoe
-                            ? 'bg-amber-50 text-amber-700 border border-amber-200'
-                            : 'bg-slate-100 text-slate-600 border border-slate-200'
-                        }`}
-                      >
-                        {m.isMoe ? `MoE (${m.activeParamsB}B)` : 'Dense'}
-                      </span>
+                      {m.isMoe ? (
+                        <Badge tone="accent" className="font-mono">{`MoE (${m.activeParamsB}B)`}</Badge>
+                      ) : (
+                        <Badge tone="default" className="font-mono">Dense</Badge>
+                      )}
                     </div>
                   </div>
 
-                  <div className="text-xs font-bold text-slate-900 mb-1 line-clamp-1 flex items-center gap-1">
+                  <div className="text-xs font-bold text-text mb-1 line-clamp-1 flex items-center gap-1">
                     <span>{m.name}</span>
                   </div>
 
-                  <div className="flex items-center gap-2 text-[10px] text-slate-500 font-mono mb-1.5">
-                    <span>Toplam: <strong className="text-indigo-700">{m.totalParamsB}B</strong></span>
-                    <span>Context: <strong className="text-slate-800">{(m.maxContextLen / 1024).toFixed(0)}k</strong></span>
+                  <div className="flex items-center gap-2 text-[10px] text-muted font-mono mb-1.5">
+                    <span>Toplam: <strong className="text-accent">{m.totalParamsB}B</strong></span>
+                    <span>Context: <strong className="text-text">{(m.maxContextLen / 1024).toFixed(0)}k</strong></span>
                   </div>
 
-                  <p className="text-[10px] text-slate-500 line-clamp-2 leading-relaxed">{m.description}</p>
+                  <p className="text-[10px] text-muted line-clamp-2 leading-relaxed">{m.description}</p>
                 </div>
               </div>
             );
@@ -545,204 +538,180 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
       )}
 
       {/* Selected Model Architectural Summary */}
-      <div className="bg-slate-50 p-2.5 border border-slate-200 rounded-lg flex flex-wrap items-center justify-between gap-3 text-[11px]">
-        <div className="flex items-center gap-2 text-slate-600">
-          <Layers className="w-3.5 h-3.5 text-indigo-600" />
-          <span className="font-semibold text-slate-700">Seçili Mimari:</span>
-          <span className="text-slate-900 font-bold">{selectedModel.name}</span>
+      <div className="bg-surface-2 p-2.5 border border-border rounded-md flex flex-wrap items-center justify-between gap-3 text-[11px]">
+        <div className="flex items-center gap-2 text-muted">
+          <Layers className="w-3.5 h-3.5 text-accent" />
+          <span className="font-semibold text-muted">Seçili Mimari:</span>
+          <span className="text-text font-bold">{selectedModel.name}</span>
           {getEnvBadge(selectedModel.targetEnv)}
           {selectedModel.verified === false && (
-            <span
-              className="text-[9px] font-semibold text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded"
+            <Badge
+              tone="danger"
               title="Bu modelin mimari bilgisi Hugging Face'ten doğrulanamadı (gated/erişim kısıtlı). Gösterilen değerler kayıtlı ön tanımlıdır."
             >
               HF'den doğrulanamadı — ön tanımlı değerler
-            </span>
+            </Badge>
           )}
           {selectedModel.source === 'mirror' && selectedModel.verified !== false && (
-            <span
-              className="text-[9px] font-semibold text-slate-500 bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded"
+            <Badge
+              tone="default"
               title={`Mimari bilgisi topluluk aynasından alındı: ${selectedModel.mirrorHfId || 'topluluk reposu'}`}
             >
               Topluluk aynası
-            </span>
+            </Badge>
           )}
         </div>
 
-        <div className="flex flex-wrap items-center gap-3 text-slate-700 font-mono text-[10px]">
+        <div className="flex flex-wrap items-center gap-3 text-muted font-mono text-[10px]">
           <div>
-            Katman: <strong className="text-indigo-700">{selectedModel.numLayers}</strong>
+            Katman: <strong className="text-accent">{selectedModel.numLayers}</strong>
           </div>
           <div>
-            Heads: <strong className="text-indigo-700">{selectedModel.numHeads}</strong> (KV: {selectedModel.numKvHeads})
+            Heads: <strong className="text-accent">{selectedModel.numHeads}</strong> (KV: {selectedModel.numKvHeads})
           </div>
           <div>
-            Head Dim: <strong className="text-indigo-700">{selectedModel.headDim}</strong>
+            Head Dim: <strong className="text-accent">{selectedModel.headDim}</strong>
           </div>
           <div>
-            Hidden: <strong className="text-indigo-700">{selectedModel.hiddenSize}</strong>
+            Hidden: <strong className="text-accent">{selectedModel.hiddenSize}</strong>
           </div>
           <div>
-            GQA: <strong className="text-indigo-700">{(selectedModel.numHeads / selectedModel.numKvHeads).toFixed(1)}:1</strong>
+            GQA: <strong className="text-accent">{(selectedModel.numHeads / selectedModel.numKvHeads).toFixed(1)}:1</strong>
           </div>
         </div>
       </div>
 
       {/* Custom Model Edit Modal */}
       {showCustomModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white border border-slate-200 rounded-xl max-w-lg w-full p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-200 pb-3">
-              <div className="flex items-center gap-2 text-slate-900 font-semibold text-base">
-                <Sliders className="w-5 h-5 text-indigo-600" />
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-surface border border-border rounded-md max-w-lg w-full p-6 space-y-4">
+            <div className="flex items-center justify-between border-b border-border pb-3">
+              <div className="flex items-center gap-2 text-text font-semibold text-base">
+                <Sliders className="w-5 h-5 text-accent" />
                 Özel Model Parametreleri
               </div>
               <button
                 onClick={() => setShowCustomModal(false)}
-                className="text-slate-400 hover:text-slate-700 text-lg font-bold"
+                className="text-muted hover:text-text text-lg font-bold"
               >
                 ✕
               </button>
             </div>
 
             <div className="grid grid-cols-2 gap-3 text-xs">
-              <div>
-                <label className="block text-slate-600 font-medium mb-1">Model Adı</label>
+              <Field label="Model Adı">
                 <input
                   type="text"
                   value={customModel.name}
                   onChange={(e) =>
                     onUpdateCustomModel({ ...customModel, name: e.target.value })
                   }
-                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-slate-900 focus:bg-white focus:border-indigo-500 focus:outline-none"
+                  className="w-full bg-surface-2 border border-border rounded px-3 py-1.5 text-xs text-text placeholder-muted focus:border-accent focus:outline-none"
                 />
-              </div>
+              </Field>
 
-              <div>
-                <label className="block text-slate-600 font-medium mb-1">Toplam Parametre (B)</label>
-                <input
-                  type="number"
-                  step="0.1"
+              <Field label="Toplam Parametre (B)">
+                <NumberInput
                   value={customModel.totalParamsB}
-                  onChange={(e) =>
+                  step={0.1}
+                  onChange={(v) =>
                     onUpdateCustomModel({
                       ...customModel,
-                      totalParamsB: parseFloat(e.target.value) || 1,
-                      activeParamsB: customModel.isMoe ? customModel.activeParamsB : parseFloat(e.target.value) || 1,
+                      totalParamsB: v || 1,
+                      activeParamsB: customModel.isMoe ? customModel.activeParamsB : v || 1,
                     })
                   }
-                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-slate-900 focus:bg-white focus:border-indigo-500 focus:outline-none"
                 />
-              </div>
+              </Field>
 
-              <div>
-                <label className="block text-slate-600 font-medium mb-1">Katman Sayısı (numLayers)</label>
-                <input
-                  type="number"
+              <Field label="Katman Sayısı (numLayers)">
+                <NumberInput
                   value={customModel.numLayers}
-                  onChange={(e) =>
-                    onUpdateCustomModel({ ...customModel, numLayers: parseInt(e.target.value) || 32 })
+                  onChange={(v) =>
+                    onUpdateCustomModel({ ...customModel, numLayers: v || 32 })
                   }
-                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-slate-900 focus:bg-white focus:border-indigo-500 focus:outline-none"
                 />
-              </div>
+              </Field>
 
-              <div>
-                <label className="block text-slate-600 font-medium mb-1">Attention Heads (numHeads)</label>
-                <input
-                  type="number"
+              <Field label="Attention Heads (numHeads)">
+                <NumberInput
                   value={customModel.numHeads}
-                  onChange={(e) =>
-                    onUpdateCustomModel({ ...customModel, numHeads: parseInt(e.target.value) || 32 })
+                  onChange={(v) =>
+                    onUpdateCustomModel({ ...customModel, numHeads: v || 32 })
                   }
-                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-slate-900 focus:bg-white focus:border-indigo-500 focus:outline-none"
                 />
-              </div>
+              </Field>
 
-              <div>
-                <label className="block text-slate-600 font-medium mb-1">KV Heads (GQA numKvHeads)</label>
-                <input
-                  type="number"
+              <Field label="KV Heads (GQA numKvHeads)">
+                <NumberInput
                   value={customModel.numKvHeads}
-                  onChange={(e) =>
-                    onUpdateCustomModel({ ...customModel, numKvHeads: parseInt(e.target.value) || 8 })
+                  onChange={(v) =>
+                    onUpdateCustomModel({ ...customModel, numKvHeads: v || 8 })
                   }
-                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-slate-900 focus:bg-white focus:border-indigo-500 focus:outline-none"
                 />
-              </div>
+              </Field>
 
-              <div>
-                <label className="block text-slate-600 font-medium mb-1">Head Dimension (headDim)</label>
-                <input
-                  type="number"
+              <Field label="Head Dimension (headDim)">
+                <NumberInput
                   value={customModel.headDim}
-                  onChange={(e) =>
-                    onUpdateCustomModel({ ...customModel, headDim: parseInt(e.target.value) || 128 })
+                  onChange={(v) =>
+                    onUpdateCustomModel({ ...customModel, headDim: v || 128 })
                   }
-                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-slate-900 focus:bg-white focus:border-indigo-500 focus:outline-none"
                 />
-              </div>
+              </Field>
 
-              <div>
-                <label className="block text-slate-600 font-medium mb-1">Hidden Size (hiddenSize)</label>
-                <input
-                  type="number"
+              <Field label="Hidden Size (hiddenSize)">
+                <NumberInput
                   value={customModel.hiddenSize}
-                  onChange={(e) =>
-                    onUpdateCustomModel({ ...customModel, hiddenSize: parseInt(e.target.value) || 4096 })
+                  onChange={(v) =>
+                    onUpdateCustomModel({ ...customModel, hiddenSize: v || 4096 })
                   }
-                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-slate-900 focus:bg-white focus:border-indigo-500 focus:outline-none"
                 />
-              </div>
+              </Field>
 
-              <div>
-                <label className="block text-slate-600 font-medium mb-1">Max Context Length (Tokens)</label>
-                <input
-                  type="number"
+              <Field label="Max Context Length (Tokens)">
+                <NumberInput
                   value={customModel.maxContextLen}
-                  onChange={(e) =>
-                    onUpdateCustomModel({ ...customModel, maxContextLen: parseInt(e.target.value) || 32768 })
+                  onChange={(v) =>
+                    onUpdateCustomModel({ ...customModel, maxContextLen: v || 32768 })
                   }
-                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-slate-900 focus:bg-white focus:border-indigo-500 focus:outline-none"
                 />
-              </div>
+              </Field>
             </div>
 
             <div className="flex items-center gap-3 pt-2">
-              <label className="flex items-center gap-2 cursor-pointer text-xs text-slate-700">
+              <label className="flex items-center gap-2 cursor-pointer text-xs text-text">
                 <input
                   type="checkbox"
                   checked={customModel.isMoe}
                   onChange={(e) =>
                     onUpdateCustomModel({ ...customModel, isMoe: e.target.checked })
                   }
-                  className="rounded border-slate-300 text-indigo-600 focus:ring-0"
+                  className="rounded border-border text-accent focus:ring-0"
                 />
                 Mixture of Experts (MoE) Mimarisi
               </label>
 
               {customModel.isMoe && (
                 <div className="flex-1">
-                  <input
-                    type="number"
+                  <NumberInput
                     placeholder="Aktif Parametre (B)"
                     value={customModel.activeParamsB}
-                    onChange={(e) =>
-                      onUpdateCustomModel({ ...customModel, activeParamsB: parseFloat(e.target.value) || 1 })
+                    onChange={(v) =>
+                      onUpdateCustomModel({ ...customModel, activeParamsB: v || 1 })
                     }
-                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1 text-xs text-slate-900"
                   />
                 </div>
               )}
             </div>
 
-            <div className="flex justify-end gap-2 pt-4 border-t border-slate-200">
+            <div className="flex justify-end gap-2 pt-4 border-t border-border">
               <button
                 onClick={() => {
                   onSelectModel('custom');
                   setShowCustomModal(false);
                 }}
-                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold shadow-xs"
+                className="px-4 py-2 bg-accent hover:opacity-90 text-bg rounded-md text-xs font-bold transition"
               >
                 Kaydet ve Uygula
               </button>
@@ -750,6 +719,6 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
           </div>
         </div>
       )}
-    </div>
+    </Panel>
   );
 };
