@@ -9,11 +9,14 @@ import { Sparkles } from 'lucide-react';
 import { VramTab } from './VramTab';
 import { PerfTab } from './PerfTab';
 import { CostTab } from './CostTab';
+import { CloudTab } from './CloudTab';
+import { TcoTab } from './TcoTab';
 
 export interface ResultsPanelProps {
   results: CalculationResults;
   config: CalculatorConfig;
   gpuVramGB: number;
+  gpuId: string;
   prices: GpuPrice[];
   overrides: Record<string, number>;
   lastUpdated: string | null;
@@ -35,6 +38,7 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
   results,
   config,
   gpuVramGB,
+  gpuId,
   prices,
   overrides,
   lastUpdated,
@@ -105,8 +109,22 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
         {tab === 'vram' && <VramTab results={results} gpuCount={config.gpuCount} gpuVramGB={gpuVramGB} />}
         {tab === 'perf' && <PerfTab results={results} />}
         {tab === 'cost' && <CostTab results={results} gpuCount={config.gpuCount} gpuName={results.gpuName} />}
-        {tab === 'cloud' && null}
-        {tab === 'tco' && null}
+        {tab === 'cloud' && (
+          <CloudTab
+            results={results}
+            gpuCount={config.gpuCount}
+            gpuId={config.gpuId}
+            gpuName={results.gpuName}
+            prices={prices}
+            overrides={overrides}
+            lastUpdated={lastUpdated}
+            pricesLoading={pricesLoading}
+            onRefreshPrices={onRefreshPrices}
+          />
+        )}
+        {tab === 'tco' && onChangeConfig && (
+          <TcoTab results={results} config={config} onChangeConfig={onChangeConfig} />
+        )}
       </div>
     </Panel>
   );

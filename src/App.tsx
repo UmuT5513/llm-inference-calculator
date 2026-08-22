@@ -332,6 +332,7 @@ export default function App() {
                 results={results}
                 config={config}
                 gpuVramGB={activeGpu.vramGB}
+                gpuId={config.gpuId}
                 prices={livePrices}
                 overrides={liveOverrides}
                 lastUpdated={lastUpdated}
