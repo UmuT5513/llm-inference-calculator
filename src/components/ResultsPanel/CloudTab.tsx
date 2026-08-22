@@ -52,10 +52,11 @@ export const CloudTab: React.FC<CloudTabProps> = ({
     <div className="space-y-3">
       <div>
         <div className="text-[11px] font-mono uppercase tracking-wider text-muted">
-          Bulut & Serverless Karşılaştırması
+          Bulut & Serverless Çıkarım (Inference) Maliyet Karşılaştırması
         </div>
         <div className="text-[10px] font-mono text-muted mt-0.5">
-          {gpuCount}x {gpuName}
+          {gpuCount}x {gpuName} için güncel resmi fiyatlandırmalar (Lambda, RunPod Pods/Serverless, Modal, Google
+          Colab)
         </div>
       </div>
 

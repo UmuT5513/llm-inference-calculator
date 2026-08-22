@@ -73,7 +73,9 @@ export const TcoTab: React.FC<TcoTabProps> = ({ results, config, onChangeConfig 
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between gap-2">
-        <div className="text-[11px] font-mono uppercase tracking-wider text-muted">Yerel Kurulum TCO</div>
+        <div className="text-[11px] font-mono uppercase tracking-wider text-muted">
+          On-Premise (Yerel Kurulum) TCO & Maliyet Bileşenleri
+        </div>
         <div className="flex items-center bg-surface-2 border border-border rounded p-0.5 text-[10px] font-mono shrink-0">
           <button
             onClick={() => setShowTry(false)}
@@ -104,14 +106,14 @@ export const TcoTab: React.FC<TcoTabProps> = ({ results, config, onChangeConfig 
         <Stat
           label="1 Yıllık Toplam (TCO)"
           value={formatMoney(onPremTco.totalFirstYearCostUsd, onPremTco.totalFirstYearCostTry)}
-          sub={`3 yıl: ${formatMoney(onPremTco.totalThreeYearCostUsd, onPremTco.totalThreeYearCostTry)}`}
+          sub={`3 Yıllık Toplam: ${formatMoney(onPremTco.totalThreeYearCostUsd, onPremTco.totalThreeYearCostTry)}`}
           tone="accent"
         />
         <Stat
           label="Başabaş (ROI Süresi)"
           value={
             onPremTco.breakEvenMonthsVsCloud < 99
-              ? `${onPremTco.breakEvenMonthsVsCloud.toFixed(1)} Ay`
+              ? `~${onPremTco.breakEvenMonthsVsCloud.toFixed(1)} Ay`
               : 'Bulut Daha Avantajlı'
           }
           sub={onPremTco.breakEvenDescription}
@@ -120,7 +122,9 @@ export const TcoTab: React.FC<TcoTabProps> = ({ results, config, onChangeConfig 
 
       <div>
         <div className="flex items-center justify-between mb-1.5">
-          <span className="text-[11px] font-mono uppercase tracking-wider text-text">Yıllık OPEX Dağılımı</span>
+          <span className="text-[11px] font-mono uppercase tracking-wider text-text">
+            1. Yıl Maliyet Bileşenleri Dağılımı (TCO Kırılımı)
+          </span>
           <span className="text-[10px] font-mono text-muted">
             Toplam: {formatMoney(onPremTco.annualOpexTotalUsd, onPremTco.annualOpexTotalTry)}
           </span>
@@ -162,7 +166,7 @@ export const TcoTab: React.FC<TcoTabProps> = ({ results, config, onChangeConfig 
           <span className="text-text font-bold">${results.monthlyCostUsd.toFixed(0)}/ay</span>
         </div>
         <div className="flex items-center justify-between text-[11px] font-mono">
-          <span className="text-muted">Yerel (3 yıl amortisman)</span>
+          <span className="text-muted">3 yıllık amortismanla aylık ortalama:</span>
           <span className="text-ok font-bold">
             {formatMoney(onPremTco.monthlyAverageCostUsd, onPremTco.monthlyAverageCostTry)}/ay
           </span>
@@ -172,19 +176,19 @@ export const TcoTab: React.FC<TcoTabProps> = ({ results, config, onChangeConfig 
 
       <Collapse title="Maliyet Ayarları">
         <div className="grid grid-cols-2 gap-2.5">
-          <Field label="TR Tarife (₺/kWh)">
+          <Field label="TR Tarife (₺/kWh):">
             <NumberInput value={config.electricityRateTryPerKwh} onChange={setElectricityRate} step={0.1} min={0.5} max={30} />
           </Field>
-          <Field label="USD/TRY Kuru">
+          <Field label="Dolar Kuru (USD/TRY):">
             <NumberInput value={config.usdToTryRate} onChange={setUsdToTryRate} step={0.5} min={10} max={100} />
           </Field>
-          <Field label="PUE Çarpanı">
+          <Field label="PUE Çarpanı (Enerji Verimliliği):">
             <NumberInput value={config.pueRatio} onChange={setPueRatio} step={0.05} min={1.0} max={2.0} />
           </Field>
-          <Field label="Sunucu Yükü (%)">
+          <Field label="Sunucu Yükü (%):">
             <NumberInput value={config.serverDutyCyclePct} onChange={setDutyCycle} step={5} min={10} max={100} />
           </Field>
-          <Field label="GPU Birim Fiyatı ($)">
+          <Field label="Birim GPU Kartı Satın Alma Fiyatı:">
             <NumberInput
               value={config.customGpuUnitPriceUsd ?? onPremTco.gpuUnitPriceUsd}
               onChange={setCustomGpuUnitPrice}
@@ -192,7 +196,7 @@ export const TcoTab: React.FC<TcoTabProps> = ({ results, config, onChangeConfig 
               min={0}
             />
           </Field>
-          <Field label="Kasa & Donanım ($)">
+          <Field label="Sunucu Kasa, CPU, RAM & NVMe Taban Bedeli:">
             <NumberInput
               value={config.customSystemBasePriceUsd ?? onPremTco.systemBaseCapexUsd}
               onChange={setCustomSystemBasePrice}
@@ -200,7 +204,7 @@ export const TcoTab: React.FC<TcoTabProps> = ({ results, config, onChangeConfig 
               min={0}
             />
           </Field>
-          <Field label="Yıllık Elektrik ($)">
+          <Field label="Doğrudan Yıllık Elektrik Faturası Gir ($/₺):">
             <NumberInput
               value={config.customAnnualElectricityUsd ?? onPremTco.annualElectricityCostUsd}
               onChange={setCustomAnnualElectricity}
@@ -208,7 +212,7 @@ export const TcoTab: React.FC<TcoTabProps> = ({ results, config, onChangeConfig 
               min={0}
             />
           </Field>
-          <Field label="Yıllık Soğutma ($)">
+          <Field label="Yıllık Soğutma / HVAC Gideri ($/₺):">
             <NumberInput
               value={config.customAnnualCoolingUsd ?? onPremTco.annualCoolingCostUsd}
               onChange={setCustomAnnualCooling}
@@ -216,7 +220,7 @@ export const TcoTab: React.FC<TcoTabProps> = ({ results, config, onChangeConfig 
               min={0}
             />
           </Field>
-          <Field label="Yıllık Bakım ($)">
+          <Field label="Yıllık Bakım, Parça Değişim & Destek:">
             <NumberInput
               value={config.customAnnualMaintenanceUsd ?? onPremTco.annualMaintenanceUsd}
               onChange={setCustomAnnualMaintenance}
@@ -224,7 +228,7 @@ export const TcoTab: React.FC<TcoTabProps> = ({ results, config, onChangeConfig 
               min={0}
             />
           </Field>
-          <Field label="Diğer Giderler ($)">
+          <Field label="Kabin/Colocation, İnternet, Sigorta ve Lisans:">
             <NumberInput
               value={config.customAnnualOtherExpensesUsd ?? onPremTco.annualOtherExpensesUsd}
               onChange={setCustomAnnualOtherExpenses}
