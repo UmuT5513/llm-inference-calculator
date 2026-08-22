@@ -230,7 +230,7 @@ export default function App() {
       : GPU_PRESETS.find((g) => g.id === config.gpuId) || GPU_PRESETS[2];
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans selection:bg-indigo-600 selection:text-white pb-16">
+    <div className="min-h-screen bg-bg text-text font-sans selection:bg-accent selection:text-bg pb-16">
       {/* Navbar */}
       <Header
         activeTab={activeTab}
@@ -249,7 +249,7 @@ export default function App() {
 
       {/* OAuth notice */}
       {authNotice && (
-        <div className="fixed top-16 left-1/2 -translate-x-1/2 z-40 px-4 py-2 bg-emerald-600 text-white text-sm font-medium rounded-lg shadow-lg">
+        <div className="fixed top-16 left-1/2 -translate-x-1/2 z-40 px-4 py-2 bg-ok text-bg text-sm font-medium rounded-lg shadow-lg">
           {authNotice}
         </div>
       )}
