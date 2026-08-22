@@ -260,68 +260,73 @@ export const ScenarioComparisonModal: React.FC<ScenarioComparisonModalProps> = (
   const rows = buildRows();
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-16 bg-slate-900/60 backdrop-blur-sm overflow-y-auto">
-      <div className="w-full max-w-5xl bg-white rounded-2xl shadow-2xl border border-slate-200">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
-          <div className="flex items-center gap-2">
-            <Scale className="w-5 h-5 text-indigo-600" />
-            <h2 className="text-base font-bold text-slate-900">Senaryo Karşılaştırma</h2>
+    <div className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-16 bg-black/60 backdrop-blur-sm overflow-y-auto">
+      <div className="w-full max-w-4xl bg-surface border border-border rounded-md shadow-2xl">
+        <div className="flex items-center justify-between border-b border-border px-3.5 py-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <Scale className="w-4 h-4 text-accent shrink-0" />
+            <h2 className="text-[11px] font-bold font-mono uppercase tracking-wider text-text">
+              Senaryo Karşılaştırma
+            </h2>
           </div>
-          <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100">
+          <button
+            onClick={onClose}
+            className="p-1.5 text-muted hover:text-text rounded-md hover:bg-surface-2 transition cursor-pointer shrink-0"
+          >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         <div className="p-5 space-y-4">
           {!user ? (
-            <div className="flex items-center justify-between gap-3 bg-indigo-50 border border-indigo-200 rounded-xl p-4">
-              <p className="text-sm font-semibold text-indigo-900">
+            <div className="flex items-center justify-between gap-3 bg-surface-2 border border-border rounded-md p-4">
+              <p className="text-sm font-semibold text-text">
                 Karşılaştırmak için önce Google ile giriş yapın.
               </p>
               <button
                 onClick={login}
-                className="px-3 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg"
+                className="px-3 py-2 text-xs font-semibold text-text bg-surface-2 border border-border hover:bg-surface rounded-md cursor-pointer"
               >
                 Giriş Yap
               </button>
             </div>
           ) : (
             <>
-              <label className="flex items-center gap-2 text-sm text-slate-700">
+              <label className="flex items-center gap-2 text-sm text-text">
                 <input
                   type="checkbox"
                   checked={includeCurrent}
                   onChange={(e) => setIncludeCurrent(e.target.checked)}
-                  className="accent-indigo-600"
+                  className="accent-[#FFB224]"
                 />
                 Geçerli yapılandırmayı da dahil et
               </label>
 
               {loading ? (
-                <p className="text-sm text-slate-500">Yükleniyor...</p>
+                <p className="text-sm text-muted">Yükleniyor...</p>
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-56 overflow-y-auto">
                   {saved.map((s) => (
                     <label
                       key={s.id}
-                      className={`flex items-start gap-2 border rounded-lg p-2 cursor-pointer text-sm ${
-                        selected.has(s.id) ? 'border-indigo-400 bg-indigo-50' : 'border-slate-200 hover:border-slate-300'
+                      className={`flex items-start gap-2 border rounded-md p-2 cursor-pointer text-sm ${
+                        selected.has(s.id) ? 'border-accent/50 bg-surface-2' : 'bg-surface border-border hover:bg-surface-2'
                       }`}
                     >
                       <input
                         type="checkbox"
                         checked={selected.has(s.id)}
                         onChange={() => toggleSaved(s.id)}
-                        className="mt-0.5 accent-indigo-600"
+                        className="mt-0.5 accent-[#FFB224]"
                       />
                       <span className="min-w-0">
-                        <span className="block font-semibold text-slate-800 truncate">{s.name}</span>
-                        <span className="block text-[10px] text-slate-400">{s.subtitle}</span>
+                        <span className="block font-semibold text-text truncate">{s.name}</span>
+                        <span className="block text-[10px] text-muted">{s.subtitle}</span>
                       </span>
                     </label>
                   ))}
                   {saved.length === 0 && (
-                    <p className="col-span-full text-sm text-slate-500 text-center py-4">
+                    <p className="col-span-full text-sm text-muted text-center py-4">
                       Kayıtlı senaryo yok.
                     </p>
                   )}
@@ -329,16 +334,21 @@ export const ScenarioComparisonModal: React.FC<ScenarioComparisonModalProps> = (
               )}
 
               {columns.length >= 2 && (
-                <div className="overflow-x-auto border border-slate-200 rounded-xl">
-                  <table className="w-full text-sm">
+                <div className="overflow-x-auto border border-border rounded-md">
+                  <table className="w-full text-[11px] font-mono">
                     <thead>
-                      <tr className="bg-slate-50 border-b border-slate-200">
-                        <th className="text-left px-4 py-2 font-semibold text-slate-500 w-56 min-w-44">
+                      <tr className="bg-surface-2 border-b border-border">
+                        <th className="text-left px-4 py-2 font-semibold text-muted w-56 min-w-44">
                           Metrik
                         </th>
                         {columns.map((c) => (
-                          <th key={c.id} className="px-4 py-2 font-semibold text-slate-800 min-w-48">
-                            <span className="block text-xs text-indigo-600 mb-0.5">
+                          <th
+                            key={c.id}
+                            className={`px-4 py-2 font-semibold text-text min-w-48 ${
+                              c.id === 'current' ? 'bg-surface-2 border-l border-accent/40' : ''
+                            }`}
+                          >
+                            <span className="block text-[10px] text-accent mb-0.5">
                               {c.id === 'current' ? '⚡ Canlı' : 'Senaryo'}
                             </span>
                             {c.name}
@@ -348,11 +358,21 @@ export const ScenarioComparisonModal: React.FC<ScenarioComparisonModalProps> = (
                     </thead>
                     <tbody>
                       {rows.map((row, idx) => (
-                        <tr key={idx} className={idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/60'}>
-                          <td className="px-4 py-2.5 font-medium text-slate-700">{row.label}</td>
-                          {row.values.map((v, vi) => (
-                            <td key={vi} className="px-4 py-2.5 text-slate-800">{v}</td>
-                          ))}
+                        <tr key={idx} className={idx % 2 === 0 ? 'bg-surface' : 'bg-surface-2/40'}>
+                          <td className="px-4 py-2.5 font-medium text-muted">{row.label}</td>
+                          {row.values.map((v, vi) => {
+                            const isCurrent = columns[vi].id === 'current';
+                            return (
+                              <td
+                                key={vi}
+                                className={`px-4 py-2.5 text-text ${
+                                  isCurrent ? 'bg-surface-2 border-l border-accent/40 text-accent' : ''
+                                }`}
+                              >
+                                {v}
+                              </td>
+                            );
+                          })}
                         </tr>
                       ))}
                     </tbody>

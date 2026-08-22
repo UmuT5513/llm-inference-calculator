@@ -2,6 +2,9 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { X, Save, FolderOpen, Trash2, ArrowUpRight, LogIn } from 'lucide-react';
 import { CalculatorConfig, CalculationResults, FineTuningConfig, FineTuningResults } from '../types';
 import { useAuth } from '../auth/AuthContext';
+import { Panel } from './ui/Panel';
+import { SectionHeader } from './ui/SectionHeader';
+import { Badge } from './ui/Badge';
 
 export interface SavedScenario {
   id: string;
@@ -139,28 +142,31 @@ export const ScenarioModal: React.FC<ScenarioModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-16 bg-slate-900/60 backdrop-blur-sm overflow-y-auto">
-      <div className="w-full max-w-2xl bg-white rounded-2xl shadow-2xl border border-slate-200">
+    <div className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-16 bg-black/60 backdrop-blur-sm overflow-y-auto">
+      <div className="w-full max-w-2xl bg-surface border border-border rounded-md shadow-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
-          <h2 className="text-base font-bold text-slate-900">Senaryo Yönetimi</h2>
-          <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100">
+        <div className="flex items-center justify-between border-b border-border px-3.5 py-2">
+          <h2 className="text-[11px] font-bold font-mono uppercase tracking-wider text-text">Senaryo Yönetimi</h2>
+          <button
+            onClick={onClose}
+            className="p-1.5 text-muted hover:text-text rounded-md hover:bg-surface-2 transition cursor-pointer"
+          >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         <div className="p-5 space-y-5">
           {!user && !authLoading && (
-            <div className="flex items-center justify-between gap-3 bg-indigo-50 border border-indigo-200 rounded-xl p-4">
+            <div className="flex items-center justify-between gap-3 bg-surface-2 border border-border rounded-md p-4">
               <div>
-                <p className="text-sm font-semibold text-indigo-900">Senaryolarınızı kaydetmek için giriş yapın</p>
-                <p className="text-xs text-indigo-700 mt-0.5">
+                <p className="text-sm font-semibold text-text">Senaryolarınızı kaydetmek için giriş yapın</p>
+                <p className="text-xs text-muted mt-0.5">
                   Kaydettiğiniz senaryoları başka senaryolarla karşılaştırabilirsiniz.
                 </p>
               </div>
               <button
                 onClick={login}
-                className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg"
+                className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-text bg-surface-2 border border-border hover:bg-surface rounded-md cursor-pointer"
               >
                 <LogIn className="w-4 h-4" /> Google ile Giriş
               </button>
@@ -170,40 +176,42 @@ export const ScenarioModal: React.FC<ScenarioModalProps> = ({
           {user && (
             <>
               {/* Save form */}
-              <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3">
-                <div className="flex items-center gap-2 text-sm font-semibold text-slate-800">
-                  <Save className="w-4 h-4 text-indigo-600" />
-                  Mevcut Yapılandırmayı Kaydet ({activeTab === 'inference' ? 'Çıkarım' : 'Fine-Tuning'})
+              <Panel className="overflow-hidden">
+                <SectionHeader
+                  title={`Mevcut Yapılandırmayı Kaydet (${activeTab === 'inference' ? 'Çıkarım' : 'Fine-Tuning'})`}
+                  right={<Save className="w-4 h-4 text-accent shrink-0" />}
+                />
+                <div className="p-3.5 space-y-3">
+                  <input
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Senaryo adı (örn. Staging API 2x H100)"
+                    className="w-full px-3 py-2 text-sm bg-surface-2 border border-border rounded-md text-text placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent/50"
+                  />
+                  <textarea
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Açıklama (opsiyonel)"
+                    rows={2}
+                    className="w-full px-3 py-2 text-sm bg-surface-2 border border-border rounded-md text-text placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent/50"
+                  />
+                  <button
+                    onClick={saveScenario}
+                    disabled={saving}
+                    className="w-full py-2 text-sm font-bold text-bg bg-accent hover:bg-accent/90 rounded-md disabled:opacity-50 cursor-pointer"
+                  >
+                    {saving ? 'Kaydediliyor...' : 'Senaryoyu Kaydet'}
+                  </button>
                 </div>
-                <input
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Senaryo adı (örn. Staging API 2x H100)"
-                  className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-                <textarea
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Açıklama (opsiyonel)"
-                  rows={2}
-                  className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-                <button
-                  onClick={saveScenario}
-                  disabled={saving}
-                  className="w-full py-2 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg disabled:opacity-50"
-                >
-                  {saving ? 'Kaydediliyor...' : 'Senaryoyu Kaydet'}
-                </button>
-              </div>
+              </Panel>
 
               {/* Error / Empty states */}
-              {error && <p className="text-xs text-rose-600 font-medium">{error}</p>}
-              {loading && <p className="text-xs text-slate-500">Yükleniyor...</p>}
+              {error && <p className="text-xs text-danger font-medium">{error}</p>}
+              {loading && <p className="text-xs text-muted">Yükleniyor...</p>}
 
               {/* List */}
               {!loading && scenarios.length === 0 && (
-                <p className="text-sm text-slate-500 text-center py-6">
+                <p className="text-sm text-muted text-center py-6">
                   Henüz kayıtlı senaryonuz yok.
                 </p>
               )}
@@ -213,35 +221,29 @@ export const ScenarioModal: React.FC<ScenarioModalProps> = ({
                   {scenarios.map((s) => (
                     <div
                       key={s.id}
-                      className={`flex items-start gap-3 border rounded-xl p-3 transition ${
+                      className={`flex items-start gap-3 border rounded-md p-3 transition ${
                         selectedIds.has(s.id)
-                          ? 'border-indigo-400 bg-indigo-50'
-                          : 'border-slate-200 bg-white hover:border-slate-300'
+                          ? 'border-accent/50 bg-surface-2'
+                          : 'bg-surface border-border hover:bg-surface-2'
                       }`}
                     >
                       <input
                         type="checkbox"
                         checked={selectedIds.has(s.id)}
                         onChange={() => toggleSelect(s.id)}
-                        className="mt-1 accent-indigo-600"
+                        className="mt-1 accent-[#FFB224]"
                       />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-sm font-semibold text-slate-900 truncate">{s.name}</span>
-                          <span
-                            className={`text-[10px] font-mono px-1.5 py-0.5 rounded border ${
-                              s.type === 'inference'
-                                ? 'bg-indigo-50 text-indigo-700 border-indigo-200'
-                                : 'bg-amber-50 text-amber-700 border-amber-200'
-                            }`}
-                          >
+                          <span className="text-sm font-semibold text-text truncate">{s.name}</span>
+                          <Badge tone={s.type === 'inference' ? 'accent' : 'default'}>
                             {s.type === 'inference' ? 'Çıkarım' : 'Fine-Tuning'}
-                          </span>
+                          </Badge>
                         </div>
                         {s.description && (
-                          <p className="text-xs text-slate-500 mt-0.5 line-clamp-2">{s.description}</p>
+                          <p className="text-xs text-muted mt-0.5 line-clamp-2">{s.description}</p>
                         )}
-                        <p className="text-[10px] text-slate-400 mt-1">
+                        <p className="text-[10px] text-muted/70 mt-1">
                           Güncellendi: {new Date(s.updated_at).toLocaleString('tr-TR')}
                         </p>
                       </div>
@@ -251,14 +253,14 @@ export const ScenarioModal: React.FC<ScenarioModalProps> = ({
                             onLoadScenario(s.type, s.config, s.results);
                             onClose();
                           }}
-                          className="p-1.5 text-indigo-600 hover:bg-indigo-50 rounded-lg"
+                          className="p-1.5 text-muted hover:text-text hover:bg-surface-2 rounded-md cursor-pointer"
                           title="Yükle"
                         >
                           <ArrowUpRight className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => deleteScenario(s.id)}
-                          className="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg"
+                          className="p-1.5 text-danger/70 hover:text-danger hover:bg-surface-2 rounded-md cursor-pointer"
                           title="Sil"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -270,7 +272,7 @@ export const ScenarioModal: React.FC<ScenarioModalProps> = ({
                   <button
                     onClick={compareSelected}
                     disabled={selectedIds.size < 2}
-                    className="w-full py-2 text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg disabled:opacity-40"
+                    className="w-full py-2 text-sm font-bold text-bg bg-accent hover:bg-accent/90 rounded-md disabled:opacity-40 cursor-pointer"
                   >
                     {selectedIds.size >= 2
                       ? `Karşılaştır (${selectedIds.size} senaryo)`
