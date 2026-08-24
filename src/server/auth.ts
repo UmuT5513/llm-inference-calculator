@@ -3,6 +3,7 @@ import { OAuth2Client } from 'google-auth-library';
 import { SignJWT, jwtVerify } from 'jose';
 import { randomUUID } from 'crypto';
 import { getPool } from './db';
+import { getAdminUser } from './adminAuth';
 
 const SESSION_COOKIE = 'llmcalc_session';
 const SESSION_TTL_SECONDS = 60 * 60 * 24 * 30; // 30 days
@@ -226,7 +227,7 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
 }
 
 export async function requireAdmin(req: Request, res: Response, next: NextFunction): Promise<void> {
-  const user = await getSessionUser(req);
+  const user = (await getSessionUser(req)) || (await getAdminUser(req));
   if (!user) {
     res.status(401).json({ error: 'Oturum açmanız gerekiyor.' });
     return;

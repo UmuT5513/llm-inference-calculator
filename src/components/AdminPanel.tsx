@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
-import { RefreshCw, X, Database, Cpu, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { RefreshCw, X, Database, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { Panel } from './ui/Panel';
 import { SectionHeader } from './ui/SectionHeader';
 
-interface AdminPanelProps {
-  isOpen: boolean;
-  onClose: () => void;
+export interface AdminPanelContentProps {
   onModelsRefreshed: () => Promise<void>;
   onPricesRefreshed: () => Promise<void>;
 }
@@ -18,11 +16,9 @@ interface TaskState {
 
 const idleState: TaskState = { busy: false, message: null, error: null };
 
-export const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, onModelsRefreshed, onPricesRefreshed }) => {
+export const AdminPanelContent: React.FC<AdminPanelContentProps> = ({ onModelsRefreshed, onPricesRefreshed }) => {
   const [modelsState, setModelsState] = useState<TaskState>(idleState);
   const [pricesState, setPricesState] = useState<TaskState>(idleState);
-
-  if (!isOpen) return null;
 
   const runModelRefresh = async () => {
     setModelsState({ busy: true, message: null, error: null });
@@ -60,6 +56,79 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, onModel
   };
 
   return (
+    <>
+      {/* Model catalog */}
+      <Panel className="overflow-hidden">
+        <SectionHeader
+          title="Model Kataloğu"
+          description="Hugging Face'ten açık kaynak modelleri çeker ve günceller."
+          right={
+            <button
+              onClick={runModelRefresh}
+              disabled={modelsState.busy}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-bg bg-accent hover:bg-accent/90 disabled:opacity-50 disabled:cursor-not-allowed rounded-md transition active:scale-95 shrink-0 cursor-pointer"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${modelsState.busy ? 'animate-spin' : ''}`} />
+              {modelsState.busy ? 'Güncelleniyor…' : 'Güncelle'}
+            </button>
+          }
+        />
+        <div className="p-3.5 space-y-2">
+          {modelsState.message && (
+            <p className="flex items-center gap-1.5 text-[11px] font-mono text-ok">
+              <CheckCircle2 className="w-3.5 h-3.5 shrink-0" /> {modelsState.message}
+            </p>
+          )}
+          {modelsState.error && (
+            <p className="flex items-center gap-1.5 text-[11px] font-mono font-medium text-danger">
+              <AlertTriangle className="w-3.5 h-3.5 shrink-0" /> {modelsState.error}
+            </p>
+          )}
+        </div>
+      </Panel>
+
+      {/* GPU prices */}
+      <Panel className="overflow-hidden">
+        <SectionHeader
+          title="GPU Fiyatları"
+          description="RunPod, Lambda ve Modal'dan güncel saatlik fiyatları çeker."
+          right={
+            <button
+              onClick={runPricesRefresh}
+              disabled={pricesState.busy}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-bg bg-accent hover:bg-accent/90 disabled:opacity-50 disabled:cursor-not-allowed rounded-md transition active:scale-95 shrink-0 cursor-pointer"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${pricesState.busy ? 'animate-spin' : ''}`} />
+              {pricesState.busy ? 'Güncelleniyor…' : 'Güncelle'}
+            </button>
+          }
+        />
+        <div className="p-3.5 space-y-2">
+          {pricesState.message && (
+            <p className="flex items-center gap-1.5 text-[11px] font-mono text-ok">
+              <CheckCircle2 className="w-3.5 h-3.5 shrink-0" /> {pricesState.message}
+            </p>
+          )}
+          {pricesState.error && (
+            <p className="flex items-center gap-1.5 text-[11px] font-mono font-medium text-danger">
+              <AlertTriangle className="w-3.5 h-3.5 shrink-0" /> {pricesState.error}
+            </p>
+          )}
+        </div>
+      </Panel>
+    </>
+  );
+};
+
+interface AdminPanelProps extends AdminPanelContentProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, onModelsRefreshed, onPricesRefreshed }) => {
+  if (!isOpen) return null;
+
+  return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
       <div className="bg-surface border border-border rounded-md w-full max-w-lg max-h-[85vh] overflow-y-auto">
         <div className="flex items-center justify-between border-b border-border px-3.5 py-2">
@@ -81,65 +150,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, onModel
             Bu işlem yalnızca yöneticiler tarafından tetiklenebilir.
           </p>
 
-          {/* Model catalog */}
-          <Panel className="overflow-hidden">
-            <SectionHeader
-              title="Model Kataloğu"
-              description="Hugging Face'ten açık kaynak modelleri çeker ve günceller."
-              right={
-                <button
-                  onClick={runModelRefresh}
-                  disabled={modelsState.busy}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-bg bg-accent hover:bg-accent/90 disabled:opacity-50 disabled:cursor-not-allowed rounded-md transition active:scale-95 shrink-0 cursor-pointer"
-                >
-                  <RefreshCw className={`w-3.5 h-3.5 ${modelsState.busy ? 'animate-spin' : ''}`} />
-                  {modelsState.busy ? 'Güncelleniyor…' : 'Güncelle'}
-                </button>
-              }
-            />
-            <div className="p-3.5 space-y-2">
-              {modelsState.message && (
-                <p className="flex items-center gap-1.5 text-[11px] font-mono text-ok">
-                  <CheckCircle2 className="w-3.5 h-3.5 shrink-0" /> {modelsState.message}
-                </p>
-              )}
-              {modelsState.error && (
-                <p className="flex items-center gap-1.5 text-[11px] font-mono font-medium text-danger">
-                  <AlertTriangle className="w-3.5 h-3.5 shrink-0" /> {modelsState.error}
-                </p>
-              )}
-            </div>
-          </Panel>
-
-          {/* GPU prices */}
-          <Panel className="overflow-hidden">
-            <SectionHeader
-              title="GPU Fiyatları"
-              description="RunPod, Lambda ve Modal'dan güncel saatlik fiyatları çeker."
-              right={
-                <button
-                  onClick={runPricesRefresh}
-                  disabled={pricesState.busy}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-bg bg-accent hover:bg-accent/90 disabled:opacity-50 disabled:cursor-not-allowed rounded-md transition active:scale-95 shrink-0 cursor-pointer"
-                >
-                  <RefreshCw className={`w-3.5 h-3.5 ${pricesState.busy ? 'animate-spin' : ''}`} />
-                  {pricesState.busy ? 'Güncelleniyor…' : 'Güncelle'}
-                </button>
-              }
-            />
-            <div className="p-3.5 space-y-2">
-              {pricesState.message && (
-                <p className="flex items-center gap-1.5 text-[11px] font-mono text-ok">
-                  <CheckCircle2 className="w-3.5 h-3.5 shrink-0" /> {pricesState.message}
-                </p>
-              )}
-              {pricesState.error && (
-                <p className="flex items-center gap-1.5 text-[11px] font-mono font-medium text-danger">
-                  <AlertTriangle className="w-3.5 h-3.5 shrink-0" /> {pricesState.error}
-                </p>
-              )}
-            </div>
-          </Panel>
+          <AdminPanelContent onModelsRefreshed={onModelsRefreshed} onPricesRefreshed={onPricesRefreshed} />
         </div>
       </div>
     </div>

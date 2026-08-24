@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import { runMigrations } from "./src/server/db";
 import { seedModelCatalog } from "./src/server/modelCatalogSeed";
 import { authRouter } from "./src/server/auth";
+import { adminAuthRouter } from "./src/server/adminAuth";
 import { scenariosRouter } from "./src/server/scenarios";
 import { gpuPricesRouter } from "./src/server/gpuPrices";
 import { hfModelsRouter } from "./src/server/hfModels";
@@ -13,12 +14,14 @@ import { hfModelsRouter } from "./src/server/hfModels";
 dotenv.config();
 
 const app = express();
+app.set("trust proxy", true);
 const PORT = Number(process.env.PORT) || 3000;
 
 app.use(express.json());
 
 // API Routes
 app.use("/api/auth", authRouter);
+app.use("/api/admin", adminAuthRouter);
 app.use("/api/scenarios", scenariosRouter);
 app.use("/api/gpu-prices", gpuPricesRouter);
 app.use("/api/models", hfModelsRouter);

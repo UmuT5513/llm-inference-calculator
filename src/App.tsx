@@ -14,6 +14,7 @@ import { ExportModal } from './components/ExportModal';
 import { ScenarioModal } from './components/ScenarioModal';
 import { ScenarioComparisonModal } from './components/ScenarioComparisonModal';
 import { AdminPanel } from './components/AdminPanel';
+import { AdminGate } from './components/AdminGate';
 import { ResultsPanel } from './components/ResultsPanel';
 
 import { CalculatorConfig, PresetScenario, FineTuningConfig } from './types';
@@ -26,6 +27,12 @@ import { useAuth } from './auth/AuthContext';
 
 export default function App() {
   const { user, login, logout } = useAuth();
+
+  // Secret admin panel route (username/password login lives on this page).
+  if (window.location.pathname === '/admnsterrrrr') {
+    return <AdminGate />;
+  }
+
   const [activeTab, setActiveTab] = useState<'inference' | 'finetuning'>('inference');
 
   // Inference Calculator State

@@ -10,6 +10,7 @@ Unfinished work: the unified model-catalog plan is tracked in `PLAN.md` — resu
 - `npm run build` — vite build + esbuild bundle of `server.ts` → `dist/server.cjs` (`npm start` serves it in production mode).
 - `npm run scrape:prices` — refresh GPU prices from RunPod/Lambda/Modal. Python, run via `uv` with the repo `.venv` (Python 3.13); needs `DATABASE_URL`.
 - `npm run scrape:models` — refresh open-source LLMs from the Hugging Face Hub (top-N by downloads + Turkish allowlist) into the `hf_models` table; needs `DATABASE_URL`. Flags: `--top N`, `--min-downloads N`, `--pipeline text-generation` (TTS/STT = `text-to-speech` / `automatic-speech-recognition`).
+- `docker compose up -d --build` — production deploy (VPS): app (multi-stage `Dockerfile`) + `db` (postgres:16-alpine) + `caddy` (auto Let's Encrypt via `Caddyfile`, domain from `DOMAIN` env). Needs `.env` with `POSTGRES_PASSWORD` and `DOMAIN`; compose overrides `DATABASE_URL` to the internal `db` host with `?sslmode=disable`.
 
 ## Architecture
 - Entry: `index.html` → `src/main.tsx` → `src/App.tsx`.
@@ -21,6 +22,8 @@ Unfinished work: the unified model-catalog plan is tracked in `PLAN.md` — resu
 ## Gotchas
 - The server keeps running if the DB is down (migration failure is logged), but DB-backed routes 500 — missing Postgres is the most likely cause of a broken dev run.
 - `GEMINI_API_KEY` is optional: `/api/recommend-model` falls back to keyword heuristics; `/api/advisor` returns 503 without it.
-- Google sign-in needs `GOOGLE_CLIENT_ID`/`GOOGLE_CLIENT_SECRET`/`GOOGLE_CALLBACK_URL` and a matching redirect URI in Google Console; sessions use a JWT cookie signed with `SESSION_SECRET`.
+- Google sign-in needs `GOOGLE_CLIENT_ID`/`GOOGLE_CLIENT_SECRET`/`GOOGLE_CALLBACK_URL` and a matching redirect URI in Google Console; sessions use a JWT cookie signed with `SESSION_SECRET`. Local admin login (`/api/admin/*`) needs `ADMIN_USERNAME`/`ADMIN_PASSWORD` instead.
+- `db.ts` auto-enables SSL for any non-localhost `DATABASE_URL` host without `?sslmode=` — internal Docker/other plain Postgres hosts must append `?sslmode=disable`.
+- Express runs with `trust proxy: true` (Caddy in front in prod); the admin login brute-force lockout relies on the real client IP.
 - Keep `GPU_SLUG_PATTERNS` in `scripts/scraper/common.py` aligned with the GPU ids in `src/data/gpuPresets.ts` — scraped prices are matched to presets by slug.
 - `vite.config.ts` disables HMR/file-watching when `DISABLE_HMR=true` (agent-editing mode); don't modify that block.

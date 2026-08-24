@@ -103,9 +103,20 @@ curl -H "Authorization: Bearer $HUGGINGFACE_API_KEY" https://huggingface.co/api/
 - Scraper portu çevrimdışı fixture'lar ile test edildi (fetch stub'lanarak gerçek regex/extraction kodu koşuldu): runpod 3 satır (H100 SXM→$2.29, RTX 4090→$0.69, A100 80GB→$1.50), modal 2 satır (×3600 dönüşümü doğru), lambda 2 satır (en-düşük fiyat seçimi: B200 $2.49). Python davranışıyla birebir.
 - Prod sunucu (PORT=3111, NODE_ENV=production): `/api/auth/me` → `{user:null}`, `POST /api/models/refresh` ve `POST /api/gpu-prices/refresh` → **401** (middleware bağlı), `/api/models` → 200, `/` → 200 (statik serve + migration + 124 curated seed).
 
-### KALAN (sonraki oturum: Render deploy)
-1. Render dashboard: repo'yu import et (veya `render.yaml` blueprint'ini kullan).
-2. Secret env'ler: `APP_URL`=`https://<app>.onrender.com`, `GOOGLE_CALLBACK_URL` (Google Console'a "Authorized redirect URIs" olarak da ekle), `GOOGLE_CLIENT_ID/SECRET`, `SESSION_SECRET` (`openssl rand -base64 32`), `GEMINI_API_KEY`, `HUGGINGFACE_API_KEY`, `ADMIN_EMAILS`=senin Google email'in.
-3. Postgres: blueprint `llm-calc-db` otomatik oluşturur; `DATABASE_URL` web servisine otomatik bağlanır (SSL kodu hazır).
-4. Deploy sonrası uçtan uca: OAuth ile giriş → `isAdmin` görünür → "Yönetim" → iki güncelleme butonu; `/api/gpu-prices` ve `/api/models` canlı.
-5. Not: free tier 15 dk uyur; `starter` ($7/ay) önerilir. Scraper'lar sayfa yapısına bağımlı (değişirse provider-bazlı hata döner, 500 değil).
+### KALAN (sonraki oturum: Render deploy) — İPTAL: Render'dan vazgeçildi
+Karar (2026-08-24): Render yerine kendi VPS'inde Docker Compose ile self-host. `render.yaml` silindi.
+
+## Tamamlanan oturum özeti (2026-08-24, VPS deploy hazırlığı)
+- **`Dockerfile`**: multi-stage node:22-alpine (build → runtime, `npm ci --omit=dev`, `dist/` kopyası).
+- **`docker-compose.yml`**: `db` (postgres:16-alpine + pgdata volume + healthcheck), `app` (env_file=.env, DATABASE_URL compose'ta `?sslmode=disable` ile override), `caddy` (80/443, otomatik Let's Encrypt).
+- **`Caddyfile`**: `{$DOMAIN:localhost} { reverse_proxy app:3000 }`.
+- **`server.ts`**: `app.set("trust proxy", true)` — Caddy arkasında admin brute-force kilidi gerçek IP'yi görür.
+- **`.env.example`**: `POSTGRES_PASSWORD`, `DOMAIN`, `ADMIN_USERNAME`/`ADMIN_PASSWORD` eklendi + sslmode notu.
+- **Doğrulama (yerel, DOMAIN=localhost)**: `docker compose up -d --build` → migration + 124 curated seed ✅, `https://localhost/` 200 ✅, `/api/models` ✅, admin login (yanlış→401, doğru→`{ok:true}` + `/api/admin/me` 200) ✅.
+
+### KALAN (VPS üzerinde)
+1. VPS (Ubuntu 24.04, min 1 vCPU/2GB): Docker kur, `ufw allow 22,80,443/tcp`.
+2. Repo clone (private → deploy key veya PAT), `cp .env.example .env` ve doldur: `DOMAIN`, `POSTGRES_PASSWORD`, `APP_URL=https://domain`, `GOOGLE_CALLBACK_URL`, `SESSION_SECRET`, `ADMIN_USERNAME/PASSWORD`, Gemini/HF/Google key'leri.
+3. DNS A kaydı → VPS IP; `docker compose up -d --build`.
+4. Google Console'a `https://domain/api/auth/google/callback` ekle.
+5. Bakım: `docker compose logs -f app`; güncelleme `git pull && docker compose up -d --build`; yedek `docker compose exec -T db pg_dump -U llmcalc llmcalc | gzip > backup.sql.gz`.
