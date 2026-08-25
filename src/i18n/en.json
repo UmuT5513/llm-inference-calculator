@@ -1,0 +1,9 @@
+{
+  "common": {
+    "copyLink": "Copy link",
+    "copied": "Copied"
+  },
+  "header": {
+    "language": "Language"
+  }
+}

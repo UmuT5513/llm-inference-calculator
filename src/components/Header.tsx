@@ -4,6 +4,7 @@ import { PresetScenario } from '../types';
 import { PRESET_SCENARIOS } from '../data/presets';
 import { Segmented } from './ui/Segmented';
 import { Badge } from './ui/Badge';
+import { LanguageSwitcher } from './LanguageSwitcher';
 
 interface HeaderProps {
   activeTab: 'inference' | 'finetuning';
@@ -61,6 +62,7 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Action Buttons */}
         <div className="flex items-center gap-2">
+          <LanguageSwitcher />
           {/* Quick Presets Dropdown */}
           <div className="relative group hidden md:block">
             <button className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-muted bg-surface-2 hover:bg-surface border border-border rounded transition-colors hover:text-text">
