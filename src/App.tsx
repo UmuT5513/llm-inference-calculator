@@ -19,7 +19,8 @@ import { Footer } from './components/Footer';
 import { AboutModal } from './components/AboutModal';
 
 import { CalculatorConfig, PresetScenario, FineTuningConfig } from './types';
-import { DEFAULT_CUSTOM_MODEL, DEFAULT_CUSTOM_GPU, DEFAULT_USER_PROFILES, GPU_PRESETS, MODEL_PRESETS } from './data/presets';
+import { GPU_PRESETS, MODEL_PRESETS } from './data/presets';
+import { DEFAULT_INFERENCE_CONFIG, DEFAULT_FINETUNING_CONFIG } from './data/defaults';
 import { calculateInferenceMetrics } from './utils/calculator';
 import { calculateFineTuningMetrics } from './utils/fineTuningCalculator';
 import { useLiveGpuPrices } from './hooks/useLiveGpuPrices';
@@ -34,67 +35,10 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<'inference' | 'finetuning'>('inference');
 
   // Inference Calculator State
-  const [config, setConfig] = useState<CalculatorConfig>({
-    modelId: 'llama-3.3-70b',
-    customModel: DEFAULT_CUSTOM_MODEL,
-    quantId: 'fp8',
-    kvCacheQuantId: 'fp8',
-    engineId: 'vllm',
-    gpuId: 'nvidia-h100-sxm',
-    customGpu: DEFAULT_CUSTOM_GPU,
-    gpuCount: 1,
-    tensorParallelism: 1,
-    pipelineParallelism: 1,
-    promptLen: 4096,
-    genLen: 1024,
-    batchSize: 16,
-    userProfiles: DEFAULT_USER_PROFILES,
-    useMultiProfile: true,
-    requestsPerMin: 120,
-    cudaOverheadGB: 1.5,
-    activationOverheadPct: 10,
-    tpEfficiencyPct: 85,
-
-    // On-Premise & Turkey TCO Defaults
-    electricityRateTryPerKwh: 4.20,
-    usdToTryRate: 50,
-    pueRatio: 1.25,
-    serverDutyCyclePct: 85,
-    customGpuUnitPriceUsd: null,
-    customSystemBasePriceUsd: null,
-    customAnnualElectricityUsd: null,
-    customAnnualCoolingUsd: null,
-    customAnnualMaintenanceUsd: null,
-    customAnnualOtherExpensesUsd: null,
-  });
+  const [config, setConfig] = useState<CalculatorConfig>({ ...DEFAULT_INFERENCE_CONFIG });
 
   // Fine-Tuning State
-  const [ftConfig, setFtConfig] = useState<FineTuningConfig>({
-    modelId: 'llama-3.3-70b',
-    customModel: DEFAULT_CUSTOM_MODEL,
-    methodId: 'qlora',
-    frameworkId: 'unsloth',
-    gpuId: 'nvidia-rtx-4090',
-    customGpu: DEFAULT_CUSTOM_GPU,
-    gpuCount: 1,
-
-    sampleCount: 10000,
-    avgSeqLen: 2048,
-    epochs: 3,
-
-    perDeviceBatchSize: 2,
-    gradientAccumulationSteps: 4,
-    learningRate: '2e-4',
-    loraRank: 16,
-    loraAlpha: 32,
-    optimizerType: 'adamw_8bit',
-    gradientCheckpointing: true,
-    flashAttention: true,
-    useUnslothAcceleratedKernels: true,
-
-    electricityRateTryPerKwh: 4.20,
-    usdToTryRate: 50,
-  });
+  const [ftConfig, setFtConfig] = useState<FineTuningConfig>({ ...DEFAULT_FINETUNING_CONFIG });
 
   const [isAiModalOpen, setIsAiModalOpen] = useState<boolean>(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState<boolean>(false);
@@ -141,60 +85,8 @@ export default function App() {
   };
 
   const handleReset = () => {
-    setConfig({
-      modelId: 'llama-3.3-70b',
-      customModel: DEFAULT_CUSTOM_MODEL,
-      quantId: 'fp8',
-      kvCacheQuantId: 'fp8',
-      engineId: 'vllm',
-      gpuId: 'nvidia-h100-sxm',
-      customGpu: DEFAULT_CUSTOM_GPU,
-      gpuCount: 1,
-      tensorParallelism: 1,
-      pipelineParallelism: 1,
-      promptLen: 4096,
-      genLen: 1024,
-      batchSize: 16,
-      userProfiles: DEFAULT_USER_PROFILES,
-      useMultiProfile: true,
-      requestsPerMin: 120,
-      cudaOverheadGB: 1.5,
-      activationOverheadPct: 10,
-      tpEfficiencyPct: 85,
-      electricityRateTryPerKwh: 4.20,
-      usdToTryRate: 50,
-      pueRatio: 1.25,
-      serverDutyCyclePct: 85,
-      customGpuUnitPriceUsd: null,
-      customSystemBasePriceUsd: null,
-      customAnnualElectricityUsd: null,
-      customAnnualCoolingUsd: null,
-      customAnnualMaintenanceUsd: null,
-      customAnnualOtherExpensesUsd: null,
-    });
-    setFtConfig({
-      modelId: 'llama-3.3-70b',
-      customModel: DEFAULT_CUSTOM_MODEL,
-      methodId: 'qlora',
-      frameworkId: 'unsloth',
-      gpuId: 'nvidia-rtx-4090',
-      customGpu: DEFAULT_CUSTOM_GPU,
-      gpuCount: 1,
-      sampleCount: 10000,
-      avgSeqLen: 2048,
-      epochs: 3,
-      perDeviceBatchSize: 2,
-      gradientAccumulationSteps: 4,
-      learningRate: '2e-4',
-      loraRank: 16,
-      loraAlpha: 32,
-      optimizerType: 'adamw_8bit',
-      gradientCheckpointing: true,
-      flashAttention: true,
-      useUnslothAcceleratedKernels: true,
-      electricityRateTryPerKwh: 4.20,
-      usdToTryRate: 50,
-    });
+    setConfig({ ...DEFAULT_INFERENCE_CONFIG });
+    setFtConfig({ ...DEFAULT_FINETUNING_CONFIG });
   };
 
   // Load a saved scenario into the app state

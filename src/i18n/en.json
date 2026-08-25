@@ -4,6 +4,28 @@
     "copied": "Copied"
   },
   "header": {
-    "language": "Language"
+    "language": "Language",
+    "tabInference": "1. Inference",
+    "tabFinetuning": "2. Fine-Tuning",
+    "scenarios": "Scenarios",
+    "scenarioTemplates": "Scenario Templates",
+    "save": "Save",
+    "saveTitle": "Save / manage scenarios",
+    "compare": "Compare",
+    "compareTitle": "Compare scenarios",
+    "aiAdvisor": "AI Architect",
+    "export": "Export",
+    "exportTitle": "Get configuration and command output",
+    "resetTitle": "Reset to defaults",
+    "subtitle": "Inference Sizing • Fine-Tuning Cost • Unsloth • Colab & Cloud TCO"
+  },
+  "footer": {
+    "description": "LLM inference and fine-tuning hardware/cost calculator. A free, community-driven project; you can reach out via GitHub for contributions and feedback.",
+    "sourceCodeTitle": "Source code (GitHub)",
+    "feedbackTitle": "Report a bug or make a suggestion",
+    "feedback": "Feedback",
+    "mediumTitle": "Medium posts",
+    "privacy": "No personal data is collected; the scenarios you save are stored only in your browser.",
+    "about": "Methodology & About"
   }
 }

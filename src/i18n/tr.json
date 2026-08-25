@@ -4,6 +4,28 @@
     "copied": "Kopyalandı"
   },
   "header": {
-    "language": "Dil"
+    "language": "Dil",
+    "tabInference": "1. Çıkarım",
+    "tabFinetuning": "2. Fine-Tuning",
+    "scenarios": "Senaryolar",
+    "scenarioTemplates": "Senaryo Şablonları",
+    "save": "Kaydet",
+    "saveTitle": "Senaryo kaydet / yönet",
+    "compare": "Karşılaştır",
+    "compareTitle": "Senaryoları karşılaştır",
+    "aiAdvisor": "AI Mimar",
+    "export": "Dışa Aktar",
+    "exportTitle": "Konfigürasyon ve Komut Çıktısı Al",
+    "resetTitle": "Varsayılan Değerlere Sıfırla",
+    "subtitle": "Çıkarım (Inference) Sizing • Fine-Tuning Maliyeti • Unsloth • Colab & Cloud TCO"
+  },
+  "footer": {
+    "description": "LLM çıkarım (inference) ve fine-tuning donanım/maliyet hesaplayıcısı. Topluluğa açık, ücretsiz bir projedir; katkılarınız ve geri bildirimleriniz için GitHub üzerinden ulaşabilirsiniz.",
+    "sourceCodeTitle": "Kaynak kodu (GitHub)",
+    "feedbackTitle": "Hata bildir veya öneri ver",
+    "feedback": "Geri Bildirim",
+    "mediumTitle": "Medium yazıları",
+    "privacy": "Kişisel veri toplanmaz; kaydettiğiniz senaryolar yalnızca kendi tarayıcınızda saklanır.",
+    "about": "Metodoloji & Hakkında"
   }
 }
