@@ -28,35 +28,11 @@ export function getPool(): Pool {
 const SCHEMA_SQL = `
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
-CREATE TABLE IF NOT EXISTS users (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  google_sub TEXT UNIQUE NOT NULL,
-  email TEXT NOT NULL,
-  name TEXT,
-  avatar_url TEXT,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
-);
-
-CREATE TABLE IF NOT EXISTS sessions (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  expires_at TIMESTAMPTZ NOT NULL
-);
-CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON sessions(user_id);
-
-CREATE TABLE IF NOT EXISTS scenarios (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  type TEXT NOT NULL CHECK (type IN ('inference', 'finetuning')),
-  name TEXT NOT NULL,
-  description TEXT,
-  config JSONB NOT NULL,
-  results JSONB NOT NULL,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
-);
-CREATE INDEX IF NOT EXISTS idx_scenarios_user_id ON scenarios(user_id);
+-- Legacy auth/scenario tables (Google OAuth was removed; scenarios now live
+-- in the browser's localStorage). Drop order respects foreign keys.
+DROP TABLE IF EXISTS scenarios;
+DROP TABLE IF EXISTS sessions;
+DROP TABLE IF EXISTS users;
 
 CREATE TABLE IF NOT EXISTS gpu_prices (
   id BIGSERIAL PRIMARY KEY,

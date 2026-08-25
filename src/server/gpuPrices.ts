@@ -1,6 +1,6 @@
 import express from 'express';
 import { getPool } from './db';
-import { requireAdmin } from './auth';
+import { requireAdminSession } from './adminAuth';
 import { syncGpuPrices } from './gpuScraper';
 
 export const gpuPricesRouter = express.Router();
@@ -44,9 +44,10 @@ gpuPricesRouter.get('/', async (req, res) => {
 });
 
 // Admin hook: re-scrape RunPod/Lambda/Modal and write new price rows on demand.
-// Requires an admin session (see ADMIN_EMAILS). A concurrent run is rejected
-// with 409; a provider failure is reported per-provider instead of failing all.
-gpuPricesRouter.post('/refresh', requireAdmin, async (req, res) => {
+// Requires the local admin session (ADMIN_USERNAME/ADMIN_PASSWORD). A concurrent
+// run is rejected with 409; a provider failure is reported per-provider
+// instead of failing all.
+gpuPricesRouter.post('/refresh', requireAdminSession, async (req, res) => {
   try {
     const summary = await syncGpuPrices();
     res.json({ ok: true, summary });

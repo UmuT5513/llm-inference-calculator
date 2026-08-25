@@ -1,7 +1,7 @@
-import React, { useEffect, useMemo, useState, useCallback } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { X, Scale } from 'lucide-react';
 import { CalculatorConfig, CalculationResults, FineTuningConfig, FineTuningResults } from '../types';
-import { useAuth } from '../auth/AuthContext';
+import { listScenarios } from '../utils/scenarioStorage';
 
 interface ScenarioRow {
   id: string;
@@ -42,21 +42,15 @@ export const ScenarioComparisonModal: React.FC<ScenarioComparisonModalProps> = (
   results,
   ftResults,
 }) => {
-  const { user, login } = useAuth();
   const [saved, setSaved] = useState<ScenarioRow[]>([]);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [includeCurrent, setIncludeCurrent] = useState(true);
-  const [loading, setLoading] = useState(false);
 
-  const loadSaved = useCallback(async () => {
-    if (!user) return;
-    setLoading(true);
-    try {
-      const res = await fetch('/api/scenarios');
-      if (!res.ok) throw new Error('Yüklenemedi');
-      const data = await res.json();
+  useEffect(() => {
+    if (isOpen) {
+      setSelected(new Set(initialIds || []));
       setSaved(
-        (data.scenarios || []).map((s: any) => ({
+        listScenarios().map((s) => ({
           id: s.id,
           type: s.type,
           name: s.name,
@@ -65,19 +59,8 @@ export const ScenarioComparisonModal: React.FC<ScenarioComparisonModalProps> = (
           results: s.results,
         }))
       );
-    } catch {
-      setSaved([]);
-    } finally {
-      setLoading(false);
     }
-  }, [user]);
-
-  useEffect(() => {
-    if (isOpen) {
-      setSelected(new Set(initialIds || []));
-      loadSaved();
-    }
-  }, [isOpen, initialIds, loadSaved]);
+  }, [isOpen, initialIds]);
 
   const currentRow: ScenarioRow | null = useMemo(
     () => ({
@@ -278,108 +261,88 @@ export const ScenarioComparisonModal: React.FC<ScenarioComparisonModalProps> = (
         </div>
 
         <div className="p-5 space-y-4">
-          {!user ? (
-            <div className="flex items-center justify-between gap-3 bg-surface-2 border border-border rounded-md p-4">
-              <p className="text-sm font-semibold text-text">
-                Karşılaştırmak için önce Google ile giriş yapın.
-              </p>
-              <button
-                onClick={login}
-                className="px-3 py-2 text-xs font-semibold text-text bg-surface-2 border border-border hover:bg-surface rounded-md cursor-pointer"
+          <label className="flex items-center gap-2 text-sm text-text">
+            <input
+              type="checkbox"
+              checked={includeCurrent}
+              onChange={(e) => setIncludeCurrent(e.target.checked)}
+              className="accent-[#FFB224]"
+            />
+            Geçerli yapılandırmayı da dahil et
+          </label>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-56 overflow-y-auto">
+            {saved.map((s) => (
+              <label
+                key={s.id}
+                className={`flex items-start gap-2 border rounded-md p-2 cursor-pointer text-sm ${
+                  selected.has(s.id) ? 'border-accent/50 bg-surface-2' : 'bg-surface border-border hover:bg-surface-2'
+                }`}
               >
-                Giriş Yap
-              </button>
-            </div>
-          ) : (
-            <>
-              <label className="flex items-center gap-2 text-sm text-text">
                 <input
                   type="checkbox"
-                  checked={includeCurrent}
-                  onChange={(e) => setIncludeCurrent(e.target.checked)}
-                  className="accent-[#FFB224]"
+                  checked={selected.has(s.id)}
+                  onChange={() => toggleSaved(s.id)}
+                  className="mt-0.5 accent-[#FFB224]"
                 />
-                Geçerli yapılandırmayı da dahil et
+                <span className="min-w-0">
+                  <span className="block font-semibold text-text truncate">{s.name}</span>
+                  <span className="block text-[10px] text-muted">{s.subtitle}</span>
+                </span>
               </label>
+            ))}
+            {saved.length === 0 && (
+              <p className="col-span-full text-sm text-muted text-center py-4">
+                Kayıtlı senaryo yok.
+              </p>
+            )}
+          </div>
 
-              {loading ? (
-                <p className="text-sm text-muted">Yükleniyor...</p>
-              ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-56 overflow-y-auto">
-                  {saved.map((s) => (
-                    <label
-                      key={s.id}
-                      className={`flex items-start gap-2 border rounded-md p-2 cursor-pointer text-sm ${
-                        selected.has(s.id) ? 'border-accent/50 bg-surface-2' : 'bg-surface border-border hover:bg-surface-2'
-                      }`}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={selected.has(s.id)}
-                        onChange={() => toggleSaved(s.id)}
-                        className="mt-0.5 accent-[#FFB224]"
-                      />
-                      <span className="min-w-0">
-                        <span className="block font-semibold text-text truncate">{s.name}</span>
-                        <span className="block text-[10px] text-muted">{s.subtitle}</span>
-                      </span>
-                    </label>
-                  ))}
-                  {saved.length === 0 && (
-                    <p className="col-span-full text-sm text-muted text-center py-4">
-                      Kayıtlı senaryo yok.
-                    </p>
-                  )}
-                </div>
-              )}
-
-              {columns.length >= 2 && (
-                <div className="overflow-x-auto border border-border rounded-md">
-                  <table className="w-full text-[11px] font-mono">
-                    <thead>
-                      <tr className="bg-surface-2 border-b border-border">
-                        <th className="text-left px-4 py-2 font-semibold text-muted w-56 min-w-44">
-                          Metrik
-                        </th>
-                        {columns.map((c) => (
-                          <th
-                            key={c.id}
-                            className={`px-4 py-2 font-semibold text-text min-w-48 ${
-                              c.id === 'current' ? 'bg-surface-2 border-l border-accent/40' : ''
+          {columns.length >= 2 && (
+            <div className="overflow-x-auto border border-border rounded-md">
+              <table className="w-full text-[11px] font-mono">
+                <thead>
+                  <tr className="bg-surface-2 border-b border-border">
+                    <th className="text-left px-4 py-2 font-semibold text-muted w-56 min-w-44">
+                      Metrik
+                    </th>
+                    {columns.map((c) => (
+                      <th
+                        key={c.id}
+                        className={`px-4 py-2 font-semibold text-text min-w-48 ${
+                          c.id === 'current' ? 'bg-surface-2 border-l border-accent/40' : ''
+                        }`}
+                      >
+                        <span className="block text-[10px] text-accent mb-0.5">
+                          {c.id === 'current' ? '⚡ Canlı' : 'Senaryo'}
+                        </span>
+                        {c.name}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map((row, idx) => (
+                    <tr key={idx} className={idx % 2 === 0 ? 'bg-surface' : 'bg-surface-2/40'}>
+                      <td className="px-4 py-2.5 font-medium text-muted">{row.label}</td>
+                      {row.values.map((v, vi) => {
+                        const isCurrent = columns[vi].id === 'current';
+                        return (
+                          <td
+                            key={vi}
+                            className={`px-4 py-2.5 text-text ${
+                              isCurrent ? 'bg-surface-2 border-l border-accent/40 text-accent' : ''
                             }`}
                           >
-                            <span className="block text-[10px] text-accent mb-0.5">
-                              {c.id === 'current' ? '⚡ Canlı' : 'Senaryo'}
-                            </span>
-                            {c.name}
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {rows.map((row, idx) => (
-                        <tr key={idx} className={idx % 2 === 0 ? 'bg-surface' : 'bg-surface-2/40'}>
-                          <td className="px-4 py-2.5 font-medium text-muted">{row.label}</td>
-                          {row.values.map((v, vi) => {
-                            const isCurrent = columns[vi].id === 'current';
-                            return (
-                              <td
-                                key={vi}
-                                className={`px-4 py-2.5 text-text ${
-                                  isCurrent ? 'bg-surface-2 border-l border-accent/40 text-accent' : ''
-                                }`}
-                              >
-                                {v}
-                              </td>
-                            );
-                          })}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </>
+                            {v}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
       </div>

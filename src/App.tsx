@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Header } from './components/Header';
 import { ModelSelector } from './components/ModelSelector';
 import { QuantizationSelector } from './components/QuantizationSelector';
@@ -13,9 +13,10 @@ import { AiAdvisorModal } from './components/AiAdvisorModal';
 import { ExportModal } from './components/ExportModal';
 import { ScenarioModal } from './components/ScenarioModal';
 import { ScenarioComparisonModal } from './components/ScenarioComparisonModal';
-import { AdminPanel } from './components/AdminPanel';
 import { AdminGate } from './components/AdminGate';
 import { ResultsPanel } from './components/ResultsPanel';
+import { Footer } from './components/Footer';
+import { AboutModal } from './components/AboutModal';
 
 import { CalculatorConfig, PresetScenario, FineTuningConfig } from './types';
 import { DEFAULT_CUSTOM_MODEL, DEFAULT_CUSTOM_GPU, DEFAULT_USER_PROFILES, GPU_PRESETS, MODEL_PRESETS } from './data/presets';
@@ -23,11 +24,8 @@ import { calculateInferenceMetrics } from './utils/calculator';
 import { calculateFineTuningMetrics } from './utils/fineTuningCalculator';
 import { useLiveGpuPrices } from './hooks/useLiveGpuPrices';
 import { useLiveModels } from './hooks/useLiveModels';
-import { useAuth } from './auth/AuthContext';
 
 export default function App() {
-  const { user, login, logout } = useAuth();
-
   // Secret admin panel route (username/password login lives on this page).
   if (window.location.pathname === '/admnsterrrrr') {
     return <AdminGate />;
@@ -102,7 +100,7 @@ export default function App() {
   const [isExportModalOpen, setIsExportModalOpen] = useState<boolean>(false);
   const [isScenarioModalOpen, setIsScenarioModalOpen] = useState<boolean>(false);
   const [isCompareModalOpen, setIsCompareModalOpen] = useState<boolean>(false);
-  const [isAdminModalOpen, setIsAdminModalOpen] = useState<boolean>(false);
+  const [isAboutModalOpen, setIsAboutModalOpen] = useState<boolean>(false);
   const [compareInitialIds, setCompareInitialIds] = useState<string[]>([]);
 
   // Live scraped GPU prices (RunPod / Modal / Lambda)
@@ -110,28 +108,11 @@ export default function App() {
 
   // Live unified model catalog from the server (curated + discovered);
   // falls back to the static presets when the API is unavailable.
-  const { models: liveModels, refetch: refetchModels } = useLiveModels();
+  const { models: liveModels } = useLiveModels();
   const modelCatalog = useMemo(
     () => (liveModels.length > 0 ? liveModels : MODEL_PRESETS),
     [liveModels]
   );
-
-  // Show a toast-style message after OAuth redirect
-  const [authNotice, setAuthNotice] = useState<string | null>(null);
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const status = params.get('auth');
-    if (status === 'success') {
-      setAuthNotice('Google ile giriş başarılı!');
-    } else if (status === 'error') {
-      setAuthNotice('Giriş sırasında bir sorun oluştu.');
-    }
-    if (status) {
-      window.history.replaceState({}, '', window.location.pathname);
-      const t = setTimeout(() => setAuthNotice(null), 4000);
-      return () => clearTimeout(t);
-    }
-  }, []);
 
   // Synchronize model selection across Inference and Fine-Tuning
   const handleSelectModel = (modelId: string) => {
@@ -248,18 +229,7 @@ export default function App() {
         onReset={handleReset}
         onOpenSave={() => setIsScenarioModalOpen(true)}
         onOpenCompare={() => handleOpenCompare()}
-        onOpenAdmin={() => setIsAdminModalOpen(true)}
-        user={user}
-        onLogin={login}
-        onLogout={logout}
       />
-
-      {/* OAuth notice */}
-      {authNotice && (
-        <div className="fixed top-16 left-1/2 -translate-x-1/2 z-40 px-4 py-2 bg-ok text-bg text-sm font-medium rounded-lg shadow-lg">
-          {authNotice}
-        </div>
-      )}
 
       {/* Main Container */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
@@ -400,13 +370,14 @@ export default function App() {
         ftResults={ftResults}
       />
 
-      {/* Admin Panel Modal */}
-      <AdminPanel
-        isOpen={isAdminModalOpen}
-        onClose={() => setIsAdminModalOpen(false)}
-        onModelsRefreshed={refetchModels}
-        onPricesRefreshed={refetchPrices}
+      {/* Methodology & About Modal */}
+      <AboutModal
+        isOpen={isAboutModalOpen}
+        onClose={() => setIsAboutModalOpen(false)}
       />
+
+      {/* Footer */}
+      <Footer onOpenAbout={() => setIsAboutModalOpen(true)} />
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import express from 'express';
 import { getPool } from './db';
 import { refreshModels } from './modelRefresh';
-import { requireAdmin } from './auth';
+import { requireAdminSession } from './adminAuth';
 import { isFormatBlocked, isDerivativeBlocked, isTextPipeline } from './knownOrgs';
 
 export const hfModelsRouter = express.Router();
@@ -110,11 +110,11 @@ hfModelsRouter.get('/', async (req, res) => {
 });
 
 // Admin hook: refresh the catalog from Hugging Face on demand (no scheduler).
-// Requires an admin session (see ADMIN_EMAILS). Returns a summary of
-// fetched/updated/mirrored/discovered models. A second concurrent call is
-// rejected with 409 (the refresh is idempotent, but running it twice at once
-// would hammer the Hub).
-hfModelsRouter.post('/refresh', requireAdmin, async (req, res) => {
+// Requires the local admin session (ADMIN_USERNAME/ADMIN_PASSWORD). Returns a
+// summary of fetched/updated/mirrored/discovered models. A second concurrent
+// call is rejected with 409 (the refresh is idempotent, but running it twice
+// at once would hammer the Hub).
+hfModelsRouter.post('/refresh', requireAdminSession, async (req, res) => {
   try {
     const summary = await refreshModels();
     res.json({ ok: true, summary });

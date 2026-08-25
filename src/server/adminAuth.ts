@@ -1,20 +1,22 @@
-import express, { Request } from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import { SignJWT, jwtVerify } from 'jose';
 import { createHash, timingSafeEqual } from 'crypto';
-import type { AuthUser } from './auth';
 
 const ADMIN_SESSION_COOKIE = 'llmcalc_admin_session';
 const ADMIN_SESSION_TTL_SECONDS = 60 * 60 * 24; // 24 hours
 const MAX_FAILED_ATTEMPTS = 5;
 const LOCKOUT_MS = 15 * 60 * 1000; // 15 minutes
 
+export interface AdminUser {
+  id: string;
+  name: string;
+  isAdmin: true;
+}
+
 // Synthetic user object used when an admin authenticates via username/password.
-export const ADMIN_LOCAL_USER: AuthUser = {
+export const ADMIN_LOCAL_USER: AdminUser = {
   id: 'admin-local',
-  googleSub: 'local:admin',
-  email: 'admin',
   name: 'Yönetici',
-  avatarUrl: null,
   isAdmin: true,
 };
 
@@ -152,7 +154,7 @@ adminAuthRouter.post('/logout', (req, res) => {
   res.json({ ok: true });
 });
 
-export async function getAdminUser(req: Request): Promise<AuthUser | null> {
+export async function getAdminUser(req: Request): Promise<AdminUser | null> {
   if (!credentialsConfigured()) return null;
   const cookies = parseCookies(req);
   const jwt = cookies[ADMIN_SESSION_COOKIE];
@@ -165,4 +167,15 @@ export async function getAdminUser(req: Request): Promise<AuthUser | null> {
   } catch {
     return null;
   }
+}
+
+// Guards admin-only endpoints (catalog/price refresh) with the local
+// username/password admin session.
+export async function requireAdminSession(req: Request, res: Response, next: NextFunction): Promise<void> {
+  const admin = await getAdminUser(req);
+  if (!admin) {
+    res.status(401).json({ error: 'Bu işlem için yönetici oturumu gerekli.' });
+    return;
+  }
+  next();
 }

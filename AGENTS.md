@@ -14,15 +14,16 @@ Unfinished work: the unified model-catalog plan is tracked in `PLAN.md` — resu
 
 ## Architecture
 - Entry: `index.html` → `src/main.tsx` → `src/App.tsx`.
-- Express API in `server.ts`: `/api/auth`, `/api/scenarios`, `/api/gpu-prices`, `/api/models`, plus inline `/api/recommend-model` and `/api/advisor` (Gemini).
+- Express API in `server.ts`: `/api/admin` (local admin login), `/api/gpu-prices`, `/api/models`, plus inline `/api/recommend-model` and `/api/advisor` (Gemini). There is no user auth — the app is fully anonymous.
 - Data presets are the source of truth: `src/data/presets.ts` aggregates model presets from `src/data/models/*.ts` (one file per vendor); `src/data/gpuPresets.ts` holds GPU specs. Calculation logic in `src/utils/calculator.ts` and `src/utils/fineTuningCalculator.ts`.
-- DB schema is auto-created at boot (`runMigrations()` in `src/server/db.ts`): tables users, sessions, scenarios, gpu_prices, hf_models. Have Postgres running with a `DATABASE_URL` like `.env.example`.
+- DB schema is auto-created at boot (`runMigrations()` in `src/server/db.ts`): tables gpu_prices, hf_models (legacy users/sessions/scenarios tables are dropped on boot). Have Postgres running with a `DATABASE_URL` like `.env.example`.
+- Saved scenarios live in the browser's localStorage (`src/utils/scenarioStorage.ts`, key `llmcalc:scenarios`) — no server-side scenario storage.
 - Live HF models are fetched by `useLiveModels` → `/api/models` and merged over the static presets by `mergeModelCatalog` (`src/utils/modelCatalog.ts`); a fetched model overwrites a matching curated entry (matched by `hfId`, slug id, or normalized name) but keeps the curated id/name/description/category.
 
 ## Gotchas
 - The server keeps running if the DB is down (migration failure is logged), but DB-backed routes 500 — missing Postgres is the most likely cause of a broken dev run.
 - `GEMINI_API_KEY` is optional: `/api/recommend-model` falls back to keyword heuristics; `/api/advisor` returns 503 without it.
-- Google sign-in needs `GOOGLE_CLIENT_ID`/`GOOGLE_CLIENT_SECRET`/`GOOGLE_CALLBACK_URL` and a matching redirect URI in Google Console; sessions use a JWT cookie signed with `SESSION_SECRET`. Local admin login (`/api/admin/*`) needs `ADMIN_USERNAME`/`ADMIN_PASSWORD` instead.
+- Google sign-in was removed (KVKK): the only auth is the local admin login (`/api/admin/*`, needs `ADMIN_USERNAME`/`ADMIN_PASSWORD`, JWT cookie signed with `SESSION_SECRET`) reached via the secret route in `App.tsx`. The same admin session guards `POST /api/models/refresh` and `POST /api/gpu-prices/refresh` (`requireAdminSession`).
 - `db.ts` auto-enables SSL for any non-localhost `DATABASE_URL` host without `?sslmode=` — internal Docker/other plain Postgres hosts must append `?sslmode=disable`.
 - Express runs with `trust proxy: true` (Caddy in front in prod); the admin login brute-force lockout relies on the real client IP.
 - Keep `GPU_SLUG_PATTERNS` in `scripts/scraper/common.py` aligned with the GPU ids in `src/data/gpuPresets.ts` — scraped prices are matched to presets by slug.

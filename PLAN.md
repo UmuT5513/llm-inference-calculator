@@ -116,7 +116,6 @@ Karar (2026-08-24): Render yerine kendi VPS'inde Docker Compose ile self-host. `
 
 ### KALAN (VPS üzerinde)
 1. VPS (Ubuntu 24.04, min 1 vCPU/2GB): Docker kur, `ufw allow 22,80,443/tcp`.
-2. Repo clone (private → deploy key veya PAT), `cp .env.example .env` ve doldur: `DOMAIN`, `POSTGRES_PASSWORD`, `APP_URL=https://domain`, `GOOGLE_CALLBACK_URL`, `SESSION_SECRET`, `ADMIN_USERNAME/PASSWORD`, Gemini/HF/Google key'leri.
+2. Repo clone (private → deploy key veya PAT), `cp .env.example .env` ve doldur: `DOMAIN`, `POSTGRES_PASSWORD`, `APP_URL=https://domain`, `SESSION_SECRET`, `ADMIN_USERNAME/PASSWORD`, Gemini/HF key'leri. (Google OAuth kaldırıldı — gerekmez.)
 3. DNS A kaydı → VPS IP; `docker compose up -d --build`.
-4. Google Console'a `https://domain/api/auth/google/callback` ekle.
-5. Bakım: `docker compose logs -f app`; güncelleme `git pull && docker compose up -d --build`; yedek `docker compose exec -T db pg_dump -U llmcalc llmcalc | gzip > backup.sql.gz`.
+4. Bakım: `docker compose logs -f app`; güncelleme `git pull && docker compose up -d --build`; yedek `docker compose exec -T db pg_dump -U llmcalc llmcalc | gzip > backup.sql.gz`.
