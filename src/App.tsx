@@ -25,6 +25,7 @@ import { calculateInferenceMetrics } from './utils/calculator';
 import { calculateFineTuningMetrics } from './utils/fineTuningCalculator';
 import { useLiveGpuPrices } from './hooks/useLiveGpuPrices';
 import { useLiveModels } from './hooks/useLiveModels';
+import { readScenarioFromLocation } from './utils/shareUrl';
 
 export default function App() {
   // Secret admin panel route (username/password login lives on this page).
@@ -32,13 +33,21 @@ export default function App() {
     return <AdminGate />;
   }
 
-  const [activeTab, setActiveTab] = useState<'inference' | 'finetuning'>('inference');
+  const [initialScenario] = useState(readScenarioFromLocation);
+
+  const [activeTab, setActiveTab] = useState<'inference' | 'finetuning'>(
+    initialScenario?.type === 'finetuning' ? 'finetuning' : 'inference'
+  );
 
   // Inference Calculator State
-  const [config, setConfig] = useState<CalculatorConfig>({ ...DEFAULT_INFERENCE_CONFIG });
+  const [config, setConfig] = useState<CalculatorConfig>(() =>
+    initialScenario?.type === 'inference' ? (initialScenario.config as CalculatorConfig) : { ...DEFAULT_INFERENCE_CONFIG }
+  );
 
   // Fine-Tuning State
-  const [ftConfig, setFtConfig] = useState<FineTuningConfig>({ ...DEFAULT_FINETUNING_CONFIG });
+  const [ftConfig, setFtConfig] = useState<FineTuningConfig>(() =>
+    initialScenario?.type === 'finetuning' ? (initialScenario.config as FineTuningConfig) : { ...DEFAULT_FINETUNING_CONFIG }
+  );
 
   const [isAiModalOpen, setIsAiModalOpen] = useState<boolean>(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState<boolean>(false);
