@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FineTuningResults } from '../types';
 import { Panel } from './ui/Panel';
 import { SectionHeader } from './ui/SectionHeader';
@@ -10,17 +11,18 @@ interface FineTuningPlatformCompareProps {
 
 type CategoryFilter = 'ALL' | 'RunPod' | 'Lambda' | 'Modal' | 'Colab' | 'Multi-GPU';
 
-const FILTERS: { id: CategoryFilter; label: string }[] = [
-  { id: 'ALL', label: 'Tümü (Hepsi)' },
-  { id: 'RunPod', label: 'RunPod Pods' },
-  { id: 'Lambda', label: 'Lambda Cloud' },
-  { id: 'Modal', label: 'Modal Dedicated' },
-  { id: 'Colab', label: 'Google Colab' },
-  { id: 'Multi-GPU', label: 'Multi-GPU Kümeleri' },
-];
-
 export const FineTuningPlatformCompare: React.FC<FineTuningPlatformCompareProps> = ({ results }) => {
+  const { t } = useTranslation();
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<CategoryFilter>('ALL');
+
+  const FILTERS: { id: CategoryFilter; label: string }[] = [
+    { id: 'ALL', label: t('ft.platform.filterAll') },
+    { id: 'RunPod', label: t('ft.platform.filterRunpod') },
+    { id: 'Lambda', label: t('ft.platform.filterLambda') },
+    { id: 'Modal', label: t('ft.platform.filterModal') },
+    { id: 'Colab', label: t('ft.platform.filterColab') },
+    { id: 'Multi-GPU', label: t('ft.platform.filterMultiGpu') },
+  ];
 
   const filteredPlatforms = results.platformEstimates.filter((plat) => {
     if (selectedCategoryFilter === 'ALL') return true;
@@ -31,10 +33,10 @@ export const FineTuningPlatformCompare: React.FC<FineTuningPlatformCompareProps>
   return (
     <Panel>
       <SectionHeader
-        title="Bulut Dedicated Pod & Instance Fine-Tuning Maliyet Karşılaştırması"
+        title={t('ft.platform.title')}
         description={
           <>
-            Resmi fiyat listeleriyle adanmış (dedicated) GPU podları:{' '}
+            {t('ft.platform.subtitle')}{' '}
             <a href="https://www.runpod.io/pricing" target="_blank" rel="noreferrer" className="text-accent underline font-medium hover:opacity-80">
               RunPod
             </a>{' '}
@@ -78,7 +80,7 @@ export const FineTuningPlatformCompare: React.FC<FineTuningPlatformCompareProps>
             <div className="p-3 rounded-md border border-accent/40 bg-surface-2 space-y-2">
               <div className="flex items-center justify-between gap-2">
                 <span className="text-[9px] font-bold uppercase tracking-wider text-accent bg-surface border border-accent/40 px-1.5 py-0.5 rounded">
-                  ★ En Ekonomik Pod
+                  {t('ft.platform.cheapestBadge')}
                 </span>
                 <span className="text-xs font-mono font-bold text-accent">
                   ${results.cheapestPlatform.totalCostUsd.toFixed(2)}
@@ -89,11 +91,11 @@ export const FineTuningPlatformCompare: React.FC<FineTuningPlatformCompareProps>
                 <div className="text-[11px] text-muted font-mono">{results.cheapestPlatform.gpuName}</div>
               </div>
               <div className="text-[11px] font-mono text-muted pt-1 border-t border-border flex justify-between gap-2">
-                <span>Tahmini Süre:</span>
+                <span>{t('ft.platform.estimatedDuration')}</span>
                 <strong className="text-text">{results.cheapestPlatform.estimatedTimeFormatted}</strong>
               </div>
               <div className="text-[10px] text-muted font-sans">
-                Toplam: <strong className="text-text">{results.cheapestPlatform.totalCostTry.toFixed(1)} ₺</strong>
+                {t('ft.platform.total')} <strong className="text-text">{results.cheapestPlatform.totalCostTry.toFixed(1)} ₺</strong>
               </div>
             </div>
           )}
@@ -102,7 +104,7 @@ export const FineTuningPlatformCompare: React.FC<FineTuningPlatformCompareProps>
             <div className="p-3 rounded-md border border-ok/40 bg-surface-2 space-y-2">
               <div className="flex items-center justify-between gap-2">
                 <span className="text-[9px] font-bold uppercase tracking-wider text-ok bg-surface border border-ok/40 px-1.5 py-0.5 rounded">
-                  ⚡ En İyi Fiyat / Performans
+                  {t('ft.platform.bestValueBadge')}
                 </span>
                 <span className="text-xs font-mono font-bold text-ok">
                   ${results.bestValuePlatform.totalCostUsd.toFixed(2)}
@@ -113,11 +115,11 @@ export const FineTuningPlatformCompare: React.FC<FineTuningPlatformCompareProps>
                 <div className="text-[11px] text-muted font-mono">{results.bestValuePlatform.gpuName}</div>
               </div>
               <div className="text-[11px] font-mono text-muted pt-1 border-t border-border flex justify-between gap-2">
-                <span>Tahmini Süre:</span>
+                <span>{t('ft.platform.estimatedDuration')}</span>
                 <strong className="text-text">{results.bestValuePlatform.estimatedTimeFormatted}</strong>
               </div>
               <div className="text-[10px] text-muted font-sans">
-                Toplam: <strong className="text-text">{results.bestValuePlatform.totalCostTry.toFixed(1)} ₺</strong>
+                {t('ft.platform.total')} <strong className="text-text">{results.bestValuePlatform.totalCostTry.toFixed(1)} ₺</strong>
               </div>
             </div>
           )}
@@ -126,7 +128,7 @@ export const FineTuningPlatformCompare: React.FC<FineTuningPlatformCompareProps>
             <div className="p-3 rounded-md border border-border bg-surface-2 space-y-2">
               <div className="flex items-center justify-between gap-2">
                 <span className="text-[9px] font-bold uppercase tracking-wider text-text bg-surface border border-border px-1.5 py-0.5 rounded">
-                  🚀 En Hızlı Tamamlama
+                  {t('ft.platform.fastestBadge')}
                 </span>
                 <span className="text-xs font-mono font-bold text-text">
                   ${results.fastestPlatform.totalCostUsd.toFixed(2)}
@@ -137,11 +139,11 @@ export const FineTuningPlatformCompare: React.FC<FineTuningPlatformCompareProps>
                 <div className="text-[11px] text-muted font-mono">{results.fastestPlatform.gpuName}</div>
               </div>
               <div className="text-[11px] font-mono text-muted pt-1 border-t border-border flex justify-between gap-2">
-                <span>Tahmini Süre:</span>
+                <span>{t('ft.platform.estimatedDuration')}</span>
                 <strong className="text-text">{results.fastestPlatform.estimatedTimeFormatted}</strong>
               </div>
               <div className="text-[10px] text-muted font-sans">
-                Toplam: <strong className="text-text">{results.fastestPlatform.totalCostTry.toFixed(1)} ₺</strong>
+                {t('ft.platform.total')} <strong className="text-text">{results.fastestPlatform.totalCostTry.toFixed(1)} ₺</strong>
               </div>
             </div>
           )}
@@ -150,7 +152,7 @@ export const FineTuningPlatformCompare: React.FC<FineTuningPlatformCompareProps>
           <div className="p-3 rounded-md border border-border bg-surface space-y-2">
             <div className="flex items-center justify-between gap-2">
               <span className="text-[9px] font-bold uppercase tracking-wider text-muted bg-surface-2 border border-border px-1.5 py-0.5 rounded">
-                Blackwell & Multi-GPU Kümeleri
+                {t('ft.platform.blackwellBadge')}
               </span>
               <span className="text-xs font-mono font-bold text-text">
                 192GB / 1.44TB
@@ -158,20 +160,20 @@ export const FineTuningPlatformCompare: React.FC<FineTuningPlatformCompareProps>
             </div>
             <div>
               <div className="font-bold text-xs text-text line-clamp-1">
-                RunPod / Lambda / Modal Kümeleri
+                {t('ft.platform.runpodLambdaModalClusters')}
               </div>
               <div className="text-[11px] text-muted font-mono">
-                NVLink Mesh & InfiniBand Podlar
+                {t('ft.platform.nvlinkInfiniBand')}
               </div>
             </div>
             <div className="text-[11px] font-mono text-muted pt-1 border-t border-border flex justify-between gap-2">
-              <span>Kurumsal Ölçek:</span>
+              <span>{t('ft.platform.enterpriseScale')}</span>
               <strong className="text-accent">
                 DeepSpeed / FSDP2
               </strong>
             </div>
             <div className="text-[10px] text-muted font-sans">
-              Full Fine-Tuning ve 70B+ modeller için sınırsız ölçek
+              {t('ft.platform.fullFtScale')}
             </div>
           </div>
         </div>
@@ -181,13 +183,13 @@ export const FineTuningPlatformCompare: React.FC<FineTuningPlatformCompareProps>
           <table className="w-full text-left text-xs border-collapse">
             <thead>
               <tr className="border-b border-border text-muted font-bold uppercase tracking-wider text-[10px]">
-                <th className="py-2.5 px-3">Platform / Sağlayıcı</th>
-                <th className="py-2.5 px-3">Donanım & VRAM</th>
-                <th className="py-2.5 px-3">Saatlik Ücret</th>
-                <th className="py-2.5 px-3">VRAM Uygunluk</th>
-                <th className="py-2.5 px-3">Tahmini Eğitim Süresi</th>
-                <th className="py-2.5 px-3">Toplam Maliyet ($ / ₺)</th>
-                <th className="py-2.5 px-3">Platform Notu</th>
+                <th className="py-2.5 px-3">{t('ft.platform.colPlatform')}</th>
+                <th className="py-2.5 px-3">{t('ft.platform.colHardware')}</th>
+                <th className="py-2.5 px-3">{t('ft.platform.colHourlyRate')}</th>
+                <th className="py-2.5 px-3">{t('ft.platform.colVramFit')}</th>
+                <th className="py-2.5 px-3">{t('ft.platform.colEstimatedTime')}</th>
+                <th className="py-2.5 px-3">{t('ft.platform.colTotalCost')}</th>
+                <th className="py-2.5 px-3">{t('ft.platform.colPlatformNote')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border text-text font-mono text-[11px]">
@@ -204,17 +206,17 @@ export const FineTuningPlatformCompare: React.FC<FineTuningPlatformCompareProps>
                         <span>{plat.platformName}</span>
                         {plat.isCheapestFeasible && (
                           <span className="text-[9px] font-sans font-bold bg-surface text-accent border border-accent/40 px-1.5 py-0.2 rounded">
-                            ★ En Uygun
+                            {t('ft.platform.badgeCheapest')}
                           </span>
                         )}
                         {plat.isBestValueFeasible && !plat.isCheapestFeasible && (
                           <span className="text-[9px] font-sans font-bold bg-surface text-ok border border-ok/40 px-1.5 py-0.2 rounded">
-                            ⚡ F/P
+                            {t('ft.platform.badgeBestValue')}
                           </span>
                         )}
                         {plat.isFastestFeasible && (
                           <span className="text-[9px] font-sans font-bold bg-surface text-muted border border-border px-1.5 py-0.2 rounded">
-                            🚀 Hızlı
+                            {t('ft.platform.badgeFastest')}
                           </span>
                         )}
                       </div>
@@ -226,7 +228,7 @@ export const FineTuningPlatformCompare: React.FC<FineTuningPlatformCompareProps>
 
                     <td className="py-2.5 px-3 text-muted">
                       {plat.hourlyRateUsd === 0 ? (
-                        <span className="text-ok font-bold">ÜCRETSİZ</span>
+                        <span className="text-ok font-bold">{t('ft.platform.free')}</span>
                       ) : (
                         `$${plat.hourlyRateUsd.toFixed(2)}/sa`
                       )}
@@ -236,12 +238,12 @@ export const FineTuningPlatformCompare: React.FC<FineTuningPlatformCompareProps>
                       {plat.isFeasibleVram ? (
                         <span className="text-ok font-bold flex items-center gap-1">
                           <CheckCircle2 className="w-3.5 h-3.5" />
-                          Yeterli ({plat.vramUsagePct}% VRAM)
+                          {t('ft.platform.vramSufficient', { pct: plat.vramUsagePct })}
                         </span>
                       ) : (
                         <span className="text-danger font-bold flex items-center gap-1">
                           <AlertTriangle className="w-3.5 h-3.5" />
-                          Yetersiz ({plat.gpuVramGB}GB &lt; {results.totalVramNeededGB.toFixed(0)}GB)
+                          {t('ft.platform.vramInsufficient', { gpu: plat.gpuVramGB, needed: results.totalVramNeededGB.toFixed(0) })}
                         </span>
                       )}
                     </td>
@@ -257,7 +259,7 @@ export const FineTuningPlatformCompare: React.FC<FineTuningPlatformCompareProps>
                     <td className="py-2.5 px-3 font-bold">
                       {plat.isFeasibleVram ? (
                         plat.totalCostUsd === 0 ? (
-                          <span className="text-ok">0.00 TL (Ücretsiz)</span>
+                          <span className="text-ok">{t('ft.platform.freeCost')}</span>
                         ) : (
                           <div>
                             <span className="text-accent">${plat.totalCostUsd.toFixed(2)}</span>
@@ -273,7 +275,7 @@ export const FineTuningPlatformCompare: React.FC<FineTuningPlatformCompareProps>
 
                     <td className="py-2.5 px-3 text-[10px] text-muted font-sans max-w-xs">
                       {plat.colabComputeUnitsNeeded
-                        ? `~${plat.colabComputeUnitsNeeded} Colab Compute Unit gerekir ($10 paket).`
+                        ? t('ft.platform.colabUnits', { count: plat.colabComputeUnitsNeeded })
                         : plat.notes}
                     </td>
                   </tr>

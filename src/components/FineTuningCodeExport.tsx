@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FineTuningResults } from '../types';
 import { Panel } from './ui/Panel';
 import { SectionHeader } from './ui/SectionHeader';
@@ -11,15 +12,16 @@ interface FineTuningCodeExportProps {
 
 type CodeTab = 'unsloth' | 'hf' | 'axolotl' | 'jsonl';
 
-const CODE_TABS: { id: CodeTab; label: string }[] = [
-  { id: 'unsloth', label: 'Unsloth (Google Colab / Jupyter)' },
-  { id: 'hf', label: 'HuggingFace TRL + SFTTrainer' },
-  { id: 'axolotl', label: 'Axolotl YAML Config' },
-  { id: 'jsonl', label: 'Veri Seti Şablonu (dataset.jsonl)' },
-];
-
 export const FineTuningCodeExport: React.FC<FineTuningCodeExportProps> = ({ results }) => {
+  const { t } = useTranslation();
   const [activeCodeTab, setActiveCodeTab] = useState<CodeTab>('unsloth');
+
+  const CODE_TABS: { id: CodeTab; label: string }[] = [
+    { id: 'unsloth', label: t('ft.code.tabUnsloth') },
+    { id: 'hf', label: t('ft.code.tabHf') },
+    { id: 'axolotl', label: t('ft.code.tabAxolotl') },
+    { id: 'jsonl', label: t('ft.code.tabJsonl') },
+  ];
   const [copiedCode, setCopiedCode] = useState<boolean>(false);
 
   const handleCopyCode = () => {
@@ -36,8 +38,8 @@ export const FineTuningCodeExport: React.FC<FineTuningCodeExportProps> = ({ resu
   return (
     <Panel>
       <SectionHeader
-        title="Hazır Eğitim Scripti & Google Colab Kodu"
-        description="Otomatik optimize edilen hiperparametrelerle tek tıkla çalıştırılabilir Python/YAML eğitim kodları"
+        title={t('ft.code.title')}
+        description={t('ft.code.subtitle')}
         right={
           <button
             onClick={handleCopyCode}
@@ -46,12 +48,12 @@ export const FineTuningCodeExport: React.FC<FineTuningCodeExportProps> = ({ resu
             {copiedCode ? (
               <>
                 <Check className="w-3.5 h-3.5 text-ok" />
-                <span className="text-ok font-bold">Kopyalandı</span>
+                <span className="text-ok font-bold">{t('ft.code.copied')}</span>
               </>
             ) : (
               <>
                 <Copy className="w-3.5 h-3.5 text-muted" />
-                <span>Kodu Kopyala</span>
+                <span>{t('ft.code.copyCode')}</span>
               </>
             )}
           </button>
