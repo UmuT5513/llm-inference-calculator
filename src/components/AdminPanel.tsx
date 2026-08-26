@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { RefreshCw, X, Database, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Panel } from './ui/Panel';
 import { SectionHeader } from './ui/SectionHeader';
 
@@ -17,6 +18,7 @@ interface TaskState {
 const idleState: TaskState = { busy: false, message: null, error: null };
 
 export const AdminPanelContent: React.FC<AdminPanelContentProps> = ({ onModelsRefreshed, onPricesRefreshed }) => {
+  const { t } = useTranslation();
   const [modelsState, setModelsState] = useState<TaskState>(idleState);
   const [pricesState, setPricesState] = useState<TaskState>(idleState);
 
@@ -29,12 +31,18 @@ export const AdminPanelContent: React.FC<AdminPanelContentProps> = ({ onModelsRe
       const s = data.summary || {};
       setModelsState({
         busy: false,
-        message: `Getirilen: ${s.fetched} • Güncellenen: ${s.updated} • Ayna: ${s.mirrored} • Keşfedilen: ${s.discovered} • Başarısız: ${(s.failed || []).length}`,
+        message: t('admin.modelsRefreshedSummary', {
+          fetched: s.fetched,
+          updated: s.updated,
+          mirrored: s.mirrored,
+          discovered: s.discovered,
+          failed: (s.failed || []).length,
+        }),
         error: null,
       });
       await onModelsRefreshed();
     } catch (err: any) {
-      setModelsState({ busy: false, message: null, error: err?.message || 'Model kataloğu güncellenemedi.' });
+      setModelsState({ busy: false, message: null, error: err?.message || t('admin.modelsRefreshError') });
     }
   };
 
@@ -46,12 +54,18 @@ export const AdminPanelContent: React.FC<AdminPanelContentProps> = ({ onModelsRe
       if (!res.ok) throw new Error(data?.error || `HTTP ${res.status}`);
       const providers = data.summary?.providers || [];
       const detail = providers
-        .map((p: any) => `${p.provider}: ${p.count}${p.error ? ' (hata)' : ''}`)
+        .map((p: any) =>
+          t('admin.pricesRefreshDetail', {
+            provider: p.provider,
+            count: p.count,
+            error: p.error ? t('admin.refreshErrorSuffix') : '',
+          })
+        )
         .join(' • ');
-      setPricesState({ busy: false, message: detail || `Toplam: ${data.summary?.total}`, error: null });
+      setPricesState({ busy: false, message: detail || t('admin.pricesTotalSummary', { total: data.summary?.total }), error: null });
       await onPricesRefreshed();
     } catch (err: any) {
-      setPricesState({ busy: false, message: null, error: err?.message || 'GPU fiyatları güncellenemedi.' });
+      setPricesState({ busy: false, message: null, error: err?.message || t('admin.pricesRefreshError') });
     }
   };
 
@@ -60,8 +74,8 @@ export const AdminPanelContent: React.FC<AdminPanelContentProps> = ({ onModelsRe
       {/* Model catalog */}
       <Panel className="overflow-hidden">
         <SectionHeader
-          title="Model Kataloğu"
-          description="Hugging Face'ten açık kaynak modelleri çeker ve günceller."
+          title={t('admin.modelsTitle')}
+          description={t('admin.modelsDescription')}
           right={
             <button
               onClick={runModelRefresh}
@@ -69,7 +83,7 @@ export const AdminPanelContent: React.FC<AdminPanelContentProps> = ({ onModelsRe
               className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-bg bg-accent hover:bg-accent/90 disabled:opacity-50 disabled:cursor-not-allowed rounded-md transition active:scale-95 shrink-0 cursor-pointer"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${modelsState.busy ? 'animate-spin' : ''}`} />
-              {modelsState.busy ? 'Güncelleniyor…' : 'Güncelle'}
+              {modelsState.busy ? t('admin.updating') : t('admin.refresh')}
             </button>
           }
         />
@@ -90,8 +104,8 @@ export const AdminPanelContent: React.FC<AdminPanelContentProps> = ({ onModelsRe
       {/* GPU prices */}
       <Panel className="overflow-hidden">
         <SectionHeader
-          title="GPU Fiyatları"
-          description="RunPod, Lambda ve Modal'dan güncel saatlik fiyatları çeker."
+          title={t('admin.pricesTitle')}
+          description={t('admin.pricesDescription')}
           right={
             <button
               onClick={runPricesRefresh}
@@ -99,7 +113,7 @@ export const AdminPanelContent: React.FC<AdminPanelContentProps> = ({ onModelsRe
               className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-bg bg-accent hover:bg-accent/90 disabled:opacity-50 disabled:cursor-not-allowed rounded-md transition active:scale-95 shrink-0 cursor-pointer"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${pricesState.busy ? 'animate-spin' : ''}`} />
-              {pricesState.busy ? 'Güncelleniyor…' : 'Güncelle'}
+              {pricesState.busy ? t('admin.updating') : t('admin.refresh')}
             </button>
           }
         />
@@ -126,6 +140,7 @@ interface AdminPanelProps extends AdminPanelContentProps {
 }
 
 export const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, onModelsRefreshed, onPricesRefreshed }) => {
+  const { t } = useTranslation();
   if (!isOpen) return null;
 
   return (
@@ -134,7 +149,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, onModel
         <div className="flex items-center justify-between border-b border-border px-3.5 py-2">
           <div className="flex items-center gap-2 min-w-0">
             <Database className="w-4 h-4 text-accent shrink-0" />
-            <h2 className="text-[11px] font-bold font-mono uppercase tracking-wider text-text">Yönetim Paneli</h2>
+            <h2 className="text-[11px] font-bold font-mono uppercase tracking-wider text-text">{t('admin.panelTitle')}</h2>
           </div>
           <button
             onClick={onClose}
@@ -146,8 +161,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, onModel
 
         <div className="p-5 space-y-4">
           <p className="text-[11px] text-muted">
-            Veri kataloğunu Hugging Face ve GPU sağlayıcılarından (RunPod / Lambda / Modal) talep üzerine güncelleyin.
-            Bu işlem yalnızca yöneticiler tarafından tetiklenebilir.
+            {t('admin.intro')} {t('admin.adminOnlyNote')}
           </p>
 
           <AdminPanelContent onModelsRefreshed={onModelsRefreshed} onPricesRefreshed={onPricesRefreshed} />

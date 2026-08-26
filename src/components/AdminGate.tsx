@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { LogOut, Lock, ShieldCheck, ArrowLeft } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { AdminPanelContent } from './AdminPanel';
 import { Panel } from './ui/Panel';
 import { Field } from './ui/Field';
@@ -7,6 +8,7 @@ import { Field } from './ui/Field';
 type AuthState = 'loading' | 'anon' | 'authed';
 
 export const AdminGate: React.FC = () => {
+  const { t } = useTranslation();
   const [authState, setAuthState] = useState<AuthState>('loading');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -45,7 +47,7 @@ export const AdminGate: React.FC = () => {
       setPassword('');
       setAuthState('authed');
     } catch {
-      setError('Giriş sırasında bir sorun oluştu.');
+      setError(t('admin.loginError'));
     } finally {
       setSubmitting(false);
     }
@@ -66,7 +68,7 @@ export const AdminGate: React.FC = () => {
       <div className="min-h-screen bg-bg text-text flex items-center justify-center">
         <div className="flex items-center gap-2 text-muted text-sm">
           <Lock className="w-4 h-4 animate-pulse" />
-          Kontrol ediliyor…
+          {t('admin.checking')}
         </div>
       </div>
     );
@@ -78,10 +80,10 @@ export const AdminGate: React.FC = () => {
         <Panel className="w-full max-w-sm">
           <div className="flex items-center gap-2 border-b border-border px-3.5 py-2">
             <Lock className="w-4 h-4 text-accent shrink-0" />
-            <h2 className="text-[11px] font-bold font-mono uppercase tracking-wider text-text">Yönetici Girişi</h2>
+            <h2 className="text-[11px] font-bold font-mono uppercase tracking-wider text-text">{t('admin.loginTitle')}</h2>
           </div>
           <form onSubmit={handleSubmit} className="p-5 space-y-4">
-            <Field label="Kullanıcı Adı">
+            <Field label={t('admin.username')}>
               <input
                 type="text"
                 value={username}
@@ -91,7 +93,7 @@ export const AdminGate: React.FC = () => {
                 className="w-full bg-surface-2 border border-border rounded px-2.5 py-1.5 text-xs font-mono text-text placeholder-muted focus:outline-none focus:border-accent"
               />
             </Field>
-            <Field label="Şifre">
+            <Field label={t('admin.password')}>
               <input
                 type="password"
                 value={password}
@@ -108,7 +110,7 @@ export const AdminGate: React.FC = () => {
               className="w-full flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-bold text-bg bg-accent hover:bg-accent/90 disabled:opacity-50 disabled:cursor-not-allowed rounded-md transition active:scale-95 cursor-pointer"
             >
               <ShieldCheck className="w-3.5 h-3.5" />
-              {submitting ? 'Giriş yapılıyor…' : 'Giriş Yap'}
+              {submitting ? t('admin.signingIn') : t('admin.signIn')}
             </button>
           </form>
         </Panel>
@@ -122,7 +124,7 @@ export const AdminGate: React.FC = () => {
         <div className="flex items-center justify-between gap-3 mb-4">
           <div className="flex items-center gap-2 min-w-0">
             <ShieldCheck className="w-4 h-4 text-accent shrink-0" />
-            <h1 className="text-[11px] font-bold font-mono uppercase tracking-wider text-text">Yönetim Paneli</h1>
+            <h1 className="text-[11px] font-bold font-mono uppercase tracking-wider text-text">{t('admin.panelTitle')}</h1>
           </div>
           <div className="flex items-center gap-2 shrink-0">
             <a
@@ -130,20 +132,20 @@ export const AdminGate: React.FC = () => {
               className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-muted hover:text-text hover:bg-surface-2 rounded-md transition cursor-pointer"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
-              Ana Sayfa
+              {t('admin.home')}
             </a>
             <button
               onClick={handleLogout}
               className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-danger hover:bg-surface-2 rounded-md transition cursor-pointer"
             >
               <LogOut className="w-3.5 h-3.5" />
-              Çıkış Yap
+              {t('admin.logout')}
             </button>
           </div>
         </div>
 
         <p className="text-[11px] text-muted mb-4">
-          Veri kataloğunu Hugging Face ve GPU sağlayıcılarından (RunPod / Lambda / Modal) talep üzerine güncelleyin.
+          {t('admin.intro')}
         </p>
 
         <div className="space-y-4">
