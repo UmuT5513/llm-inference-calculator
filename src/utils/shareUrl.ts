@@ -1,4 +1,4 @@
-import { CalculatorConfig, FineTuningConfig } from '../types';
+import { CalculatorConfig, FineTuningConfig, ModelPreset, GpuPreset } from '../types';
 import { DEFAULT_INFERENCE_CONFIG, DEFAULT_FINETUNING_CONFIG } from '../data/defaults';
 
 export type ScenarioType = 'inference' | 'finetuning';
@@ -32,6 +32,36 @@ function bool(value: unknown, fallback: boolean): boolean {
   return typeof value === 'boolean' ? value : fallback;
 }
 
+function sanitizeCustomModel(raw: Record<string, unknown>, base: ModelPreset): ModelPreset {
+  return {
+    ...base,
+    ...raw,
+    totalParamsB: num(raw.totalParamsB, base.totalParamsB),
+    activeParamsB: num(raw.activeParamsB, base.activeParamsB),
+    numLayers: num(raw.numLayers, base.numLayers),
+    numHeads: num(raw.numHeads, base.numHeads),
+    numKvHeads: num(raw.numKvHeads, base.numKvHeads),
+    headDim: num(raw.headDim, base.headDim),
+    hiddenSize: num(raw.hiddenSize, base.hiddenSize),
+    defaultContextLen: num(raw.defaultContextLen, base.defaultContextLen),
+    maxContextLen: num(raw.maxContextLen, base.maxContextLen),
+    numExperts: raw.numExperts === undefined ? base.numExperts : num(raw.numExperts, base.numExperts ?? 0),
+    activeExperts: raw.activeExperts === undefined ? base.activeExperts : num(raw.activeExperts, base.activeExperts ?? 0),
+  } as ModelPreset;
+}
+
+function sanitizeCustomGpu(raw: Record<string, unknown>, base: GpuPreset): GpuPreset {
+  return {
+    ...base,
+    ...raw,
+    vramGB: num(raw.vramGB, base.vramGB),
+    memoryBandwidthGBs: num(raw.memoryBandwidthGBs, base.memoryBandwidthGBs),
+    fp16Tflops: num(raw.fp16Tflops, base.fp16Tflops),
+    hourlyCostUsd: num(raw.hourlyCostUsd, base.hourlyCostUsd),
+    interconnectSpeedGBs: num(raw.interconnectSpeedGBs, base.interconnectSpeedGBs),
+  } as GpuPreset;
+}
+
 function sanitizeInference(raw: Record<string, unknown>): CalculatorConfig {
   const d = DEFAULT_INFERENCE_CONFIG;
   const cfg: CalculatorConfig = {
@@ -58,14 +88,15 @@ function sanitizeInference(raw: Record<string, unknown>): CalculatorConfig {
     serverDutyCyclePct: Math.min(100, Math.max(0, num(raw.serverDutyCyclePct, d.serverDutyCyclePct))),
   };
   if (raw.customModel && typeof raw.customModel === 'object') {
-    cfg.customModel = { ...d.customModel, ...(raw.customModel as object) } as CalculatorConfig['customModel'];
+    cfg.customModel = sanitizeCustomModel(raw.customModel as Record<string, unknown>, d.customModel);
   }
   if (raw.customGpu && typeof raw.customGpu === 'object') {
-    cfg.customGpu = { ...d.customGpu, ...(raw.customGpu as object) } as CalculatorConfig['customGpu'];
+    cfg.customGpu = sanitizeCustomGpu(raw.customGpu as Record<string, unknown>, d.customGpu);
   }
   if (Array.isArray(raw.userProfiles) && raw.userProfiles.length > 0) {
     cfg.userProfiles = raw.userProfiles
       .filter((p) => p && typeof p === 'object')
+      .slice(0, 200)
       .map((p, i) => ({
         id: str((p as any).id, `profile-${i}`),
         name: str((p as any).name, `Profile ${i + 1}`),
@@ -110,10 +141,10 @@ function sanitizeFinetuning(raw: Record<string, unknown>): FineTuningConfig {
     usdToTryRate: Math.max(0, num(raw.usdToTryRate, d.usdToTryRate)),
   };
   if (raw.customModel && typeof raw.customModel === 'object') {
-    cfg.customModel = { ...d.customModel, ...(raw.customModel as object) } as FineTuningConfig['customModel'];
+    cfg.customModel = sanitizeCustomModel(raw.customModel as Record<string, unknown>, d.customModel);
   }
   if (raw.customGpu && typeof raw.customGpu === 'object') {
-    cfg.customGpu = { ...d.customGpu, ...(raw.customGpu as object) } as FineTuningConfig['customGpu'];
+    cfg.customGpu = sanitizeCustomGpu(raw.customGpu as Record<string, unknown>, d.customGpu);
   }
   return cfg;
 }

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Header } from './components/Header';
 import { ModelSelector } from './components/ModelSelector';
 import { QuantizationSelector } from './components/QuantizationSelector';
@@ -55,6 +55,19 @@ export default function App() {
   const [isCompareModalOpen, setIsCompareModalOpen] = useState<boolean>(false);
   const [isAboutModalOpen, setIsAboutModalOpen] = useState<boolean>(false);
   const [compareInitialIds, setCompareInitialIds] = useState<string[]>([]);
+
+  const hydratedFromUrl = useRef(initialScenario !== null);
+  const hydratedSnapshot = useRef(initialScenario?.config ?? null);
+
+  useEffect(() => {
+    if (!hydratedFromUrl.current) return;
+    const snapshot = hydratedSnapshot.current;
+    const changed = activeTab === 'inference' ? config !== snapshot : ftConfig !== snapshot;
+    if (changed) {
+      hydratedFromUrl.current = false;
+      window.history.replaceState(null, '', '/app');
+    }
+  }, [config, ftConfig]);
 
   // Live scraped GPU prices (RunPod / Modal / Lambda)
   const { prices: livePrices, overrides: liveOverrides, lastUpdated, loading: pricesLoading, refetch: refetchPrices } = useLiveGpuPrices();

@@ -73,7 +73,7 @@ export const ScenarioComparisonModal: React.FC<ScenarioComparisonModalProps> = (
       config: activeTab === 'inference' ? config : ftConfig,
       results: activeTab === 'inference' ? results : ftResults,
     }),
-    [activeTab, config, ftConfig, results, ftResults]
+    [activeTab, config, ftConfig, results, ftResults, t]
   );
 
   const columns = useMemo(() => {

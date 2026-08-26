@@ -192,7 +192,14 @@ function getHeuristicRecommendation(useCase: string) {
     query.includes("rapor") ||
     query.includes("muhasebe") ||
     query.includes("rag") ||
-    query.includes("doküman")
+    query.includes("doküman") ||
+    query.includes("legal") ||
+    query.includes("law") ||
+    query.includes("contract") ||
+    query.includes("finance") ||
+    query.includes("compliance") ||
+    query.includes("document") ||
+    query.includes("report")
   ) {
     return {
       recommendedModelId: "llama-3.3-70b",
@@ -216,7 +223,15 @@ function getHeuristicRecommendation(useCase: string) {
     query.includes("mac") ||
     query.includes("pc") ||
     query.includes("edge") ||
-    query.includes("düşük vram")
+    query.includes("düşük vram") ||
+    query.includes("local") ||
+    query.includes("budget") ||
+    query.includes("cheap") ||
+    query.includes("fast") ||
+    query.includes("desktop") ||
+    query.includes("gaming") ||
+    query.includes("vram") ||
+    query.includes("consumer")
   ) {
     return {
       recommendedModelId: "llama-3.1-8b",
