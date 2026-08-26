@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { FineTuningResults } from '../../types';
 import { Stat } from '../ui/Stat';
 
@@ -6,15 +7,15 @@ interface VramTabProps {
   results: FineTuningResults;
 }
 
-const SEGMENTS = [
-  { label: 'Model Ağırlıkları', field: 'weightVramGB' as const, cls: 'bg-accent' },
-  { label: 'Gradyanlar (Grads)', field: 'gradientVramGB' as const, cls: 'bg-[#8e8b8b]' },
-  { label: 'Optimizer Durumları', field: 'optimizerVramGB' as const, cls: 'bg-ok' },
-  { label: 'Aktivasyon Belleği', field: 'activationVramGB' as const, cls: 'bg-danger/50' },
-  { label: 'CUDA Overhead', field: 'cudaOverheadGB' as const, cls: 'bg-danger/40' },
-];
-
 export const VramTab: React.FC<VramTabProps> = ({ results }) => {
+  const { t } = useTranslation();
+  const SEGMENTS = [
+    { label: t('ft.results.vram.weights'), field: 'weightVramGB' as const, cls: 'bg-accent' },
+    { label: t('ft.results.vram.gradients'), field: 'gradientVramGB' as const, cls: 'bg-[#8e8b8b]' },
+    { label: t('ft.results.vram.optimizerStates'), field: 'optimizerVramGB' as const, cls: 'bg-ok' },
+    { label: t('ft.results.vram.activationMemory'), field: 'activationVramGB' as const, cls: 'bg-danger/50' },
+    { label: t('ft.results.vram.cudaOverhead'), field: 'cudaOverheadGB' as const, cls: 'bg-danger/40' },
+  ];
   const total = results.totalVramNeededGB || 1;
   return (
     <div className="space-y-3">
@@ -37,33 +38,33 @@ export const VramTab: React.FC<VramTabProps> = ({ results }) => {
           </div>
         ))}
         <div className="flex items-center justify-between border-t border-border pt-1 font-bold">
-          <span className="text-muted">Toplam Gerekli</span>
+          <span className="text-muted">{t('ft.results.vram.totalRequired')}</span>
           <span className={results.isOom ? 'text-danger' : 'text-text'}>
             {results.totalVramNeededGB.toFixed(1)} GB
           </span>
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-muted">GPU Başına</span>
+          <span className="text-muted">{t('ft.results.vram.perGpu')}</span>
           <span className="text-text">{results.vramPerGpuNeededGB.toFixed(1)} GB</span>
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-muted">Mevcut</span>
+          <span className="text-muted">{t('ft.results.vram.available')}</span>
           <span className="text-ok">{results.totalVramAvailableGB} GB</span>
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-muted">Önerilen Min VRAM</span>
+          <span className="text-muted">{t('ft.results.vram.recommendedMinVram')}</span>
           <span className="text-text">{results.recommendedMinVramGB} GB</span>
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-2">
-        <Stat label="Doluluk" value={`%${results.vramUtilizationPct.toFixed(0)}`} tone={results.isOom ? 'danger' : 'ok'} />
-        <Stat label="Önerilen Min GPU" value={results.recommendedMinGpus} sub="adet" />
+        <Stat label={t('ft.results.vram.utilization')} value={`%${results.vramUtilizationPct.toFixed(0)}`} tone={results.isOom ? 'danger' : 'ok'} />
+        <Stat label={t('ft.results.vram.recommendedMinGpu')} value={results.recommendedMinGpus} sub={t('ft.results.vram.unitCount')} />
       </div>
 
       {results.isOom && (
         <div className="border border-danger/40 bg-danger/10 rounded p-2.5 text-[11px] font-mono text-danger">
-          [OOM] Bu donanım yetersiz. Önerilen min. GPU: {results.recommendedMinGpus}
+          {t('ft.results.vram.oomInsufficient', { gpus: results.recommendedMinGpus })}
         </div>
       )}
     </div>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Layers, CheckCircle2 } from 'lucide-react';
 import { INFERENCE_ENGINES } from '../data/presets';
 import { Panel } from './ui/Panel';
@@ -14,12 +15,13 @@ export const InferenceEngineSelector: React.FC<InferenceEngineSelectorProps> = (
   selectedEngineId,
   onSelectEngine,
 }) => {
+  const { t } = useTranslation();
   return (
     <Panel className="p-3.5 space-y-3">
       <SectionHeader
         index="03"
         title="Inference Engine"
-        description="vLLM, TensorRT-LLM, llama.cpp, SGLang, TGI veya Ollama optimizasyon mimarisi"
+        description={t('engine.subtitle')}
         right={
           <div className="flex items-center gap-1.5 text-[11px] font-mono text-accent bg-surface-2 border border-border px-2 py-0.5 rounded-md font-semibold">
             <Layers className="w-3.5 h-3.5 text-accent" />
@@ -32,7 +34,7 @@ export const InferenceEngineSelector: React.FC<InferenceEngineSelectorProps> = (
         {INFERENCE_ENGINES.map((eng) => {
           const isSelected = eng.id === selectedEngineId;
           const speedPct = Math.round((eng.throughputMultiplier - 1) * 100);
-          const speedText = speedPct > 0 ? `+${speedPct}% Token/sn` : speedPct < 0 ? `${speedPct}% Token/sn` : 'Referans Hız';
+          const speedText = speedPct > 0 ? t('engine.speedBoost', { pct: speedPct }) : speedPct < 0 ? t('engine.speedPenalty', { pct: speedPct }) : t('engine.speedReference');
 
           return (
             <button
@@ -67,7 +69,7 @@ export const InferenceEngineSelector: React.FC<InferenceEngineSelectorProps> = (
                     ⚡ {speedText}
                   </span>
                   <span className="text-muted">
-                    KV İzole: ~%{eng.kvCacheFragmentationPct}
+                    {t('engine.kvIsolated', { pct: eng.kvCacheFragmentationPct })}
                   </span>
                 </div>
 

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation, Trans } from 'react-i18next';
 import { FineTuningConfig, FineTuningResults, DatasetPreset } from '../types';
 import { FINE_TUNING_METHODS, FINE_TUNING_FRAMEWORKS, DATASET_PRESETS } from '../data/fineTuningPresets';
 import { GPU_PRESETS } from '../data/presets';
@@ -19,6 +20,7 @@ interface FineTuningConfigPanelProps {
 }
 
 export const FineTuningConfigPanel: React.FC<FineTuningConfigPanelProps> = ({ config, results, onChangeConfig }) => {
+  const { t } = useTranslation();
   const [showAdvancedManualParams, setShowAdvancedManualParams] = useState<boolean>(false);
 
   const handleSelectPreset = (preset: DatasetPreset) => {
@@ -64,20 +66,20 @@ export const FineTuningConfigPanel: React.FC<FineTuningConfigPanelProps> = ({ co
   return (
     <Panel className="p-3.5 space-y-3">
       <SectionHeader
-        title="Fine-Tuning Yapılandırması"
-        description="Veri seti, adaptasyon yöntemi, GPU donanımı ve hiperparametre ayarları"
+        title={t('ft.config.title')}
+        description={t('ft.config.subtitle')}
       />
 
-      <Collapse title="Dataset & Yöntem" defaultOpen>
+      <Collapse title={t('ft.config.datasetMethod')} defaultOpen>
         <div className="space-y-4">
           <div className="space-y-2">
             <div className="flex items-center justify-between gap-2">
               <div className="text-[10px] font-bold text-text uppercase tracking-wider flex items-center gap-1.5">
                 <SlidersHorizontal className="w-3.5 h-3.5 text-accent" />
-                Hazır Veri Seti & Görev Şablonları (Tek Tıkla Yükle)
+                {t('ft.config.datasetPresetsTitle')}
               </div>
               <span className="text-[10px] text-muted font-medium">
-                Örnek ve token sayılarını otomatik ayarlar
+                {t('ft.config.datasetPresetsHint')}
               </span>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -98,7 +100,7 @@ export const FineTuningConfigPanel: React.FC<FineTuningConfigPanelProps> = ({ co
                   >
                     <div className="font-bold text-text text-[11px] line-clamp-1">{p.title}</div>
                     <div className="text-[10px] text-muted font-mono mt-1">
-                      {p.sampleCount.toLocaleString()} örn • {p.avgSeqLen} tok
+                      {t('ft.config.sampleSeqSummary', { samples: p.sampleCount.toLocaleString(), seq: p.avgSeqLen })}
                     </div>
                   </button>
                 );
@@ -113,16 +115,16 @@ export const FineTuningConfigPanel: React.FC<FineTuningConfigPanelProps> = ({ co
                   <Database className="w-3.5 h-3.5" />
                 </div>
                 <div>
-                  <div className="text-[11px] font-bold text-text uppercase tracking-wider">Veri Kümesi & Sequence Length</div>
-                  <div className="text-[10px] text-muted">Toplam örnek adedi, token uzunluğu ve eğitim turu (Epoch)</div>
+                  <div className="text-[11px] font-bold text-text uppercase tracking-wider">{t('ft.config.datasetSequenceTitle')}</div>
+                  <div className="text-[10px] text-muted">{t('ft.config.datasetSequenceDesc')}</div>
                 </div>
               </div>
               <Segmented
                 value={config.datasetInputMode || 'samples'}
                 onChange={(v) => onChangeConfig((prev) => ({ ...prev, datasetInputMode: v }))}
                 options={[
-                  { value: 'samples', label: 'Örnek + SeqLen' },
-                  { value: 'tokens', label: 'Toplam Token' },
+                  { value: 'samples', label: t('ft.config.modeSamples') },
+                  { value: 'tokens', label: t('ft.config.modeTokens') },
                 ]}
               />
             </div>
@@ -131,7 +133,7 @@ export const FineTuningConfigPanel: React.FC<FineTuningConfigPanelProps> = ({ co
               {config.datasetInputMode === 'tokens' ? (
                 <div className="space-y-2">
                   <div className="flex justify-between text-text">
-                    <span className="font-sans font-medium">Toplam Token Sayısı:</span>
+                    <span className="font-sans font-medium">{t('ft.config.totalTokensLabel')}</span>
                     <span className="font-bold text-accent">
                       {(config.totalTokensInput || (config.sampleCount * config.avgSeqLen * config.epochs)).toLocaleString()} token
                     </span>
@@ -150,13 +152,13 @@ export const FineTuningConfigPanel: React.FC<FineTuningConfigPanelProps> = ({ co
                     }
                   />
                   <p className="text-[10px] text-muted font-sans">
-                    * Doğrudan ham token hacmi girildiğinde, örnek sayısı Sequence Length ({config.avgSeqLen}) ve Epoch ({config.epochs}) üzerinden otomatik hesaplanır.
+                    {t('ft.config.tokensModeHint', { seqLen: config.avgSeqLen, epochs: config.epochs })}
                   </p>
                 </div>
               ) : (
                 <div className="space-y-2">
                   <div className="flex justify-between items-center text-text">
-                    <span className="font-sans font-medium">Toplam Veri Kümesi Örnek Sayısı (Sample Count):</span>
+                    <span className="font-sans font-medium">{t('ft.config.sampleCountLabel')}</span>
                     <div className="w-28">
                       <NumberInput
                         min={100}
@@ -183,18 +185,18 @@ export const FineTuningConfigPanel: React.FC<FineTuningConfigPanelProps> = ({ co
                     className="w-full h-1.5 bg-surface-2 rounded-lg appearance-none cursor-pointer accent-[#FFB224]"
                   />
                   <div className="flex justify-between text-[10px] text-muted">
-                    <span>1,000 (Test)</span>
-                    <span>10,000 (Standart)</span>
+                    <span>{t('ft.config.sampleTick1')}</span>
+                    <span>{t('ft.config.sampleTick2')}</span>
                     <span>50,000</span>
                     <span>100,000</span>
-                    <span>200,000 (Büyük)</span>
+                    <span>{t('ft.config.sampleTick3')}</span>
                   </div>
                 </div>
               )}
 
               <div className="space-y-2 pt-2 border-t border-border">
                 <div className="flex justify-between items-center text-text">
-                  <span className="font-sans font-medium">Ortalama Sequence Length (Token / Örnek):</span>
+                  <span className="font-sans font-medium">{t('ft.config.avgSeqLenLabel')}</span>
                   <div className="w-28">
                     <NumberInput
                       min={128}
@@ -221,23 +223,23 @@ export const FineTuningConfigPanel: React.FC<FineTuningConfigPanelProps> = ({ co
                   className="w-full h-1.5 bg-surface-2 rounded-lg appearance-none cursor-pointer accent-[#FFB224]"
                 />
                 <div className="flex justify-between text-[10px] text-muted">
-                  <span>512 (Kısa QA)</span>
-                  <span>2,048 (Standart)</span>
-                  <span>4,096 (Uzun Chat)</span>
-                  <span>8,192 (RAG/Belge)</span>
+                  <span>{t('ft.config.seqTick1')}</span>
+                  <span>{t('ft.config.seqTick2')}</span>
+                  <span>{t('ft.config.seqTick3')}</span>
+                  <span>{t('ft.config.seqTick4')}</span>
                   <span>16,384</span>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3 pt-2 border-t border-border">
-                <Field label="Eğitim Turu (Epoch)">
+                <Field label={t('ft.config.epochsLabel')}>
                   <Select
                     value={config.epochs}
                     onChange={(val) => onChangeConfig((prev) => ({ ...prev, epochs: Math.round(val) }))}
                     options={[
                       { value: 1, label: '1 Epoch' },
                       { value: 2, label: '2 Epoch' },
-                      { value: 3, label: '3 Epoch (Önerilen)' },
+                      { value: 3, label: t('ft.config.epoch3Recommended') },
                       { value: 4, label: '4 Epoch' },
                       { value: 5, label: '5 Epoch' },
                     ]}
@@ -245,10 +247,10 @@ export const FineTuningConfigPanel: React.FC<FineTuningConfigPanelProps> = ({ co
                 </Field>
 
                 <div className="p-2.5 bg-surface-2 border border-border rounded-md text-text space-y-0.5">
-                  <div className="text-[10px] font-sans text-muted">Toplam İşlenecek Token:</div>
+                  <div className="text-[10px] font-sans text-muted">{t('ft.config.totalTokensToProcess')}:</div>
                   <div className="font-bold text-xs text-accent">{results.totalTokens.toLocaleString()} token</div>
                   <div className="text-[10px] text-muted font-sans">
-                    ({results.totalSteps.toLocaleString()} optimizasyon adımı)
+                    ({t('ft.config.totalSteps', { count: results.totalSteps.toLocaleString() })})
                   </div>
                 </div>
               </div>
@@ -261,13 +263,13 @@ export const FineTuningConfigPanel: React.FC<FineTuningConfigPanelProps> = ({ co
                 <Zap className="w-3.5 h-3.5" />
               </div>
               <div>
-                <div className="text-[11px] font-bold text-text uppercase tracking-wider">Model & Fine-Tuning Yöntemi</div>
-                <div className="text-[10px] text-muted">Temel model seçimi ve VRAM tasarruflu adaptör türü</div>
+                <div className="text-[11px] font-bold text-text uppercase tracking-wider">{t('ft.config.modelMethodTitle')}</div>
+                <div className="text-[10px] text-muted">{t('ft.config.modelMethodDesc')}</div>
               </div>
             </div>
 
             <div>
-              <label className="text-[11px] font-medium text-muted block mb-1.5">Adaptasyon Yöntemi:</label>
+              <label className="text-[11px] font-medium text-muted block mb-1.5">{t('ft.config.adaptationMethod')}</label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {FINE_TUNING_METHODS.map((m) => {
                   const isSelected = config.methodId === m.id;
@@ -303,7 +305,7 @@ export const FineTuningConfigPanel: React.FC<FineTuningConfigPanelProps> = ({ co
             </div>
 
             <div className="pt-2 border-t border-border flex flex-wrap items-center justify-between gap-2">
-              <span className="text-[11px] font-medium text-muted">Hızlandırıcı Motor:</span>
+              <span className="text-[11px] font-medium text-muted">{t('ft.config.acceleratorEngine')}</span>
               <div className="flex gap-1.5 flex-wrap">
                 {FINE_TUNING_FRAMEWORKS.map((f) => {
                   const isSelected = config.frameworkId === f.id;
@@ -331,7 +333,7 @@ export const FineTuningConfigPanel: React.FC<FineTuningConfigPanelProps> = ({ co
         </div>
       </Collapse>
 
-      <Collapse title="GPU Donanımı" defaultOpen>
+      <Collapse title={t('ft.config.gpuHardware')} defaultOpen>
         <div className="space-y-3">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 max-h-64 overflow-y-auto pr-1">
             {GPU_PRESETS.map((g) => {
@@ -355,7 +357,7 @@ export const FineTuningConfigPanel: React.FC<FineTuningConfigPanelProps> = ({ co
                   <div className="text-[11px] font-bold text-text mb-1 line-clamp-1">{g.name}</div>
                   <div className="flex items-center justify-between text-[10px] text-muted font-mono">
                     <span>FP16: <strong className="text-accent">{g.fp16Tflops} TF</strong></span>
-                    <span>{g.hourlyCostUsd > 0 ? `$${g.hourlyCostUsd.toFixed(2)}/sa` : 'Yerel'}</span>
+                    <span>{g.hourlyCostUsd > 0 ? `$${g.hourlyCostUsd.toFixed(2)}/sa` : t('ft.config.local')}</span>
                   </div>
                 </div>
               );
@@ -366,7 +368,7 @@ export const FineTuningConfigPanel: React.FC<FineTuningConfigPanelProps> = ({ co
             <div className="flex items-center justify-between mb-1.5">
               <label className="text-xs font-bold text-text uppercase tracking-wider flex items-center gap-1">
                 <Cpu className="w-3.5 h-3.5 text-accent" />
-                GPU Adedi
+                {t('ft.config.gpuCountLabel')}
               </label>
               <span className="text-xs font-mono font-bold text-accent bg-surface-2 border border-border px-2 py-0.5 rounded">
                 {gpuCount}x GPU ({selectedGpu.vramGB * gpuCount} GB VRAM)
@@ -380,13 +382,13 @@ export const FineTuningConfigPanel: React.FC<FineTuningConfigPanelProps> = ({ co
               onChange={(val) => onChangeConfig((prev) => ({ ...prev, gpuCount: Math.max(1, val || 1) }))}
             />
             <p className="text-[10px] text-muted mt-1">
-              Seçili: {selectedGpu.name} — Toplam {selectedGpu.vramGB * gpuCount} GB VRAM
+              {t('ft.config.selectedSummary', { name: selectedGpu.name, vram: selectedGpu.vramGB * gpuCount })}
             </p>
           </div>
         </div>
       </Collapse>
 
-      <Collapse title="Hiperparametreler">
+      <Collapse title={t('ft.config.hyperparams')}>
         <div className="space-y-3">
           <div className="bg-surface-2 border border-border rounded-md p-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
@@ -395,13 +397,13 @@ export const FineTuningConfigPanel: React.FC<FineTuningConfigPanelProps> = ({ co
                   <Sparkles className="w-3.5 h-3.5" />
                 </div>
                 <div>
-                  <div className="text-[11px] font-bold text-text">Otomatik Hiperparametre Optimizasyonu</div>
-                  <div className="text-[10px] text-muted">Donanım ve veri seti bazlı otomatik mikro-batch / grad accumulation</div>
+                  <div className="text-[11px] font-bold text-text">{t('ft.config.autoOptimizeTitle')}</div>
+                  <div className="text-[10px] text-muted">{t('ft.config.autoOptimizeDesc')}</div>
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <Badge tone={autoOptimizeOn ? 'ok' : 'accent'}>
-                  {autoOptimizeOn ? 'Otomatik (Açık)' : 'Manuel (Kapalı)'}
+                  {autoOptimizeOn ? t('ft.config.autoOn') : t('ft.config.manualOff')}
                 </Badge>
                 <button
                   onClick={() => onChangeConfig((prev) => ({ ...prev, autoOptimizeHyperparams: !(prev.autoOptimizeHyperparams !== false) }))}
@@ -422,10 +424,10 @@ export const FineTuningConfigPanel: React.FC<FineTuningConfigPanelProps> = ({ co
               <div className="mt-3 pt-3 border-t border-border">
                 <div className="flex items-center justify-between border-b border-border pb-2">
                   <h4 className="text-xs font-bold text-text uppercase tracking-wider">
-                    Gelişmiş Hiperparametre & Optimizasyon Ayarları (Manuel Override)
+                    {t('ft.config.advancedParamsTitle')}
                   </h4>
                   <span className="text-[11px] text-accent font-mono">
-                    Varsayılan: Otomatik Optimize Edildi
+                    {t('ft.config.defaultAutoOptimized')}
                   </span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-3 text-xs font-mono">
@@ -437,8 +439,8 @@ export const FineTuningConfigPanel: React.FC<FineTuningConfigPanelProps> = ({ co
                       }
                       options={[
                         { value: 1, label: '1 (Min VRAM)' },
-                        { value: 2, label: '2 (Dengeli)' },
-                        { value: 4, label: '4 (Yüksek Hız)' },
+                        { value: 2, label: t('ft.config.batch2Balanced') },
+                        { value: 4, label: t('ft.config.batch4High') },
                         { value: 8, label: '8' },
                       ]}
                     />
@@ -468,7 +470,7 @@ export const FineTuningConfigPanel: React.FC<FineTuningConfigPanelProps> = ({ co
                       }
                       options={[
                         { value: 8, label: 'r = 8' },
-                        { value: 16, label: 'r = 16 (Standart)' },
+                        { value: 16, label: t('ft.config.lora16Standard') },
                         { value: 32, label: 'r = 32' },
                         { value: 64, label: 'r = 64' },
                       ]}
@@ -480,14 +482,14 @@ export const FineTuningConfigPanel: React.FC<FineTuningConfigPanelProps> = ({ co
                       value={config.optimizerType}
                       onChange={(val) => onChangeConfig((prev) => ({ ...prev, optimizerType: val }))}
                       options={[
-                        { value: 'adamw_8bit', label: 'Paged AdamW 8-bit (%75 VRAM Tasarrufu)' },
-                        { value: 'adamw_32bit', label: 'Standard AdamW 32-bit (Saf FP32)' },
+                        { value: 'adamw_8bit', label: t('ft.config.optAdamw8bit') },
+                        { value: 'adamw_32bit', label: t('ft.config.optAdamw32bit') },
                         { value: 'lion', label: 'Lion' },
                       ]}
                     />
                   </Field>
 
-                  <Field label="Öğrenme Oranı (Learning Rate)">
+                  <Field label={t('ft.config.learningRate')}>
                     <input
                       type="text"
                       value={config.learningRate}
@@ -513,7 +515,7 @@ export const FineTuningConfigPanel: React.FC<FineTuningConfigPanelProps> = ({ co
                     {toggleSwitch('Flash Attention', config.flashAttention, (v) =>
                       onChangeConfig((prev) => ({ ...prev, flashAttention: v }))
                     )}
-                    {toggleSwitch('Unsloth Hızlandırılmış Çekirdekler', config.useUnslothAcceleratedKernels, (v) =>
+                    {toggleSwitch(t('ft.config.unslothKernels'), config.useUnslothAcceleratedKernels, (v) =>
                       onChangeConfig((prev) => ({ ...prev, useUnslothAcceleratedKernels: v }))
                     )}
                   </div>
@@ -522,20 +524,24 @@ export const FineTuningConfigPanel: React.FC<FineTuningConfigPanelProps> = ({ co
             ) : (
               <div className="mt-3 pt-3 border-t border-border">
                 <div className="text-[11px] font-bold text-text flex items-center gap-1.5">
-                  <span>Otomatik Optimize Edilen Parametreler:</span>
+                  <span>{t('ft.config.autoOptimizedParams')}</span>
                   <span className="font-mono text-accent bg-surface-2 border border-border px-2 py-0.5 rounded text-[10px]">
                     Micro-Batch: {results.optimalBatchSize} • Grad Accumulation: {results.optimalGradAcc} (Effective Batch: {results.effectiveBatchSize})
                   </span>
                 </div>
                 <p className="text-[10px] text-muted mt-1">
-                  Donanım seçimi yapmanıza gerek yoktur; girdiğiniz <strong className="text-text">{config.sampleCount.toLocaleString()} örnek</strong> ve <strong className="text-text">{config.avgSeqLen} token</strong> uzunluğuna göre tüm platformlar için VRAM, süre ve maliyet aynı anda hesaplanmıştır.
+                  <Trans
+                    i18nKey="ft.config.autoOptimizedParagraph"
+                    values={{ samples: config.sampleCount.toLocaleString(), seqLen: config.avgSeqLen }}
+                    components={{ strong: <strong className="text-text" /> }}
+                  />
                 </p>
                 <button
                   onClick={() => setShowAdvancedManualParams(true)}
                   className="mt-2 flex items-center gap-1 px-2.5 py-1.5 bg-surface-2 hover:bg-surface border border-border rounded-md text-text font-medium text-[11px] transition"
                 >
                   <SlidersHorizontal className="w-3.5 h-3.5" />
-                  Manuel Parametreleri İncele
+                  {t('ft.config.manualParamsButton')}
                   <ChevronDown className="w-3 h-3" />
                 </button>
               </div>

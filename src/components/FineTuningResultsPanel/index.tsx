@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FineTuningResults } from '../../types';
 import { Badge } from '../ui/Badge';
 import { Panel } from '../ui/Panel';
@@ -19,6 +20,7 @@ const TABS = [
 ];
 
 export const FineTuningResultsPanel: React.FC<FineTuningResultsPanelProps> = ({ results }) => {
+  const { t } = useTranslation();
   const [tab, setTab] = useState('vram');
 
   return (
@@ -32,7 +34,7 @@ export const FineTuningResultsPanel: React.FC<FineTuningResultsPanelProps> = ({ 
 
         <div className="mt-3">
           <div className="flex items-center justify-between text-[11px] font-mono mb-1">
-            <span className="text-muted uppercase tracking-wider">VRAM Doluluk</span>
+            <span className="text-muted uppercase tracking-wider">{t('ft.results.vramUsage')}</span>
             <span className={results.isOom ? 'text-danger' : 'text-ok'}>
               {results.isOom ? '[OOM]' : '[OK]'} %{results.vramUtilizationPct.toFixed(0)}
             </span>
@@ -51,10 +53,10 @@ export const FineTuningResultsPanel: React.FC<FineTuningResultsPanelProps> = ({ 
       </div>
 
       <div className="grid grid-cols-2 gap-2 px-3.5 py-3 border-b border-border">
-        <Stat label="Eğitim Süresi" value={results.trainingTimeFormatted} tone={results.isOom ? 'danger' : 'accent'} />
-        <Stat label="Gerekli VRAM" value={`${results.totalVramNeededGB.toFixed(1)}`} sub="GB" />
-        <Stat label="Yerel Elektrik" value={`${results.localElectricityCostTry.toFixed(0)}`} sub="₺" />
-        <Stat label="Unsloth Tasarruf" value={`$${results.unslothCostSavingsUsd.toFixed(0)}`} tone="ok" />
+        <Stat label={t('ft.results.trainingTime')} value={results.trainingTimeFormatted} tone={results.isOom ? 'danger' : 'accent'} />
+        <Stat label={t('ft.results.requiredVram')} value={`${results.totalVramNeededGB.toFixed(1)}`} sub="GB" />
+        <Stat label={t('ft.results.localElectricity')} value={`${results.localElectricityCostTry.toFixed(0)}`} sub="₺" />
+        <Stat label={t('ft.results.unslothSavings')} value={`$${results.unslothCostSavingsUsd.toFixed(0)}`} tone="ok" />
       </div>
 
       <Tabs tabs={TABS} active={tab} onChange={setTab} />

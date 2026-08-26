@@ -2,6 +2,7 @@ import express from 'express';
 import { getPool } from './db';
 import { requireAdminSession } from './adminAuth';
 import { syncGpuPrices } from './gpuScraper';
+import { pickLang, msg } from './i18nErrors';
 
 export const gpuPricesRouter = express.Router();
 
@@ -18,6 +19,7 @@ export interface GpuPriceRow {
 
 // Latest price per provider + gpu_slug (one row per provider/slug)
 gpuPricesRouter.get('/', async (req, res) => {
+  const lang = pickLang(req);
   try {
     const pool = getPool();
     const result = await pool.query(
@@ -39,7 +41,7 @@ gpuPricesRouter.get('/', async (req, res) => {
     res.json({ prices: rows });
   } catch (err: any) {
     console.error('List gpu prices error:', err?.message);
-    res.status(500).json({ error: 'GPU fiyatları yüklenemedi.' });
+    res.status(500).json({ error: msg(lang, 'GPU fiyatları yüklenemedi.', 'Failed to load GPU prices.') });
   }
 });
 
@@ -48,6 +50,7 @@ gpuPricesRouter.get('/', async (req, res) => {
 // run is rejected with 409; a provider failure is reported per-provider
 // instead of failing all.
 gpuPricesRouter.post('/refresh', requireAdminSession, async (req, res) => {
+  const lang = pickLang(req);
   try {
     const summary = await syncGpuPrices();
     res.json({ ok: true, summary });
@@ -57,12 +60,13 @@ gpuPricesRouter.post('/refresh', requireAdminSession, async (req, res) => {
       return;
     }
     console.error('Refresh GPU prices error:', err?.message);
-    res.status(500).json({ error: 'GPU fiyatları güncellenemedi.' });
+    res.status(500).json({ error: msg(lang, 'GPU fiyatları güncellenemedi.', 'Failed to refresh GPU prices.') });
   }
 });
 
 // Price history for a specific provider + slug (for the prices card history view)
 gpuPricesRouter.get('/history/:provider/:slug', async (req, res) => {
+  const lang = pickLang(req);
   try {
     const pool = getPool();
     const result = await pool.query(
@@ -76,6 +80,6 @@ gpuPricesRouter.get('/history/:provider/:slug', async (req, res) => {
     res.json({ history: result.rows });
   } catch (err: any) {
     console.error('GPU price history error:', err?.message);
-    res.status(500).json({ error: 'Fiyat geçmişi yüklenemedi.' });
+    res.status(500).json({ error: msg(lang, 'Fiyat geçmişi yüklenemedi.', 'Failed to load price history.') });
   }
 });

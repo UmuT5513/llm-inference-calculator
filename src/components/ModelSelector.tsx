@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { useTranslation, Trans } from 'react-i18next';
 import {
   Edit3,
   Layers,
@@ -33,51 +34,6 @@ interface ModelSelectorProps {
   models?: ModelPreset[];
 }
 
-const USE_CASE_PRESETS = [
-  {
-    id: 'health',
-    label: 'Sağlık & Epikriz Analizi',
-    sublabel: 'Uzun Bağlam & RAG',
-    icon: Stethoscope,
-    query: 'Sağlık sektöründe hastane kayıtları, klinik hasta epikrizleri ve uzun medikal raporların analizi (128k uzun bağlam ve yüksek RAG sadakati gerekiyor).',
-  },
-  {
-    id: 'coding',
-    label: 'Yazılım & Agentic Kodlama',
-    sublabel: 'Tool Use & Code',
-    icon: Code,
-    query: 'Büyük bir kod tabanında repository analizi, agentic refactoring, hata ayıklama ve çok adımlı kod üretimi yapacağım.',
-  },
-  {
-    id: 'reasoning',
-    label: 'Mantık & Derin Düşünme',
-    sublabel: 'Thinking & Matematik',
-    icon: BrainCircuit,
-    query: 'Matematiksel problem çözme, mantıksal çıkarım, bilimsel araştırma ve adım adım zincirleme düşünme (chain-of-thought thinking) gerektiren görevler.',
-  },
-  {
-    id: 'turkish',
-    label: 'Türkçe Müşteri Hizmetleri',
-    sublabel: 'Yerel NLP & Chatbot',
-    icon: MessageSquare,
-    query: 'Çağrı merkezi, Türkçe müşteri desteği, yerel dil nüansları ve yüksek hızlı sohbet botu.',
-  },
-  {
-    id: 'law-finance',
-    label: 'Hukuk & Finans Dokümanları',
-    sublabel: '128k+ Büyük RAG',
-    icon: Scale,
-    query: 'Yüzlerce sayfalık hukuki sözleşmeler, mevzuat metinleri ve finansal raporların derinlemesine RAG analizi.',
-  },
-  {
-    id: 'local-edge',
-    label: 'Yerel PC / Mac & Düşük Bütçe',
-    sublabel: 'Hafif 8B Edge LLM',
-    icon: Laptop,
-    query: 'Tek bir tüketici GPU (RTX 4060/3060) veya Apple Mac üzerinde minimum VRAM ile yerel ve hızlı çalıştırma.',
-  },
-];
-
 export const ModelSelector: React.FC<ModelSelectorProps> = ({
   selectedModelId,
   customModel,
@@ -85,6 +41,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
   onUpdateCustomModel,
   models,
 }) => {
+  const { t } = useTranslation();
   const [activeCapability, setActiveCapability] = useState<'all' | 'frontier' | 'turkish'>('all');
   const [activeEnvFilter, setActiveEnvFilter] = useState<'all' | 'edge' | 'local' | 'hybrid' | 'server'>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -112,7 +69,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
       });
 
       if (!res.ok) {
-        throw new Error('Model önerisi alınırken bir hata oluştu.');
+        throw new Error(t('model.recommendError'));
       }
 
       const data: ModelRecommendationResult = await res.json();
@@ -124,24 +81,69 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
       }
     } catch (err: any) {
       console.error('Model recommendation failed:', err);
-      setRecommendationError(err.message || 'Öneri servisiyle bağlantı kurulamadı.');
+      setRecommendationError(err.message || t('model.recommendServiceError'));
     } finally {
       setIsRecommending(false);
     }
   };
 
+  const USE_CASE_PRESETS = [
+    {
+      id: 'health',
+      label: t('model.useCaseHealth'),
+      sublabel: t('model.useCaseHealthSub'),
+      icon: Stethoscope,
+      query: t('model.useCaseHealthQuery'),
+    },
+    {
+      id: 'coding',
+      label: t('model.useCaseCoding'),
+      sublabel: t('model.useCaseCodingSub'),
+      icon: Code,
+      query: t('model.useCaseCodingQuery'),
+    },
+    {
+      id: 'reasoning',
+      label: t('model.useCaseReasoning'),
+      sublabel: t('model.useCaseReasoningSub'),
+      icon: BrainCircuit,
+      query: t('model.useCaseReasoningQuery'),
+    },
+    {
+      id: 'turkish',
+      label: t('model.useCaseTurkish'),
+      sublabel: t('model.useCaseTurkishSub'),
+      icon: MessageSquare,
+      query: t('model.useCaseTurkishQuery'),
+    },
+    {
+      id: 'law-finance',
+      label: t('model.useCaseLawFinance'),
+      sublabel: t('model.useCaseLawFinanceSub'),
+      icon: Scale,
+      query: t('model.useCaseLawFinanceQuery'),
+    },
+    {
+      id: 'local-edge',
+      label: t('model.useCaseLocalEdge'),
+      sublabel: t('model.useCaseLocalEdgeSub'),
+      icon: Laptop,
+      query: t('model.useCaseLocalEdgeQuery'),
+    },
+  ];
+
   const capabilityFilters = [
-    { id: 'all' as const, label: 'Tümü' },
-    { id: 'frontier' as const, label: '🚀 Frontier' },
-    { id: 'turkish' as const, label: '🇹🇷 Türkçe' },
+    { id: 'all' as const, label: t('model.capabilityAll') },
+    { id: 'frontier' as const, label: t('model.capabilityFrontier') },
+    { id: 'turkish' as const, label: t('model.capabilityTurkish') },
   ];
 
   const envFilters = [
-    { id: 'all' as const, label: 'Tüm Donanımlar', icon: null },
-    { id: 'edge' as const, label: '📱 Edge', icon: Laptop, desc: 'Mobil / NPU / On-device' },
-    { id: 'local' as const, label: '💻 Yerel / PC & Mac', icon: Laptop, desc: 'Tüketici GPU / Apple Silicon' },
-    { id: 'hybrid' as const, label: '⚡ İş İstasyonu (Hybrid)', icon: Zap, desc: '24GB - 48GB VRAM / Çoklu GPU' },
-    { id: 'server' as const, label: '🏢 Sunucu / Enterprise', icon: Server, desc: '80GB+ H100/A100 / GPU Kümesi' },
+    { id: 'all' as const, label: t('model.envAll'), icon: null },
+    { id: 'edge' as const, label: t('model.envEdge'), icon: Laptop, desc: t('model.envEdgeDesc') },
+    { id: 'local' as const, label: t('model.envLocal'), icon: Laptop, desc: t('model.envLocalDesc') },
+    { id: 'hybrid' as const, label: t('model.envHybrid'), icon: Zap, desc: t('model.envHybridDesc') },
+    { id: 'server' as const, label: t('model.envServer'), icon: Server, desc: t('model.envServerDesc') },
   ];
 
   const filteredModels = useMemo(() => {
@@ -168,30 +170,30 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
     switch (env) {
       case 'edge':
         return (
-          <Badge tone="default" title="Mobil / NPU / on-device cihazlarda çalıştırmaya elverişli">
+          <Badge tone="default" title={t('model.envBadgeEdgeTitle')}>
             <Laptop className="w-2.5 h-2.5" />
-            Edge
+            {t('model.envBadgeEdge')}
           </Badge>
         );
       case 'local':
         return (
-          <Badge tone="default" title="Yerel PC, Mac veya tek GPU ile çalıştırmaya elverişli">
+          <Badge tone="default" title={t('model.envBadgeLocalTitle')}>
             <Laptop className="w-2.5 h-2.5" />
-            Yerel / PC
+            {t('model.envBadgeLocal')}
           </Badge>
         );
       case 'hybrid':
         return (
-          <Badge tone="default" title="İş istasyonu (24GB-48GB VRAM) veya 2x GPU için uygun">
+          <Badge tone="default" title={t('model.envBadgeHybridTitle')}>
             <Zap className="w-2.5 h-2.5" />
-            İş İstasyonu
+            {t('model.envBadgeHybrid')}
           </Badge>
         );
       case 'server':
         return (
-          <Badge tone="default" title="Veri merkezi, 80GB H100/A100 veya GPU kümesi gerektirir">
+          <Badge tone="default" title={t('model.envBadgeServerTitle')}>
             <Server className="w-2.5 h-2.5" />
-            Sunucu / Küme
+            {t('model.envBadgeServer')}
           </Badge>
         );
       default:
@@ -203,8 +205,8 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
     <Panel className="p-3.5 space-y-3">
       <SectionHeader
         index="01"
-        title="LLM Model Parametreleri"
-        description="Parametre boyutu, mimari (Dense / MoE), katman ve donanım uygunluğu"
+        title={t('model.title')}
+        description={t('model.subtitle')}
         right={
           <div className="flex items-center gap-2">
             {/* Quick search input */}
@@ -212,7 +214,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
               <Search className="w-3.5 h-3.5 text-muted absolute left-2.5 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
-                placeholder="Model ara (örn: Gemma 4, Qwen 3.5)..."
+                placeholder={t('model.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="bg-surface-2 border border-border rounded pl-8 pr-2.5 py-1 text-xs font-mono text-text placeholder-muted focus:outline-none focus:border-accent w-48 sm:w-60 transition"
@@ -232,7 +234,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
               }`}
             >
               <Edit3 className="w-3 h-3" />
-              <span>Özel Model</span>
+              <span>{t('model.customModel')}</span>
             </button>
           </div>
         }
@@ -248,11 +250,14 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
               </div>
               <div>
                 <h3 className="text-xs font-bold text-text flex items-center gap-1.5">
-                  <span>Bu hesaplamaları ne için yapıyorsunuz? (Akıllı Model Seçimi)</span>
-                  <Badge tone="accent">AI Destekli</Badge>
+                  <span>{t('model.advisorTitle')}</span>
+                  <Badge tone="accent">{t('model.advisorBadge')}</Badge>
                 </h3>
                 <p className="text-[11px] text-muted mt-0.5">
-                  Kullanım amacınızı seçin veya yazın; yapay zeka sağlık verileri için <strong>uzun context length</strong>, kodlama için <strong>agentic kabiliyetler</strong> ya da mantık için <strong>thinking/reasoning</strong> gücünü analiz ederek en ideal modeli otomatik seçsin.
+                  <Trans
+                    i18nKey="model.advisorDesc"
+                    components={{ strong: <strong /> }}
+                  />
                 </p>
               </div>
             </div>
@@ -260,7 +265,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
             <button
               onClick={() => setShowAiAdvisorBox(false)}
               className="text-muted hover:text-text text-xs px-1.5 py-0.5 rounded-md hover:bg-surface"
-              title="Kutuyu Gizle"
+              title={t('model.advisorHideTitle')}
             >
               ✕
             </button>
@@ -269,7 +274,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
           {/* Quick Scenario Chips */}
           <div className="space-y-1.5">
             <div className="text-[10px] font-semibold text-muted uppercase tracking-wider flex items-center gap-1">
-              <span>Hızlı Senaryo Seçin:</span>
+              <span>{t('model.quickScenario')}</span>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-1.5">
               {USE_CASE_PRESETS.map((preset) => {
@@ -311,7 +316,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
                     handleRecommendModel(useCaseInput);
                   }
                 }}
-                placeholder="Veya projenizi yazın: (örn: 'Sağlık sektöründe hasta epikrizleri tarayacağım' ya da 'Python agentic kod refactoring')..."
+                placeholder={t('model.useCasePlaceholder')}
                 className="w-full bg-surface-2 border border-border rounded px-3 py-2 text-xs font-mono text-text placeholder-muted focus:outline-none focus:border-accent"
               />
             </div>
@@ -324,12 +329,12 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
               {isRecommending ? (
                 <>
                   <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                  <span>Model Analiz Ediliyor...</span>
+                  <span>{t('model.recommending')}</span>
                 </>
               ) : (
                 <>
                   <Sparkles className="w-3.5 h-3.5" />
-                  <span>AI ile Modeli Öner & Seç</span>
+                  <span>{t('model.recommendAndSelect')}</span>
                 </>
               )}
             </button>
@@ -349,7 +354,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
                 <div className="flex items-center gap-2">
                   <Badge tone="ok" className="text-[10px] font-bold uppercase tracking-wider">
                     <CheckCircle2 className="w-3 h-3" />
-                    Önerilen Model Otomatik Seçildi
+                    {t('model.recommendedAutoSelected')}
                   </Badge>
                   <span className="text-xs font-bold text-text">
                     {recommendation.modelName}
@@ -360,14 +365,14 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
                 </div>
 
                 <div className="text-[10px] text-muted">
-                  İstediğiniz zaman aşağıdaki listeden başka bir model seçebilirsiniz.
+                  {t('model.recommendationNote')}
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs">
                 <div className="md:col-span-2 space-y-1">
                   <div className="text-[10px] font-bold text-muted uppercase tracking-wider">
-                    💡 AI Analiz Gerekçesi:
+                    {t('model.analysisReason')}
                   </div>
                   <p className="text-muted text-[11px] leading-relaxed">
                     {recommendation.reason}
@@ -376,7 +381,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
 
                 <div className="space-y-1 bg-surface p-2 rounded-md border border-border">
                   <div className="text-[10px] font-bold text-accent uppercase tracking-wider">
-                    🎯 Kritik Güçlü Yön:
+                    {t('model.keyStrength')}
                   </div>
                   <p className="text-text text-[10.5px] font-semibold">
                     {recommendation.keyHighlight}
@@ -387,7 +392,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
               {/* Alternative Recommendations */}
               {recommendation.alternativeModelIds && recommendation.alternativeModelIds.length > 0 && (
                 <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-border text-[10px]">
-                  <span className="text-muted font-semibold">Alternatif Öneriler:</span>
+                  <span className="text-muted font-semibold">{t('model.alternativeSuggestions')}</span>
                   {recommendation.alternativeModelIds.map((altId) => {
                     const altModel = catalog.find((m) => m.id === altId);
                     if (!altModel) return null;
@@ -415,7 +420,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
 
       {/* Deployment Suitability Filter Tabs (Yerel vs Sunucu) */}
       <div className="flex flex-wrap items-center gap-1.5 bg-surface-2 p-1 rounded border border-border">
-        <span className="text-[10px] font-semibold text-muted px-2 uppercase tracking-wide">Donanım Türü:</span>
+        <span className="text-[10px] font-semibold text-muted px-2 uppercase tracking-wide">{t('model.hardwareType')}</span>
         {envFilters.map((ef) => (
           <button
             key={ef.id}
@@ -432,7 +437,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
         ))}
       </div>
 
-      {/* Capability Filters (Frontier / Türkçe) */}
+      {/* Capability Filters (Frontier / Turkish) */}
       <div className="flex items-center gap-1 overflow-x-auto pb-1 scrollbar-none">
         {capabilityFilters.map((cap) => (
           <button
@@ -452,7 +457,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
       {/* Model Grid */}
       {filteredModels.length === 0 ? (
         <div className="p-6 text-center text-muted text-xs border border-dashed border-border rounded-md">
-          Seçilen kriterlere uygun model bulunamadı. Filtreleri sıfırlamayı deneyin.
+          {t('model.noModelsFound')}
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 max-h-[380px] overflow-y-auto pr-1">
@@ -477,30 +482,30 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
                   {isAiRecommended && (
                     <div className="bg-surface-2 text-muted text-[8px] font-bold px-1.5 py-0.5 rounded-bl flex items-center gap-0.5">
                       <Sparkles className="w-2 h-2" />
-                      AI ÖNERİSİ
+                      {t('model.aiRecommendationBadge')}
                     </div>
                   )}
                   {m.verified === false && (
                     <Badge
                       tone="danger"
                       className="rounded-bl"
-                      title="Bu modelin mimari bilgisi Hugging Face'ten doğrulanamadı (gated/erişim kısıtlı olabilir). Gösterilen değerler kayıtlı ön tanımlıdır."
+                      title={t('model.unverifiedBadgeTitle')}
                     >
-                      HF'DEN DOĞRULANAMADI
+                      {t('model.unverifiedBadge')}
                     </Badge>
                   )}
                   {m.source === 'mirror' && m.verified !== false && (
                     <Badge
                       tone="default"
                       className="rounded-bl"
-                      title={`Mimari bilgisi üreticinin gated reposu yerine topluluk aynasından alındı: ${m.mirrorHfId || 'topluluk reposu'}`}
+                      title={t('model.mirrorBadgeTitle', { mirrorHfId: m.mirrorHfId || t('model.communityRepo') })}
                     >
-                      TOPLULUK AYNASI
+                      {t('model.mirrorBadge')}
                     </Badge>
                   )}
                   {isSelected && (
                     <div className="bg-accent text-bg text-[8px] font-bold px-1.5 py-0.5 rounded-bl">
-                      SEÇİLİ
+                      {t('model.selectedBadge')}
                     </div>
                   )}
                 </div>
@@ -525,7 +530,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
                   </div>
 
                   <div className="flex items-center gap-2 text-[10px] text-muted font-mono mb-1.5">
-                    <span>Toplam: <strong className="text-accent">{m.totalParamsB}B</strong></span>
+                    <span>{t('model.totalParams')} <strong className="text-accent">{m.totalParamsB}B</strong></span>
                     <span>Context: <strong className="text-text">{(m.maxContextLen / 1024).toFixed(0)}k</strong></span>
                   </div>
 
@@ -541,30 +546,30 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
       <div className="bg-surface-2 p-2.5 border border-border rounded-md flex flex-wrap items-center justify-between gap-3 text-[11px]">
         <div className="flex items-center gap-2 text-muted">
           <Layers className="w-3.5 h-3.5 text-accent" />
-          <span className="font-semibold text-muted">Seçili Mimari:</span>
+          <span className="font-semibold text-muted">{t('model.selectedArchitecture')}</span>
           <span className="text-text font-bold">{selectedModel.name}</span>
           {getEnvBadge(selectedModel.targetEnv)}
           {selectedModel.verified === false && (
             <Badge
               tone="danger"
-              title="Bu modelin mimari bilgisi Hugging Face'ten doğrulanamadı (gated/erişim kısıtlı). Gösterilen değerler kayıtlı ön tanımlıdır."
+              title={t('model.unverifiedShortTitle')}
             >
-              HF'den doğrulanamadı — ön tanımlı değerler
+              {t('model.unverifiedShort')}
             </Badge>
           )}
           {selectedModel.source === 'mirror' && selectedModel.verified !== false && (
             <Badge
               tone="default"
-              title={`Mimari bilgisi topluluk aynasından alındı: ${selectedModel.mirrorHfId || 'topluluk reposu'}`}
+              title={t('model.mirrorShortTitle', { mirrorHfId: selectedModel.mirrorHfId || t('model.communityRepo') })}
             >
-              Topluluk aynası
+              {t('model.mirrorShort')}
             </Badge>
           )}
         </div>
 
         <div className="flex flex-wrap items-center gap-3 text-muted font-mono text-[10px]">
           <div>
-            Katman: <strong className="text-accent">{selectedModel.numLayers}</strong>
+            {t('model.layers')} <strong className="text-accent">{selectedModel.numLayers}</strong>
           </div>
           <div>
             Heads: <strong className="text-accent">{selectedModel.numHeads}</strong> (KV: {selectedModel.numKvHeads})
@@ -588,7 +593,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
             <div className="flex items-center justify-between border-b border-border pb-3">
               <div className="flex items-center gap-2 text-text font-semibold text-base">
                 <Sliders className="w-5 h-5 text-accent" />
-                Özel Model Parametreleri
+                {t('model.customModalTitle')}
               </div>
               <button
                 onClick={() => setShowCustomModal(false)}
@@ -599,7 +604,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
             </div>
 
             <div className="grid grid-cols-2 gap-3 text-xs">
-              <Field label="Model Adı">
+              <Field label={t('model.customName')}>
                 <input
                   type="text"
                   value={customModel.name}
@@ -610,7 +615,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
                 />
               </Field>
 
-              <Field label="Toplam Parametre (B)">
+              <Field label={t('model.customTotalParams')}>
                 <NumberInput
                   value={customModel.totalParamsB}
                   step={0.1}
@@ -624,7 +629,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
                 />
               </Field>
 
-              <Field label="Katman Sayısı (numLayers)">
+              <Field label={t('model.customNumLayers')}>
                 <NumberInput
                   value={customModel.numLayers}
                   onChange={(v) =>
@@ -633,7 +638,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
                 />
               </Field>
 
-              <Field label="Attention Heads (numHeads)">
+              <Field label={t('model.customNumHeads')}>
                 <NumberInput
                   value={customModel.numHeads}
                   onChange={(v) =>
@@ -642,7 +647,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
                 />
               </Field>
 
-              <Field label="KV Heads (GQA numKvHeads)">
+              <Field label={t('model.customNumKvHeads')}>
                 <NumberInput
                   value={customModel.numKvHeads}
                   onChange={(v) =>
@@ -651,7 +656,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
                 />
               </Field>
 
-              <Field label="Head Dimension (headDim)">
+              <Field label={t('model.customHeadDim')}>
                 <NumberInput
                   value={customModel.headDim}
                   onChange={(v) =>
@@ -660,7 +665,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
                 />
               </Field>
 
-              <Field label="Hidden Size (hiddenSize)">
+              <Field label={t('model.customHiddenSize')}>
                 <NumberInput
                   value={customModel.hiddenSize}
                   onChange={(v) =>
@@ -669,7 +674,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
                 />
               </Field>
 
-              <Field label="Max Context Length (Tokens)">
+              <Field label={t('model.customMaxContext')}>
                 <NumberInput
                   value={customModel.maxContextLen}
                   onChange={(v) =>
@@ -689,13 +694,13 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
                   }
                   className="rounded border-border text-accent focus:ring-0"
                 />
-                Mixture of Experts (MoE) Mimarisi
+                {t('model.customMoE')}
               </label>
 
               {customModel.isMoe && (
                 <div className="flex-1">
                   <NumberInput
-                    placeholder="Aktif Parametre (B)"
+                    placeholder={t('model.customActiveParams')}
                     value={customModel.activeParamsB}
                     onChange={(v) =>
                       onUpdateCustomModel({ ...customModel, activeParamsB: v || 1 })
@@ -713,7 +718,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
                 }}
                 className="px-4 py-2 bg-accent hover:opacity-90 text-bg rounded-md text-xs font-bold transition"
               >
-                Kaydet ve Uygula
+                {t('model.customSave')}
               </button>
             </div>
           </div>

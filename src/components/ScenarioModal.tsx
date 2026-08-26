@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { X, Save, Trash2, ArrowUpRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { CalculatorConfig, CalculationResults, FineTuningConfig, FineTuningResults } from '../types';
 import { Panel } from './ui/Panel';
 import { SectionHeader } from './ui/SectionHeader';
@@ -34,6 +35,7 @@ export const ScenarioModal: React.FC<ScenarioModalProps> = ({
   onLoadScenario,
   onOpenCompare,
 }) => {
+  const { t } = useTranslation();
   const [scenarios, setScenarios] = useState<SavedScenario[]>([]);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -57,7 +59,7 @@ export const ScenarioModal: React.FC<ScenarioModalProps> = ({
 
   const handleSave = () => {
     if (!name.trim()) {
-      setError('Lütfen senaryo adı girin.');
+      setError(t('scenarios.errorNameRequired'));
       return;
     }
     setSaving(true);
@@ -75,14 +77,14 @@ export const ScenarioModal: React.FC<ScenarioModalProps> = ({
       setDescription('');
       loadScenarios();
     } catch {
-      setError('Senaryo kaydedilemedi.');
+      setError(t('scenarios.errorSaveFailed'));
     } finally {
       setSaving(false);
     }
   };
 
   const handleDelete = (id: string) => {
-    if (!window.confirm('Bu senaryoyu silmek istediğinize emin misiniz?')) return;
+    if (!window.confirm(t('scenarios.deleteConfirm'))) return;
     removeScenario(id);
     setSelectedIds((prev) => {
       const next = new Set(prev);
@@ -103,7 +105,7 @@ export const ScenarioModal: React.FC<ScenarioModalProps> = ({
 
   const compareSelected = () => {
     if (selectedIds.size < 2) {
-      setError('Karşılaştırmak için en az 2 senaryo seçin.');
+      setError(t('scenarios.errorMinCompare'));
       return;
     }
     onOpenCompare([...selectedIds]);
@@ -115,7 +117,7 @@ export const ScenarioModal: React.FC<ScenarioModalProps> = ({
       <div className="w-full max-w-2xl bg-surface border border-border rounded-md shadow-2xl">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-border px-3.5 py-2">
-          <h2 className="text-[11px] font-bold font-mono uppercase tracking-wider text-text">Senaryo Yönetimi</h2>
+          <h2 className="text-[11px] font-bold font-mono uppercase tracking-wider text-text">{t('scenarios.title')}</h2>
           <button
             onClick={onClose}
             className="p-1.5 text-muted hover:text-text rounded-md hover:bg-surface-2 transition cursor-pointer"
@@ -128,20 +130,22 @@ export const ScenarioModal: React.FC<ScenarioModalProps> = ({
           {/* Save form */}
           <Panel className="overflow-hidden">
             <SectionHeader
-              title={`Mevcut Yapılandırmayı Kaydet (${activeTab === 'inference' ? 'Çıkarım' : 'Fine-Tuning'})`}
+              title={t('scenarios.saveSectionTitle', {
+                type: activeTab === 'inference' ? t('scenarios.typeInference') : t('scenarios.typeFinetuning'),
+              })}
               right={<Save className="w-4 h-4 text-accent shrink-0" />}
             />
             <div className="p-3.5 space-y-3">
               <input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Senaryo adı (örn. Staging API 2x H100)"
+                placeholder={t('scenarios.namePlaceholder')}
                 className="w-full px-3 py-2 text-sm bg-surface-2 border border-border rounded-md text-text placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent/50"
               />
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Açıklama (opsiyonel)"
+                placeholder={t('scenarios.descriptionPlaceholder')}
                 rows={2}
                 className="w-full px-3 py-2 text-sm bg-surface-2 border border-border rounded-md text-text placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent/50"
               />
@@ -150,7 +154,7 @@ export const ScenarioModal: React.FC<ScenarioModalProps> = ({
                 disabled={saving}
                 className="w-full py-2 text-sm font-bold text-bg bg-accent hover:bg-accent/90 rounded-md disabled:opacity-50 cursor-pointer"
               >
-                {saving ? 'Kaydediliyor...' : 'Senaryoyu Kaydet'}
+                {saving ? t('scenarios.saving') : t('scenarios.saveButton')}
               </button>
             </div>
           </Panel>
@@ -161,7 +165,7 @@ export const ScenarioModal: React.FC<ScenarioModalProps> = ({
           {/* Empty state */}
           {scenarios.length === 0 && (
             <p className="text-sm text-muted text-center py-6">
-              Henüz kayıtlı senaryonuz yok.
+              {t('scenarios.empty')}
             </p>
           )}
 
@@ -186,14 +190,14 @@ export const ScenarioModal: React.FC<ScenarioModalProps> = ({
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="text-sm font-semibold text-text truncate">{s.name}</span>
                       <Badge tone={s.type === 'inference' ? 'accent' : 'default'}>
-                        {s.type === 'inference' ? 'Çıkarım' : 'Fine-Tuning'}
+                        {s.type === 'inference' ? t('scenarios.typeInference') : t('scenarios.typeFinetuning')}
                       </Badge>
                     </div>
                     {s.description && (
                       <p className="text-xs text-muted mt-0.5 line-clamp-2">{s.description}</p>
                     )}
                     <p className="text-[10px] text-muted/70 mt-1">
-                      Güncellendi: {new Date(s.updated_at).toLocaleString('tr-TR')}
+                      {t('scenarios.updated', { date: new Date(s.updated_at).toLocaleString('tr-TR') })}
                     </p>
                   </div>
                   <div className="flex items-center gap-1.5">
@@ -203,14 +207,14 @@ export const ScenarioModal: React.FC<ScenarioModalProps> = ({
                         onClose();
                       }}
                       className="p-1.5 text-muted hover:text-text hover:bg-surface-2 rounded-md cursor-pointer"
-                      title="Yükle"
+                      title={t('scenarios.loadTitle')}
                     >
                       <ArrowUpRight className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => handleDelete(s.id)}
                       className="p-1.5 text-danger/70 hover:text-danger hover:bg-surface-2 rounded-md cursor-pointer"
-                      title="Sil"
+                      title={t('scenarios.deleteTitle')}
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -224,14 +228,14 @@ export const ScenarioModal: React.FC<ScenarioModalProps> = ({
                 className="w-full py-2 text-sm font-bold text-bg bg-accent hover:bg-accent/90 rounded-md disabled:opacity-40 cursor-pointer"
               >
                 {selectedIds.size >= 2
-                  ? `Karşılaştır (${selectedIds.size} senaryo)`
-                  : 'Karşılaştır (en az 2 seçin)'}
+                  ? t('scenarios.compareCount', { count: selectedIds.size })
+                  : t('scenarios.compareMin')}
               </button>
             </div>
           )}
 
           <p className="text-[10px] text-muted/70 text-center">
-            Senaryolar yalnızca bu tarayıcıda saklanır (giriş gerektirmez).
+            {t('scenarios.storageNote')}
           </p>
         </div>
       </div>

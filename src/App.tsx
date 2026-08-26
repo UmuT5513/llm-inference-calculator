@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Header } from './components/Header';
 import { ModelSelector } from './components/ModelSelector';
 import { QuantizationSelector } from './components/QuantizationSelector';
@@ -19,11 +19,13 @@ import { Footer } from './components/Footer';
 import { AboutModal } from './components/AboutModal';
 
 import { CalculatorConfig, PresetScenario, FineTuningConfig } from './types';
-import { DEFAULT_CUSTOM_MODEL, DEFAULT_CUSTOM_GPU, DEFAULT_USER_PROFILES, GPU_PRESETS, MODEL_PRESETS } from './data/presets';
+import { GPU_PRESETS, MODEL_PRESETS } from './data/presets';
+import { DEFAULT_INFERENCE_CONFIG, DEFAULT_FINETUNING_CONFIG } from './data/defaults';
 import { calculateInferenceMetrics } from './utils/calculator';
 import { calculateFineTuningMetrics } from './utils/fineTuningCalculator';
 import { useLiveGpuPrices } from './hooks/useLiveGpuPrices';
 import { useLiveModels } from './hooks/useLiveModels';
+import { buildShareUrl, readScenarioFromLocation } from './utils/shareUrl';
 
 export default function App() {
   // Secret admin panel route (username/password login lives on this page).
@@ -31,70 +33,21 @@ export default function App() {
     return <AdminGate />;
   }
 
-  const [activeTab, setActiveTab] = useState<'inference' | 'finetuning'>('inference');
+  const [initialScenario] = useState(readScenarioFromLocation);
+
+  const [activeTab, setActiveTab] = useState<'inference' | 'finetuning'>(
+    initialScenario?.type === 'finetuning' ? 'finetuning' : 'inference'
+  );
 
   // Inference Calculator State
-  const [config, setConfig] = useState<CalculatorConfig>({
-    modelId: 'llama-3.3-70b',
-    customModel: DEFAULT_CUSTOM_MODEL,
-    quantId: 'fp8',
-    kvCacheQuantId: 'fp8',
-    engineId: 'vllm',
-    gpuId: 'nvidia-h100-sxm',
-    customGpu: DEFAULT_CUSTOM_GPU,
-    gpuCount: 1,
-    tensorParallelism: 1,
-    pipelineParallelism: 1,
-    promptLen: 4096,
-    genLen: 1024,
-    batchSize: 16,
-    userProfiles: DEFAULT_USER_PROFILES,
-    useMultiProfile: true,
-    requestsPerMin: 120,
-    cudaOverheadGB: 1.5,
-    activationOverheadPct: 10,
-    tpEfficiencyPct: 85,
-
-    // On-Premise & Turkey TCO Defaults
-    electricityRateTryPerKwh: 4.20,
-    usdToTryRate: 50,
-    pueRatio: 1.25,
-    serverDutyCyclePct: 85,
-    customGpuUnitPriceUsd: null,
-    customSystemBasePriceUsd: null,
-    customAnnualElectricityUsd: null,
-    customAnnualCoolingUsd: null,
-    customAnnualMaintenanceUsd: null,
-    customAnnualOtherExpensesUsd: null,
-  });
+  const [config, setConfig] = useState<CalculatorConfig>(() =>
+    initialScenario?.type === 'inference' ? (initialScenario.config as CalculatorConfig) : { ...DEFAULT_INFERENCE_CONFIG }
+  );
 
   // Fine-Tuning State
-  const [ftConfig, setFtConfig] = useState<FineTuningConfig>({
-    modelId: 'llama-3.3-70b',
-    customModel: DEFAULT_CUSTOM_MODEL,
-    methodId: 'qlora',
-    frameworkId: 'unsloth',
-    gpuId: 'nvidia-rtx-4090',
-    customGpu: DEFAULT_CUSTOM_GPU,
-    gpuCount: 1,
-
-    sampleCount: 10000,
-    avgSeqLen: 2048,
-    epochs: 3,
-
-    perDeviceBatchSize: 2,
-    gradientAccumulationSteps: 4,
-    learningRate: '2e-4',
-    loraRank: 16,
-    loraAlpha: 32,
-    optimizerType: 'adamw_8bit',
-    gradientCheckpointing: true,
-    flashAttention: true,
-    useUnslothAcceleratedKernels: true,
-
-    electricityRateTryPerKwh: 4.20,
-    usdToTryRate: 50,
-  });
+  const [ftConfig, setFtConfig] = useState<FineTuningConfig>(() =>
+    initialScenario?.type === 'finetuning' ? (initialScenario.config as FineTuningConfig) : { ...DEFAULT_FINETUNING_CONFIG }
+  );
 
   const [isAiModalOpen, setIsAiModalOpen] = useState<boolean>(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState<boolean>(false);
@@ -102,6 +55,19 @@ export default function App() {
   const [isCompareModalOpen, setIsCompareModalOpen] = useState<boolean>(false);
   const [isAboutModalOpen, setIsAboutModalOpen] = useState<boolean>(false);
   const [compareInitialIds, setCompareInitialIds] = useState<string[]>([]);
+
+  const hydratedFromUrl = useRef(initialScenario !== null);
+  const hydratedSnapshot = useRef(initialScenario?.config ?? null);
+
+  useEffect(() => {
+    if (!hydratedFromUrl.current) return;
+    const snapshot = hydratedSnapshot.current;
+    const changed = activeTab === 'inference' ? config !== snapshot : ftConfig !== snapshot;
+    if (changed) {
+      hydratedFromUrl.current = false;
+      window.history.replaceState(null, '', '/app');
+    }
+  }, [config, ftConfig]);
 
   // Live scraped GPU prices (RunPod / Modal / Lambda)
   const { prices: livePrices, overrides: liveOverrides, lastUpdated, loading: pricesLoading, refetch: refetchPrices } = useLiveGpuPrices();
@@ -141,60 +107,8 @@ export default function App() {
   };
 
   const handleReset = () => {
-    setConfig({
-      modelId: 'llama-3.3-70b',
-      customModel: DEFAULT_CUSTOM_MODEL,
-      quantId: 'fp8',
-      kvCacheQuantId: 'fp8',
-      engineId: 'vllm',
-      gpuId: 'nvidia-h100-sxm',
-      customGpu: DEFAULT_CUSTOM_GPU,
-      gpuCount: 1,
-      tensorParallelism: 1,
-      pipelineParallelism: 1,
-      promptLen: 4096,
-      genLen: 1024,
-      batchSize: 16,
-      userProfiles: DEFAULT_USER_PROFILES,
-      useMultiProfile: true,
-      requestsPerMin: 120,
-      cudaOverheadGB: 1.5,
-      activationOverheadPct: 10,
-      tpEfficiencyPct: 85,
-      electricityRateTryPerKwh: 4.20,
-      usdToTryRate: 50,
-      pueRatio: 1.25,
-      serverDutyCyclePct: 85,
-      customGpuUnitPriceUsd: null,
-      customSystemBasePriceUsd: null,
-      customAnnualElectricityUsd: null,
-      customAnnualCoolingUsd: null,
-      customAnnualMaintenanceUsd: null,
-      customAnnualOtherExpensesUsd: null,
-    });
-    setFtConfig({
-      modelId: 'llama-3.3-70b',
-      customModel: DEFAULT_CUSTOM_MODEL,
-      methodId: 'qlora',
-      frameworkId: 'unsloth',
-      gpuId: 'nvidia-rtx-4090',
-      customGpu: DEFAULT_CUSTOM_GPU,
-      gpuCount: 1,
-      sampleCount: 10000,
-      avgSeqLen: 2048,
-      epochs: 3,
-      perDeviceBatchSize: 2,
-      gradientAccumulationSteps: 4,
-      learningRate: '2e-4',
-      loraRank: 16,
-      loraAlpha: 32,
-      optimizerType: 'adamw_8bit',
-      gradientCheckpointing: true,
-      flashAttention: true,
-      useUnslothAcceleratedKernels: true,
-      electricityRateTryPerKwh: 4.20,
-      usdToTryRate: 50,
-    });
+    setConfig({ ...DEFAULT_INFERENCE_CONFIG });
+    setFtConfig({ ...DEFAULT_FINETUNING_CONFIG });
   };
 
   // Load a saved scenario into the app state
@@ -217,6 +131,12 @@ export default function App() {
       ? config.customGpu
       : GPU_PRESETS.find((g) => g.id === config.gpuId) || GPU_PRESETS[2];
 
+  const handleCopyLink = (): string => {
+    return activeTab === 'finetuning'
+      ? buildShareUrl('finetuning', ftConfig)
+      : buildShareUrl('inference', config);
+  };
+
   return (
     <div className="min-h-screen bg-bg text-text font-sans selection:bg-accent selection:text-bg pb-16">
       {/* Navbar */}
@@ -229,6 +149,7 @@ export default function App() {
         onReset={handleReset}
         onOpenSave={() => setIsScenarioModalOpen(true)}
         onOpenCompare={() => handleOpenCompare()}
+        onCopyLink={handleCopyLink}
       />
 
       {/* Main Container */}
@@ -323,6 +244,7 @@ export default function App() {
                 onRefreshPrices={refetchPrices}
                 onOpenAiAdvisor={() => setIsAiModalOpen(true)}
                 onChangeConfig={(updater) => setConfig(updater)}
+                onCopyLink={handleCopyLink}
               />
             </div>
           </div>

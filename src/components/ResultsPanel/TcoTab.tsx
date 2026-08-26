@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { RotateCcw } from 'lucide-react';
 import { CalculationResults, CalculatorConfig, OnPremisesTco } from '../../types';
 import { Collapse } from '../ui/Collapse';
@@ -13,21 +14,22 @@ interface TcoTabProps {
 }
 
 interface TcoSegment {
-  label: string;
+  labelKey: string;
   field: keyof OnPremisesTco;
   tryField: keyof OnPremisesTco;
   cls: string;
 }
 
 const TCO_SEGMENTS: TcoSegment[] = [
-  { label: 'Donanım (CAPEX)', field: 'hardwareCapexUsd', tryField: 'hardwareCapexTry', cls: 'bg-[#8e8b8b]' },
-  { label: 'Elektrik', field: 'annualElectricityCostUsd', tryField: 'annualElectricityCostTry', cls: 'bg-accent' },
-  { label: 'Soğutma', field: 'annualCoolingCostUsd', tryField: 'annualCoolingCostTry', cls: 'bg-[#5aa7ff]' },
-  { label: 'Bakım', field: 'annualMaintenanceUsd', tryField: 'annualMaintenanceTry', cls: 'bg-ok' },
-  { label: 'Diğer', field: 'annualOtherExpensesUsd', tryField: 'annualOtherExpensesTry', cls: 'bg-[#a78bfa]' },
+  { labelKey: 'capex', field: 'hardwareCapexUsd', tryField: 'hardwareCapexTry', cls: 'bg-[#8e8b8b]' },
+  { labelKey: 'electricity', field: 'annualElectricityCostUsd', tryField: 'annualElectricityCostTry', cls: 'bg-accent' },
+  { labelKey: 'cooling', field: 'annualCoolingCostUsd', tryField: 'annualCoolingCostTry', cls: 'bg-[#5aa7ff]' },
+  { labelKey: 'maintenance', field: 'annualMaintenanceUsd', tryField: 'annualMaintenanceTry', cls: 'bg-ok' },
+  { labelKey: 'other', field: 'annualOtherExpensesUsd', tryField: 'annualOtherExpensesTry', cls: 'bg-[#a78bfa]' },
 ];
 
 export const TcoTab: React.FC<TcoTabProps> = ({ results, config, onChangeConfig }) => {
+  const { t } = useTranslation();
   const [showTry, setShowTry] = useState(false);
   const { onPremTco } = results;
 
@@ -75,7 +77,7 @@ export const TcoTab: React.FC<TcoTabProps> = ({ results, config, onChangeConfig 
     <div className="space-y-3">
       <div className="flex items-center justify-between gap-2">
         <div className="text-[11px] font-mono uppercase tracking-wider text-muted">
-          On-Premise (Yerel Kurulum) TCO & Maliyet Bileşenleri
+          {t('results.tco.title')}
         </div>
         <div className="flex items-center bg-surface-2 border border-border rounded p-0.5 text-[10px] font-mono shrink-0">
           <button
@@ -98,24 +100,24 @@ export const TcoTab: React.FC<TcoTabProps> = ({ results, config, onChangeConfig 
       </div>
 
       <div className="grid grid-cols-2 gap-2">
-        <Stat label="İlk Yatırım (CAPEX)" value={formatMoney(onPremTco.hardwareCapexUsd, onPremTco.hardwareCapexTry)} />
+        <Stat label={t('results.tco.capex')} value={formatMoney(onPremTco.hardwareCapexUsd, onPremTco.hardwareCapexTry)} />
         <Stat
-          label="Yıllık Masraf (OPEX)"
+          label={t('results.tco.opex')}
           value={formatMoney(onPremTco.annualOpexTotalUsd, onPremTco.annualOpexTotalTry)}
-          sub="/ yıl"
+          sub={t('results.tco.perYear')}
         />
         <Stat
-          label="1 Yıllık Toplam (TCO)"
+          label={t('results.tco.yearTotal')}
           value={formatMoney(onPremTco.totalFirstYearCostUsd, onPremTco.totalFirstYearCostTry)}
-          sub={`3 Yıllık Toplam: ${formatMoney(onPremTco.totalThreeYearCostUsd, onPremTco.totalThreeYearCostTry)}`}
+          sub={t('results.tco.threeYearTotal', { value: formatMoney(onPremTco.totalThreeYearCostUsd, onPremTco.totalThreeYearCostTry) })}
           tone="accent"
         />
         <Stat
-          label="Başabaş (ROI Süresi)"
+          label={t('results.tco.breakEven')}
           value={
             onPremTco.breakEvenMonthsVsCloud < 99
-              ? `~${onPremTco.breakEvenMonthsVsCloud.toFixed(1)} Ay`
-              : 'Bulut Daha Avantajlı'
+              ? t('results.tco.breakEvenMonths', { months: onPremTco.breakEvenMonthsVsCloud.toFixed(1) })
+              : t('results.tco.cloudAdvantage')
           }
           sub={onPremTco.breakEvenDescription}
         />
@@ -124,10 +126,10 @@ export const TcoTab: React.FC<TcoTabProps> = ({ results, config, onChangeConfig 
       <div>
         <div className="flex items-center justify-between mb-1.5">
           <span className="text-[11px] font-mono uppercase tracking-wider text-text">
-            1. Yıl Maliyet Bileşenleri Dağılımı (TCO Kırılımı)
+            {t('results.tco.yearBreakdown')}
           </span>
           <span className="text-[10px] font-mono text-muted">
-            Toplam: {formatMoney(onPremTco.totalFirstYearCostUsd, onPremTco.totalFirstYearCostTry)}
+            {t('results.tco.total', { value: formatMoney(onPremTco.totalFirstYearCostUsd, onPremTco.totalFirstYearCostTry) })}
           </span>
         </div>
         <div className="flex h-2.5 w-full overflow-hidden rounded bg-surface-2 border border-border">
@@ -135,10 +137,10 @@ export const TcoTab: React.FC<TcoTabProps> = ({ results, config, onChangeConfig 
             const usdVal = onPremTco[s.field] as number;
             return (
               <div
-                key={s.label}
+                key={s.labelKey}
                 className={s.cls}
                 style={{ width: `${(usdVal / tcoTotal) * 100}%` }}
-                title={`${s.label}: ${formatMoney(usdVal, onPremTco[s.tryField] as number)}`}
+                title={`${t(`results.tco.segments.${s.labelKey}`)}: ${formatMoney(usdVal, onPremTco[s.tryField] as number)}`}
               />
             );
           })}
@@ -147,10 +149,10 @@ export const TcoTab: React.FC<TcoTabProps> = ({ results, config, onChangeConfig 
           {TCO_SEGMENTS.map((s) => {
             const usdVal = onPremTco[s.field] as number;
             return (
-              <div key={s.label} className="flex items-center justify-between text-[10px] font-mono">
+              <div key={s.labelKey} className="flex items-center justify-between text-[10px] font-mono">
                 <span className="flex items-center gap-1 text-muted">
                   <span className={`w-1.5 h-1.5 rounded-full ${s.cls}`} />
-                  {s.label}
+                  {t(`results.tco.segments.${s.labelKey}`)}
                 </span>
                 <span className="text-text">
                   {formatMoney(usdVal, onPremTco[s.tryField] as number)} (%{((usdVal / tcoTotal) * 100).toFixed(0)})
@@ -163,33 +165,33 @@ export const TcoTab: React.FC<TcoTabProps> = ({ results, config, onChangeConfig 
 
       <div className="border border-border rounded-md p-2.5 bg-surface-2 space-y-1">
         <div className="flex items-center justify-between text-[11px] font-mono">
-          <span className="text-muted">Bulut Aylık</span>
-          <span className="text-text font-bold">${results.monthlyCostUsd.toFixed(0)}/ay</span>
+          <span className="text-muted">{t('results.tco.cloudMonthly')}</span>
+          <span className="text-text font-bold">${results.monthlyCostUsd.toFixed(0)}{t('results.tco.perMonthUnit')}</span>
         </div>
         <div className="flex items-center justify-between text-[11px] font-mono">
-          <span className="text-muted">3 yıllık amortismanla aylık ortalama:</span>
+          <span className="text-muted">{t('results.tco.monthlyAverage')}</span>
           <span className="text-ok font-bold">
-            {formatMoney(onPremTco.monthlyAverageCostUsd, onPremTco.monthlyAverageCostTry)}/ay
+            {formatMoney(onPremTco.monthlyAverageCostUsd, onPremTco.monthlyAverageCostTry)}{t('results.tco.perMonthUnit')}
           </span>
         </div>
         <p className="text-[10px] text-muted leading-snug">{onPremTco.breakEvenDescription}</p>
       </div>
 
-      <Collapse title="Maliyet Ayarları">
+      <Collapse title={t('results.tco.costSettings')}>
         <div className="grid grid-cols-2 gap-2.5">
-          <Field label="TR Tarife (₺/kWh):">
+          <Field label={t('results.tco.electricityRate')}>
             <NumberInput value={config.electricityRateTryPerKwh} onChange={setElectricityRate} step={0.1} min={0.5} max={30} />
           </Field>
-          <Field label="Dolar Kuru (USD/TRY):">
+          <Field label={t('results.tco.usdRate')}>
             <NumberInput value={config.usdToTryRate} onChange={setUsdToTryRate} step={0.5} min={10} max={100} />
           </Field>
-          <Field label="PUE Çarpanı (Enerji Verimliliği):">
+          <Field label={t('results.tco.pue')}>
             <NumberInput value={config.pueRatio} onChange={setPueRatio} step={0.05} min={1.0} max={2.0} />
           </Field>
-          <Field label="Sunucu Yükü (%):">
+          <Field label={t('results.tco.dutyCycle')}>
             <NumberInput value={config.serverDutyCyclePct} onChange={setDutyCycle} step={5} min={10} max={100} />
           </Field>
-          <Field label="Birim GPU Kartı Satın Alma Fiyatı:">
+          <Field label={t('results.tco.gpuUnitPrice')}>
             <NumberInput
               value={config.customGpuUnitPriceUsd ?? onPremTco.gpuUnitPriceUsd}
               onChange={setCustomGpuUnitPrice}
@@ -197,7 +199,7 @@ export const TcoTab: React.FC<TcoTabProps> = ({ results, config, onChangeConfig 
               min={0}
             />
           </Field>
-          <Field label="Sunucu Kasa, CPU, RAM & NVMe Taban Bedeli:">
+          <Field label={t('results.tco.systemBase')}>
             <NumberInput
               value={config.customSystemBasePriceUsd ?? onPremTco.systemBaseCapexUsd}
               onChange={setCustomSystemBasePrice}
@@ -205,7 +207,7 @@ export const TcoTab: React.FC<TcoTabProps> = ({ results, config, onChangeConfig 
               min={0}
             />
           </Field>
-          <Field label="Doğrudan Yıllık Elektrik Faturası Gir ($/₺):">
+          <Field label={t('results.tco.annualElectricity')}>
             <NumberInput
               value={config.customAnnualElectricityUsd ?? onPremTco.annualElectricityCostUsd}
               onChange={setCustomAnnualElectricity}
@@ -213,7 +215,7 @@ export const TcoTab: React.FC<TcoTabProps> = ({ results, config, onChangeConfig 
               min={0}
             />
           </Field>
-          <Field label="Yıllık Soğutma / HVAC Gideri ($/₺):">
+          <Field label={t('results.tco.annualCooling')}>
             <NumberInput
               value={config.customAnnualCoolingUsd ?? onPremTco.annualCoolingCostUsd}
               onChange={setCustomAnnualCooling}
@@ -221,7 +223,7 @@ export const TcoTab: React.FC<TcoTabProps> = ({ results, config, onChangeConfig 
               min={0}
             />
           </Field>
-          <Field label="Yıllık Bakım, Parça Değişim & Destek:">
+          <Field label={t('results.tco.annualMaintenance')}>
             <NumberInput
               value={config.customAnnualMaintenanceUsd ?? onPremTco.annualMaintenanceUsd}
               onChange={setCustomAnnualMaintenance}
@@ -229,7 +231,7 @@ export const TcoTab: React.FC<TcoTabProps> = ({ results, config, onChangeConfig 
               min={0}
             />
           </Field>
-          <Field label="Kabin/Colocation, İnternet, Sigorta ve Lisans:">
+          <Field label={t('results.tco.annualOther')}>
             <NumberInput
               value={config.customAnnualOtherExpensesUsd ?? onPremTco.annualOtherExpensesUsd}
               onChange={setCustomAnnualOtherExpenses}
@@ -243,7 +245,7 @@ export const TcoTab: React.FC<TcoTabProps> = ({ results, config, onChangeConfig 
           className="mt-3 flex items-center gap-1 text-[10px] font-mono text-danger border border-danger/40 rounded px-2 py-1 hover:bg-danger/10 transition"
         >
           <RotateCcw className="w-3 h-3" />
-          Tüm Maliyetleri Varsayılana Sıfırla
+          {t('results.tco.resetAll')}
         </button>
       </Collapse>
     </div>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { RefreshCw } from 'lucide-react';
 import { CalculationResults } from '../../types';
 import { GpuPrice } from '../../hooks/useLiveGpuPrices';
@@ -40,6 +41,7 @@ export const CloudTab: React.FC<CloudTabProps> = ({
   pricesLoading,
   onRefreshPrices,
 }) => {
+  const { t } = useTranslation();
   const currentPrice = overrides[gpuId];
   const grouped: Record<string, GpuPrice[]> = {};
   prices
@@ -52,11 +54,10 @@ export const CloudTab: React.FC<CloudTabProps> = ({
     <div className="space-y-3">
       <div>
         <div className="text-[11px] font-mono uppercase tracking-wider text-muted">
-          Bulut & Serverless Çıkarım (Inference) Maliyet Karşılaştırması
+          {t('results.cloud.title')}
         </div>
         <div className="text-[10px] font-mono text-muted mt-0.5">
-          {gpuCount}x {gpuName} için güncel resmi fiyatlandırmalar (Lambda, RunPod Pods/Serverless, Modal, Google
-          Colab)
+          {t('results.cloud.subtitle', { gpuCount, gpuName })}
         </div>
       </div>
 
@@ -67,7 +68,7 @@ export const CloudTab: React.FC<CloudTabProps> = ({
               <div className="min-w-0">
                 <div className="flex items-center gap-1.5">
                   <span className="text-[11px] font-bold font-mono text-text truncate">{cloud.shortName}</span>
-                  {cloud.isCheapest && <Badge tone="accent">EN UCUZ</Badge>}
+                  {cloud.isCheapest && <Badge tone="accent">{t('results.cloud.cheapest')}</Badge>}
                 </div>
                 <div className="text-[10px] text-muted truncate mt-0.5">
                   {cloud.providerName} • {cloud.matchedInstance}
@@ -75,10 +76,10 @@ export const CloudTab: React.FC<CloudTabProps> = ({
               </div>
               <div className="text-right shrink-0">
                 <div className="text-[11px] font-mono font-bold text-text">
-                  ${cloud.totalHourlyCostUsd.toFixed(2)}/sa
+                  {t('results.cloud.perHour', { cost: cloud.totalHourlyCostUsd.toFixed(2) })}
                 </div>
                 <div className="text-[10px] font-mono text-muted">
-                  ${Math.round(cloud.totalMonthlyCostUsd).toLocaleString()}/ay
+                  {t('results.cloud.perMonth', { cost: Math.round(cloud.totalMonthlyCostUsd).toLocaleString() })}
                 </div>
               </div>
             </div>
@@ -92,32 +93,32 @@ export const CloudTab: React.FC<CloudTabProps> = ({
       <div className="border-t border-border pt-3">
         <div className="flex items-center justify-between gap-2 mb-2">
           <div className="flex items-center gap-2 min-w-0">
-            <span className="text-[11px] font-mono uppercase tracking-wider text-text">Canlı GPU Fiyatları</span>
+            <span className="text-[11px] font-mono uppercase tracking-wider text-text">{t('results.cloud.livePrices')}</span>
             {lastUpdated && (
               <span className="text-[10px] font-mono text-muted truncate">
-                Son güncelleme: {formatLastUpdated(lastUpdated)}
+                {t('results.cloud.lastUpdated', { date: formatLastUpdated(lastUpdated) })}
               </span>
             )}
           </div>
           <button
             onClick={onRefreshPrices}
-            title="Fiyatları yenile (npm run scrape:prices)"
+            title={t('results.cloud.refreshTitle')}
             className="flex items-center gap-1 px-2 py-1 text-[10px] font-mono text-muted border border-border rounded hover:text-text transition shrink-0"
           >
             <RefreshCw className={`w-3 h-3 ${pricesLoading ? 'animate-spin' : ''}`} />
-            Yenile
+            {t('results.cloud.refresh')}
           </button>
         </div>
 
         {currentPrice != null && (
           <div className="flex items-center justify-between gap-2 border border-accent/30 bg-surface-2 rounded px-2.5 py-2 mb-2">
             <div className="min-w-0">
-              <p className="text-[10px] font-mono text-text truncate">Seçili GPU: {gpuName}</p>
-              <p className="text-[9px] text-muted">Kazınan 3 sağlayıcı arasında en düşük saatlik kira</p>
+              <p className="text-[10px] font-mono text-text truncate">{t('results.cloud.selectedGpu', { gpuName })}</p>
+              <p className="text-[9px] text-muted">{t('results.cloud.lowestHourly')}</p>
             </div>
             <div className="text-base font-bold font-mono text-ok shrink-0">
               ${currentPrice.toLocaleString('en-US', { maximumFractionDigits: 3 })}
-              <span className="text-[10px] font-normal text-muted">/saat</span>
+              <span className="text-[10px] font-normal text-muted">{t('results.cloud.perHourUnit')}</span>
             </div>
           </div>
         )}
@@ -131,7 +132,7 @@ export const CloudTab: React.FC<CloudTabProps> = ({
         )}
 
         {!pricesLoading && Object.keys(grouped).length === 0 && (
-          <p className="text-[11px] text-muted text-center py-2">Fiyat verisi yok</p>
+          <p className="text-[11px] text-muted text-center py-2">{t('results.cloud.noPriceData')}</p>
         )}
 
         {!pricesLoading && Object.keys(grouped).length > 0 && (
@@ -156,7 +157,7 @@ export const CloudTab: React.FC<CloudTabProps> = ({
                         <span className={`text-[11px] font-mono font-bold ${isBest ? 'text-ok' : 'text-text'}`}>
                           ${p.pricePerHrUsd.toLocaleString('en-US', { maximumFractionDigits: 3 })}
                         </span>
-                        {isBest && <span className="block text-[9px] text-ok font-semibold">En düşük</span>}
+                        {isBest && <span className="block text-[9px] text-ok font-semibold">{t('results.cloud.lowest')}</span>}
                       </div>
                     </div>
                   );

@@ -8,6 +8,7 @@ import { seedModelCatalog } from "./src/server/modelCatalogSeed";
 import { adminAuthRouter } from "./src/server/adminAuth";
 import { gpuPricesRouter } from "./src/server/gpuPrices";
 import { hfModelsRouter } from "./src/server/hfModels";
+import { pickLang, msg } from "./src/server/i18nErrors";
 
 dotenv.config();
 
@@ -191,7 +192,14 @@ function getHeuristicRecommendation(useCase: string) {
     query.includes("rapor") ||
     query.includes("muhasebe") ||
     query.includes("rag") ||
-    query.includes("doküman")
+    query.includes("doküman") ||
+    query.includes("legal") ||
+    query.includes("law") ||
+    query.includes("contract") ||
+    query.includes("finance") ||
+    query.includes("compliance") ||
+    query.includes("document") ||
+    query.includes("report")
   ) {
     return {
       recommendedModelId: "llama-3.3-70b",
@@ -215,7 +223,15 @@ function getHeuristicRecommendation(useCase: string) {
     query.includes("mac") ||
     query.includes("pc") ||
     query.includes("edge") ||
-    query.includes("düşük vram")
+    query.includes("düşük vram") ||
+    query.includes("local") ||
+    query.includes("budget") ||
+    query.includes("cheap") ||
+    query.includes("fast") ||
+    query.includes("desktop") ||
+    query.includes("gaming") ||
+    query.includes("vram") ||
+    query.includes("consumer")
   ) {
     return {
       recommendedModelId: "llama-3.1-8b",
@@ -246,7 +262,7 @@ function getHeuristicRecommendation(useCase: string) {
 app.post("/api/recommend-model", async (req, res) => {
   const { useCase } = req.body;
   if (!useCase || typeof useCase !== "string" || useCase.trim().length === 0) {
-    return res.status(400).json({ error: "Lütfen bir kullanım senaryosu veya sektör belirtin." });
+    return res.status(400).json({ error: msg(pickLang(req), "Lütfen bir kullanım senaryosu veya sektör belirtin.", "Please provide a use case or industry.") });
   }
 
   try {
@@ -318,11 +334,13 @@ app.post("/api/advisor", async (req, res) => {
     const ai = getGenAI();
     if (!ai) {
       return res.status(503).json({
-        error: "Gemini API key is not configured. AI advisor feature requires GEMINI_API_KEY in server environment.",
+        error: msg(pickLang(req), "Gemini API anahtarı yapılandırılmamış. AI danışman özelliği sunucu ortamında GEMINI_API_KEY gerektirir.", "Gemini API key is not configured. AI advisor feature requires GEMINI_API_KEY in server environment."),
       });
     }
 
     const { modelName, quantization, gpus, totalVramNeeded, promptLen, genLen, concurrentUsers, targetTtft, targetTpot, estimatedCostPerHour } = req.body;
+
+    const adviceLang = req.body?.lang === 'en' ? 'English' : 'Turkish';
 
     const prompt = `You are a Principal AI Infrastructure Engineer and LLM Inference Specialist.
 Analyze the following deployment configuration and provide detailed optimization recommendations, engine parameters, and architecture advice.
@@ -336,7 +354,7 @@ Current Deployment Configuration:
 - Concurrency: ${concurrentUsers} concurrent users/streams
 - Hourly Hardware Cost: $${estimatedCostPerHour?.toFixed(2)}/hr
 
-Provide a structured analysis in Turkish (or bilingual terms) covering:
+Provide a structured analysis in ${adviceLang} (or bilingual terms) covering:
 1. **Feasibility & Bottleneck Analysis**: Is the GPU memory & bandwidth sufficient? What is the main bottleneck (Compute/Prefill bound vs Bandwidth/Decode bound)?
 2. **Recommended Engine & Framework**: Detailed setup for vLLM, TensorRT-LLM, SGLang, or Ollama/llama.cpp. Give recommended flags (e.g. --tensor-parallel-size, --gpu-memory-utilization, --max-model-len, --kv-cache-dtype).
 3. **Cost & Performance Optimization**: How to lower cost per 1M tokens or reduce latency (e.g. FP8/INT4 KV cache, speculative decoding, prefix caching, chunked prefill).
@@ -356,7 +374,7 @@ Keep response clear, structured in clean Markdown with headings, callout boxes, 
     res.json({ advice: response.text });
   } catch (err: any) {
     console.error("AI Advisor error:", err);
-    res.status(500).json({ error: err?.message || "Failed to generate AI advice." });
+    res.status(500).json({ error: err?.message || msg(pickLang(req), "AI danışmanlığı üretilemedi.", "Failed to generate AI advice.") });
   }
 });
 
@@ -367,6 +385,10 @@ async function startServer() {
   } catch (err: any) {
     console.error("PostgreSQL migration failed. Check DATABASE_URL and that PostgreSQL is running:", err?.message);
   }
+
+  app.get("/", (_req, res) => {
+    res.redirect(302, "/app");
+  });
 
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
