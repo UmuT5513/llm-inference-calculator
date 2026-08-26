@@ -6,7 +6,7 @@ import { Badge } from '../ui/Badge';
 import { Panel } from '../ui/Panel';
 import { Stat } from '../ui/Stat';
 import { Tabs } from '../ui/Tabs';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Link2 } from 'lucide-react';
 import { VramTab } from './VramTab';
 import { PerfTab } from './PerfTab';
 import { CostTab } from './CostTab';
@@ -25,6 +25,7 @@ export interface ResultsPanelProps {
   onRefreshPrices: () => void;
   onOpenAiAdvisor?: () => void;
   onChangeConfig?: (updater: (prev: CalculatorConfig) => CalculatorConfig) => void;
+  onCopyLink?: () => string;
 }
 
 const TABS = [
@@ -47,9 +48,23 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
   onRefreshPrices,
   onOpenAiAdvisor,
   onChangeConfig,
+  onCopyLink,
 }) => {
   const [tab, setTab] = useState('vram');
   const { t } = useTranslation();
+  const [copied, setCopied] = useState(false);
+  const handleCopyLink = async () => {
+    if (!onCopyLink) return;
+    const url = onCopyLink();
+    try {
+      await navigator.clipboard.writeText(url);
+      window.history.replaceState(null, '', url);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2000);
+    } catch {
+      window.prompt(t('common.copyLink'), url);
+    }
+  };
 
   return (
     <Panel className="overflow-hidden">
@@ -68,6 +83,15 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
               {results.effectivePromptLen.toLocaleString()} in / {results.effectiveGenLen.toLocaleString()} out
             </p>
           </div>
+          {onCopyLink && (
+            <button
+              onClick={() => void handleCopyLink()}
+              className="p-2 text-muted hover:text-text bg-surface-2 hover:bg-surface border border-border rounded transition-colors shrink-0"
+              title={copied ? t('common.copied') : t('common.copyLink')}
+            >
+              <Link2 className="w-3.5 h-3.5 text-accent" />
+            </button>
+          )}
           {onOpenAiAdvisor && (
             <button
               onClick={onOpenAiAdvisor}

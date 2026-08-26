@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Sparkles, Download, RefreshCw, Zap, Save, Scale } from 'lucide-react';
+import { Sparkles, Download, RefreshCw, Zap, Save, Scale, Link2 } from 'lucide-react';
 import { PresetScenario } from '../types';
 import { PRESET_SCENARIOS } from '../data/presets';
 import { Segmented } from './ui/Segmented';
@@ -16,6 +16,7 @@ interface HeaderProps {
   onReset: () => void;
   onOpenSave: () => void;
   onOpenCompare: () => void;
+  onCopyLink: () => string;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -27,8 +28,21 @@ export const Header: React.FC<HeaderProps> = ({
   onReset,
   onOpenSave,
   onOpenCompare,
+  onCopyLink,
 }) => {
   const { t } = useTranslation();
+  const [copied, setCopied] = useState(false);
+  const handleCopyLink = async () => {
+    const url = onCopyLink();
+    try {
+      await navigator.clipboard.writeText(url);
+      window.history.replaceState(null, '', url);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2000);
+    } catch {
+      window.prompt(t('common.copyLink'), url);
+    }
+  };
   return (
     <header className="bg-bg border-b border-border sticky top-0 z-30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between gap-3">
@@ -96,6 +110,16 @@ export const Header: React.FC<HeaderProps> = ({
           >
             <Save className="w-3.5 h-3.5 text-ok" />
             <span className="hidden sm:inline">{t('header.save')}</span>
+          </button>
+
+          {/* Copy Link Button */}
+          <button
+            onClick={() => void handleCopyLink()}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-muted bg-surface-2 hover:bg-surface border border-border rounded transition-colors hover:text-text"
+            title={t('common.copyLink')}
+          >
+            <Link2 className="w-3.5 h-3.5 text-accent" />
+            <span className="hidden sm:inline">{copied ? t('common.copied') : t('common.copyLink')}</span>
           </button>
 
           {/* Compare Scenarios Button */}

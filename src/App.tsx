@@ -25,7 +25,7 @@ import { calculateInferenceMetrics } from './utils/calculator';
 import { calculateFineTuningMetrics } from './utils/fineTuningCalculator';
 import { useLiveGpuPrices } from './hooks/useLiveGpuPrices';
 import { useLiveModels } from './hooks/useLiveModels';
-import { readScenarioFromLocation } from './utils/shareUrl';
+import { buildShareUrl, readScenarioFromLocation } from './utils/shareUrl';
 
 export default function App() {
   // Secret admin panel route (username/password login lives on this page).
@@ -118,6 +118,12 @@ export default function App() {
       ? config.customGpu
       : GPU_PRESETS.find((g) => g.id === config.gpuId) || GPU_PRESETS[2];
 
+  const handleCopyLink = (): string => {
+    return activeTab === 'finetuning'
+      ? buildShareUrl('finetuning', ftConfig)
+      : buildShareUrl('inference', config);
+  };
+
   return (
     <div className="min-h-screen bg-bg text-text font-sans selection:bg-accent selection:text-bg pb-16">
       {/* Navbar */}
@@ -130,6 +136,7 @@ export default function App() {
         onReset={handleReset}
         onOpenSave={() => setIsScenarioModalOpen(true)}
         onOpenCompare={() => handleOpenCompare()}
+        onCopyLink={handleCopyLink}
       />
 
       {/* Main Container */}
@@ -224,6 +231,7 @@ export default function App() {
                 onRefreshPrices={refetchPrices}
                 onOpenAiAdvisor={() => setIsAiModalOpen(true)}
                 onChangeConfig={(updater) => setConfig(updater)}
+                onCopyLink={handleCopyLink}
               />
             </div>
           </div>
