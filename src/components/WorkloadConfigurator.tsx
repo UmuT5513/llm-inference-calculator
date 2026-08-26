@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Users, MessageSquareText, Activity, Plus, Trash2, UserCheck, ToggleLeft, ToggleRight } from 'lucide-react';
 import { UserProfile } from '../types';
 import { Panel } from './ui/Panel';
@@ -48,6 +49,7 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
   onToggleMultiProfile,
   onUpdateProfiles,
 }) => {
+  const { t } = useTranslation();
   const contextPresets = [512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 128000];
   const genPresets = [128, 256, 512, 1024, 2048, 4096];
   const batchPresets = [1, 2, 4, 8, 16, 32, 64, 128];
@@ -56,7 +58,7 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
   const handleAddProfile = () => {
     const newProfile: UserProfile = {
       id: `profile-${Date.now()}`,
-      name: `Kullanıcı Tipi ${userProfiles.length + 1}`,
+      name: t('workload.newProfileDefaultName', { count: userProfiles.length + 1 }),
       userCount: 5,
       promptLen: 2048,
       genLen: 512,
@@ -80,11 +82,11 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
     <Panel className="p-3.5 space-y-3">
       <SectionHeader
         index="05"
-        title="Workload & Kullanıcı Profilleri"
+        title={t('workload.title')}
         description={
           useMultiProfile
-            ? 'Özelleştirilebilir çoklu kullanıcı tipleri (farklı prompt/gen uzunlukları ve eşzamanlı sayıları)'
-            : 'Sabit tekil batch size ve homojen girdi/çıktı token boyutları'
+            ? t('workload.multiProfileDesc')
+            : t('workload.singleBatchDesc')
         }
         right={
           <button
@@ -100,7 +102,7 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
             ) : (
               <ToggleLeft className="w-4 h-4" />
             )}
-            <span>{useMultiProfile ? 'Çoklu Kullanıcı (Aktif)' : 'Tekil Batch Modu'}</span>
+            <span>{useMultiProfile ? t('workload.multiProfileToggle') : t('workload.singleBatchToggle')}</span>
           </button>
         }
       />
@@ -112,11 +114,11 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
             <div className="flex items-center gap-3">
               <span className="font-mono text-accent font-bold flex items-center gap-1">
                 <Users className="w-4 h-4 text-accent" />
-                Toplam Eşzamanlı Kullanıcı: {totalMultiProfileUsers}
+                {t('workload.totalConcurrentUsers', { count: totalMultiProfileUsers })}
               </span>
               <span className="text-border">|</span>
               <span className="text-muted text-[11px] font-medium">
-                {userProfiles.length} Farklı Kullanıcı Tipi
+                {t('workload.profileCount', { count: userProfiles.length })}
               </span>
             </div>
 
@@ -125,7 +127,7 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
               className="flex items-center gap-1 px-3 py-1.5 text-[11px] font-mono font-bold text-bg bg-accent hover:opacity-90 rounded-md transition"
             >
               <Plus className="w-3.5 h-3.5" />
-              <span>Yeni Kullanıcı Tipi Ekle</span>
+              <span>{t('workload.addProfile')}</span>
             </button>
           </div>
 
@@ -145,7 +147,7 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
                       type="text"
                       value={profile.name}
                       onChange={(e) => handleUpdateProfileField(profile.id, 'name', e.target.value)}
-                      placeholder="Kullanıcı Tipi İsmi (ör. Chat, RAG, Kod)"
+                      placeholder={t('workload.profileNamePlaceholder')}
                       className="bg-surface border border-border rounded-lg px-2.5 py-1 text-xs text-text font-bold w-full max-w-xs focus:outline-none focus:ring-1 focus:ring-accent focus:border-accent"
                     />
                   </div>
@@ -153,7 +155,7 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
                   <div className="flex items-center gap-3">
                     <div className="flex items-center gap-1.5 text-[11px]">
                       <UserCheck className="w-4 h-4 text-accent" />
-                      <span className="text-muted font-medium">Eşzamanlı Sayı:</span>
+                      <span className="text-muted font-medium">{t('workload.concurrentCount')}</span>
                       <div className="w-16">
                         <NumberInput
                           value={profile.userCount}
@@ -170,7 +172,7 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
                       <button
                         onClick={() => handleRemoveProfile(profile.id)}
                         className="p-1.5 text-muted hover:text-danger rounded-lg hover:bg-surface transition"
-                        title="Profil Sil"
+                        title={t('workload.removeProfile')}
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -185,7 +187,7 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
                     <div className="flex justify-between items-center text-[10px] mb-1">
                       <span className="font-bold text-muted flex items-center gap-1">
                         <MessageSquareText className="w-3.5 h-3.5 text-accent" />
-                        Girdi (Prompt) Tokens
+                        {t('workload.profilePromptTokens')}
                       </span>
                       <span className="font-mono text-accent font-bold bg-surface border border-border px-1.5 py-0.2 rounded">
                         {profile.promptLen.toLocaleString()} tk
@@ -209,7 +211,7 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
                     <div className="flex justify-between items-center text-[10px] mb-1">
                       <span className="font-bold text-muted flex items-center gap-1">
                         <Activity className="w-3.5 h-3.5 text-accent" />
-                        Üretim (Output) Tokens
+                        {t('workload.profileGenTokens')}
                       </span>
                       <span className="font-mono text-accent font-bold bg-surface border border-border px-1.5 py-0.2 rounded">
                         {profile.genLen.toLocaleString()} tk
@@ -240,7 +242,7 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
             <div className="flex items-center justify-between mb-1.5">
               <label className="text-xs font-bold text-text uppercase tracking-wider flex items-center gap-1">
                 <MessageSquareText className="w-3.5 h-3.5 text-accent" />
-                Girdi Uzunluğu (Prompt)
+                {t('workload.promptLen')}
               </label>
               <span className="text-xs font-mono font-bold text-accent bg-surface-2 border border-border px-2 py-0.5 rounded">
                 {promptLen.toLocaleString()} Tokens
@@ -279,7 +281,7 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
             <div className="flex items-center justify-between mb-1.5">
               <label className="text-xs font-bold text-text uppercase tracking-wider flex items-center gap-1">
                 <Activity className="w-3.5 h-3.5 text-accent" />
-                Üretim Uzunluğu (Output)
+                {t('workload.genLen')}
               </label>
               <span className="text-xs font-mono font-bold text-accent bg-surface-2 border border-border px-2 py-0.5 rounded">
                 {genLen.toLocaleString()} Tokens
@@ -318,10 +320,10 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
             <div className="flex items-center justify-between mb-1.5">
               <label className="text-xs font-bold text-text uppercase tracking-wider flex items-center gap-1">
                 <Users className="w-3.5 h-3.5 text-accent" />
-                Batch Size (Eşzamanlılık)
+                {t('workload.batchSize')}
               </label>
               <span className="text-xs font-mono font-bold text-accent bg-surface-2 border border-border px-2 py-0.5 rounded">
-                {batchSize} Akış
+                {t('workload.batchStreams', { count: batchSize })}
               </span>
             </div>
 
@@ -357,7 +359,7 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
             <div className="flex items-center justify-between mb-1.5">
               <label className="text-xs font-bold text-text uppercase tracking-wider flex items-center gap-1">
                 <Activity className="w-3.5 h-3.5 text-accent" />
-                Trafik Hızı (Requests / Min)
+                {t('workload.requestsPerMin')}
               </label>
               <span className="text-xs font-mono font-bold text-accent bg-surface-2 border border-border px-2 py-0.5 rounded">
                 {requestsPerMin} req/min ({(requestsPerMin / 60).toFixed(1)} rps)
@@ -375,47 +377,47 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
             />
 
             <div className="flex justify-between text-[10px] text-muted font-mono mt-2">
-              <span>10/dk</span>
-              <span>100/dk</span>
-              <span>500/dk</span>
-              <span>1,000/dk</span>
-              <span>3,000/dk</span>
+              <span>{t('workload.rpmTick', { value: '10' })}</span>
+              <span>{t('workload.rpmTick', { value: '100' })}</span>
+              <span>{t('workload.rpmTick', { value: '500' })}</span>
+              <span>{t('workload.rpmTick', { value: '1,000' })}</span>
+              <span>{t('workload.rpmTick', { value: '3,000' })}</span>
             </div>
           </div>
         </div>
       )}
 
       {/* Advanced Settings Drawer */}
-      <Collapse title="Gelişmiş Parametreler">
+      <Collapse title={t('workload.advancedTitle')}>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-          <Field label="GPU Başına CUDA Overhead (GB)">
+          <Field label={t('workload.cudaOverhead')}>
             <NumberInput
               value={cudaOverheadGB}
               step={0.1}
               onChange={(v) => onChangeCudaOverhead(v || 1.0)}
             />
             <p className="text-[10px] text-muted mt-1">
-              PyTorch runtime ve CUDA bağlam sabiti (Genelde 1.0GB - 2.0GB).
+              {t('workload.cudaOverheadHint')}
             </p>
           </Field>
 
-          <Field label="Aktivasyon Bellek Faktörü (%)">
+          <Field label={t('workload.activationOverhead')}>
             <NumberInput
               value={activationOverheadPct}
               onChange={(v) => onChangeActivationOverhead(v || 10)}
             />
             <p className="text-[10px] text-muted mt-1">
-              Ara katman aktivasyonlarının kapladığı tahmini dinamik oran.
+              {t('workload.activationOverheadHint')}
             </p>
           </Field>
 
-          <Field label="TP İletişim Verimliliği (%)">
+          <Field label={t('workload.tpEfficiency')}>
             <NumberInput
               value={tpEfficiencyPct}
               onChange={(v) => onChangeTpEfficiency(v || 85)}
             />
             <p className="text-[10px] text-muted mt-1">
-              GPU'lar arası AllReduce haberleşme verimi (NVLink için ~%85-%95).
+              {t('workload.tpEfficiencyHint')}
             </p>
           </Field>
         </div>

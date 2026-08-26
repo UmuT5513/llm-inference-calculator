@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Edit3, Sliders, Server, Zap, Search } from 'lucide-react';
 import { GpuPreset } from '../types';
 import { GPU_PRESETS, DEFAULT_CUSTOM_GPU } from '../data/presets';
@@ -28,6 +29,7 @@ export const GpuConfigurator: React.FC<GpuConfiguratorProps> = ({
   onChangeTp,
   onUpdateCustomGpu,
 }) => {
+  const { t } = useTranslation();
   const [showCustomGpuModal, setShowCustomGpuModal] = useState<boolean>(false);
   const [activeTier, setActiveTier] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -75,14 +77,14 @@ export const GpuConfigurator: React.FC<GpuConfiguratorProps> = ({
       <SectionHeader
         index="04"
         title="GPU Hardware"
-        description="GPU donanımı, VRAM kapasitesi, bellek bant genişliği ve Tensor Parallelism (TP)"
+        description={t('gpu.subtitle')}
         right={
           <div className="flex items-center gap-2">
             <div className="relative">
               <Search className="w-3.5 h-3.5 text-muted absolute left-2.5 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
-                placeholder="GPU Ara (örn: 5090, MI300X, H200, B200)..."
+                placeholder={t('gpu.searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="bg-surface-2 border border-border rounded pl-8 pr-2.5 py-1 text-xs font-mono text-text placeholder-muted focus:outline-none focus:border-accent w-48 sm:w-60 transition"
@@ -101,7 +103,7 @@ export const GpuConfigurator: React.FC<GpuConfiguratorProps> = ({
               }`}
             >
               <Edit3 className="w-3 h-3" />
-              <span>Özel GPU Gir</span>
+              <span>{t('gpu.customGpuButton')}</span>
             </button>
           </div>
         }
@@ -110,10 +112,10 @@ export const GpuConfigurator: React.FC<GpuConfiguratorProps> = ({
       {/* Filter */}
       <div className="flex items-center gap-1 overflow-x-auto pb-1 scrollbar-none">
         {[
-          { id: 'all', label: 'Tümü' },
-          { id: 'datacenter', label: 'Veri Merkezi / AI Cluster' },
-          { id: 'workstation', label: 'İş İstasyonu' },
-          { id: 'consumer', label: 'Tüketici / Masaüstü' },
+          { id: 'all', label: t('gpu.filterAll') },
+          { id: 'datacenter', label: t('gpu.filterDatacenter') },
+          { id: 'workstation', label: t('gpu.filterWorkstation') },
+          { id: 'consumer', label: t('gpu.filterConsumer') },
           { id: 'unified', label: 'Apple Silicon' },
         ].map((cat) => (
           <button
@@ -173,9 +175,11 @@ export const GpuConfigurator: React.FC<GpuConfiguratorProps> = ({
               </div>
 
               <div className="flex items-center justify-between pt-1.5 border-t border-border text-[10px] font-mono">
-                <span className="text-muted">Birim Maliyet:</span>
+                <span className="text-muted">{t('gpu.unitCost')}</span>
                 <span className="font-semibold text-text">
-                  {g.hourlyCostUsd > 0 ? `$${g.hourlyCostUsd.toFixed(2)}/saat` : 'Yerel (Ücretsiz)'}
+                  {g.hourlyCostUsd > 0
+                    ? t('gpu.hourlyCost', { price: g.hourlyCostUsd.toFixed(2) })
+                    : t('gpu.localFree')}
                 </span>
               </div>
             </div>
@@ -190,7 +194,7 @@ export const GpuConfigurator: React.FC<GpuConfiguratorProps> = ({
           <div className="flex items-center justify-between mb-1.5">
             <label className="text-xs font-bold text-text uppercase tracking-wider flex items-center gap-1">
               <Server className="w-3.5 h-3.5 text-accent" />
-              GPU Adedi (Cluster Size)
+              {t('gpu.count')}
             </label>
             <span className="text-xs font-mono font-bold text-accent bg-surface-2 border border-border px-2 py-0.5 rounded">
               {gpuCount}x GPU ({totalVramAvailableGB} GB VRAM)
@@ -255,7 +259,7 @@ export const GpuConfigurator: React.FC<GpuConfiguratorProps> = ({
             ))}
           </div>
           <p className="text-[10px] text-muted mt-1">
-            Model katmanlarının GPU’lar arasında bölünmesi (NVLink ile TP=2..8 tavsiye edilir).
+            {t('gpu.tpHint')}
           </p>
         </div>
       </div>
@@ -267,7 +271,7 @@ export const GpuConfigurator: React.FC<GpuConfiguratorProps> = ({
             <div className="flex items-center justify-between border-b border-border pb-3">
               <div className="flex items-center gap-2 text-text font-semibold text-base">
                 <Sliders className="w-5 h-5 text-accent" />
-                Özel GPU Özellikleri Girin
+                {t('gpu.customModalTitle')}
               </div>
               <button
                 onClick={() => setShowCustomGpuModal(false)}
@@ -279,7 +283,7 @@ export const GpuConfigurator: React.FC<GpuConfiguratorProps> = ({
 
             <div className="grid grid-cols-2 gap-3 text-xs">
               <div className="col-span-2">
-                <Field label="GPU Adı">
+                <Field label={t('gpu.customName')}>
                   <input
                     type="text"
                     value={customGpu.name}
@@ -291,14 +295,14 @@ export const GpuConfigurator: React.FC<GpuConfiguratorProps> = ({
                 </Field>
               </div>
 
-              <Field label="VRAM Kapasitesi (GB)">
+              <Field label={t('gpu.customVram')}>
                 <NumberInput
                   value={customGpu.vramGB}
                   onChange={(v) => onUpdateCustomGpu({ ...customGpu, vramGB: Math.round(v) || 16 })}
                 />
               </Field>
 
-              <Field label="Bellek Bant Genişliği (GB/s)">
+              <Field label={t('gpu.customBandwidth')}>
                 <NumberInput
                   value={customGpu.memoryBandwidthGBs}
                   onChange={(v) =>
@@ -307,14 +311,14 @@ export const GpuConfigurator: React.FC<GpuConfiguratorProps> = ({
                 />
               </Field>
 
-              <Field label="FP16 Compute (TFLOPS)">
+              <Field label={t('gpu.customFp16')}>
                 <NumberInput
                   value={customGpu.fp16Tflops}
                   onChange={(v) => onUpdateCustomGpu({ ...customGpu, fp16Tflops: v || 100 })}
                 />
               </Field>
 
-              <Field label="Saatlik Bulut Maliyeti ($/saat)">
+              <Field label={t('gpu.customHourlyCost')}>
                 <NumberInput
                   value={customGpu.hourlyCostUsd}
                   step={0.05}
@@ -331,7 +335,7 @@ export const GpuConfigurator: React.FC<GpuConfiguratorProps> = ({
                 }}
                 className="px-4 py-2 bg-accent hover:opacity-90 text-bg rounded-md text-xs font-bold transition"
               >
-                Kaydet ve Seç
+                {t('gpu.customSave')}
               </button>
             </div>
           </div>
