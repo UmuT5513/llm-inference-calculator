@@ -371,6 +371,10 @@ async function startServer() {
     console.error("PostgreSQL migration failed. Check DATABASE_URL and that PostgreSQL is running:", err?.message);
   }
 
+  app.get("/", (_req, res) => {
+    res.redirect(302, "/app");
+  });
+
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
       server: { middlewareMode: true },
