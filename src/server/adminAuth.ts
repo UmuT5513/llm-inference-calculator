@@ -119,8 +119,8 @@ adminAuthRouter.post('/login', async (req, res) => {
     const lockedNow = registerFailure(ip);
     const status = lockedNow ? 429 : 401;
     const message = lockedNow
-      ? 'Çok fazla hatalı deneme. Lütfen 15 dakika sonra tekrar deneyin.'
-      : 'Kullanıcı adı veya şifre hatalı.';
+      ? msg(lang, 'Çok fazla hatalı deneme. Lütfen 15 dakika sonra tekrar deneyin.', 'Too many failed attempts. Please try again in 15 minutes.')
+      : msg(lang, 'Kullanıcı adı veya şifre hatalı.', 'Incorrect username or password.');
     return res.status(status).json({ error: message });
   }
 
