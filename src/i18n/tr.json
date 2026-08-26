@@ -289,11 +289,6 @@
     "useCaseTurkishQuery": "Çağrı merkezi, Türkçe müşteri desteği, yerel dil nüansları ve yüksek hızlı sohbet botu.",
     "useCaseTurkishSub": "Yerel NLP & Chatbot"
   },
-  "profiles": {
-    "profile-chat": { "name": "Sohbet Kullanıcıları (Chat)" },
-    "profile-rag": { "name": "RAG & Belge Arama" },
-    "profile-code": { "name": "Kod Asistanı (Coding)" }
-  },
   "quant": {
     "kvCacheDesc": "Uzun bağlam pencerelerinde (128k context) bellek taşmasını engelleyen KV belleği",
     "precisionLabel": "Hassasiyet:",

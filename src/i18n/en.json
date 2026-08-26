@@ -289,11 +289,6 @@
     "useCaseTurkishQuery": "Call center, Turkish customer support, local language nuances and a high-speed chatbot.",
     "useCaseTurkishSub": "Local NLP & Chatbot"
   },
-  "profiles": {
-    "profile-chat": { "name": "Chat Users" },
-    "profile-rag": { "name": "RAG & Document Search" },
-    "profile-code": { "name": "Coding Assistant" }
-  },
   "quant": {
     "kvCacheDesc": "KV memory that prevents memory overflow in long context windows (128k context)",
     "precisionLabel": "Precision:",
