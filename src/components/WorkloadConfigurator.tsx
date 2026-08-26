@@ -145,7 +145,7 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
                     </span>
                     <input
                       type="text"
-                      value={profile.name}
+                      value={t(`profiles.${profile.id}.name`, profile.name)}
                       onChange={(e) => handleUpdateProfileField(profile.id, 'name', e.target.value)}
                       placeholder={t('workload.profileNamePlaceholder')}
                       className="bg-surface border border-border rounded-lg px-2.5 py-1 text-xs text-text font-bold w-full max-w-xs focus:outline-none focus:ring-1 focus:ring-accent focus:border-accent"

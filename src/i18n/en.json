@@ -114,6 +114,22 @@
   },
   "scenarios": {
     "title": "Scenario Management",
+    "local-ollama": {
+      "title": "Desktop / Ollama (RTX 4090)",
+      "description": "Run Llama 3.3 70B Q4_K_M or Qwen 2.5 32B on a 24GB RTX 4090."
+    },
+    "startup-api": {
+      "title": "Startup / SaaS API Server (1x H100)",
+      "description": "Serve Llama 3.3 70B at FP8 precision to 16 concurrent users with vLLM."
+    },
+    "deepseek-r1-cluster": {
+      "title": "DeepSeek R1 / V3 On-Prem Cluster (8x H100)",
+      "description": "Run the 671B MoE model at FP8 precision on an 8x H100 80GB node."
+    },
+    "llama-405b-enterprise": {
+      "title": "Enterprise Llama 405B Inference (16x H200)",
+      "description": "Keep the frontier-class 405B model live at high concurrency and 128k context."
+    },
     "saveSectionTitle": "Save Current Configuration ({{type}})",
     "typeInference": "Inference",
     "typeFinetuning": "Fine-Tuning",
@@ -272,6 +288,11 @@
     "useCaseTurkish": "Turkish Customer Service",
     "useCaseTurkishQuery": "Call center, Turkish customer support, local language nuances and a high-speed chatbot.",
     "useCaseTurkishSub": "Local NLP & Chatbot"
+  },
+  "profiles": {
+    "profile-chat": { "name": "Chat Users" },
+    "profile-rag": { "name": "RAG & Document Search" },
+    "profile-code": { "name": "Coding Assistant" }
   },
   "quant": {
     "kvCacheDesc": "KV memory that prevents memory overflow in long context windows (128k context)",

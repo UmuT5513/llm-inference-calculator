@@ -114,6 +114,22 @@
   },
   "scenarios": {
     "title": "Senaryo Yönetimi",
+    "local-ollama": {
+      "title": "Yerel Masaüstü / Ollama (RTX 4090)",
+      "description": "RTX 4090 24GB kart üzerinde Llama 3.3 70B Q4_K_M veya Qwen 2.5 32B çalıştırma."
+    },
+    "startup-api": {
+      "title": "Girişim / SaaS API Sunucusu (1x H100)",
+      "description": "Llama 3.3 70B FP8 hassasiyetinde vLLM ile 16 eşzamanlı kullanıcıya hizmet verme."
+    },
+    "deepseek-r1-cluster": {
+      "title": "DeepSeek R1 / V3 On-Prem Kümesi (8x H100)",
+      "description": "671B MoE dev modeli 8x H100 80GB düğümünde FP8 hassasiyeti ile çalıştırma."
+    },
+    "llama-405b-enterprise": {
+      "title": "Kurumsal Llama 405B Çıkarım (16x H200)",
+      "description": "Frontier sınıfı 405B modelini yüksek eşzamanlılık ve 128k bağlam ile canlı tutma."
+    },
     "saveSectionTitle": "Mevcut Yapılandırmayı Kaydet ({{type}})",
     "typeInference": "Çıkarım",
     "typeFinetuning": "Fine-Tuning",
@@ -272,6 +288,11 @@
     "useCaseTurkish": "Türkçe Müşteri Hizmetleri",
     "useCaseTurkishQuery": "Çağrı merkezi, Türkçe müşteri desteği, yerel dil nüansları ve yüksek hızlı sohbet botu.",
     "useCaseTurkishSub": "Yerel NLP & Chatbot"
+  },
+  "profiles": {
+    "profile-chat": { "name": "Sohbet Kullanıcıları (Chat)" },
+    "profile-rag": { "name": "RAG & Belge Arama" },
+    "profile-code": { "name": "Kod Asistanı (Coding)" }
   },
   "quant": {
     "kvCacheDesc": "Uzun bağlam pencerelerinde (128k context) bellek taşmasını engelleyen KV belleği",

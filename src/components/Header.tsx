@@ -81,8 +81,8 @@ export const Header: React.FC<HeaderProps> = ({
                   onClick={() => onSelectPreset(s)}
                   className="w-full text-left px-2.5 py-1.5 rounded-md hover:bg-surface-2 text-xs text-muted transition flex flex-col gap-0.5"
                 >
-                  <span className="font-semibold text-accent">{s.title}</span>
-                  <span className="text-[10px] text-muted line-clamp-1">{s.description}</span>
+                  <span className="font-semibold text-accent">{t(`scenarios.${s.id}.title`, s.title)}</span>
+                  <span className="text-[10px] text-muted line-clamp-1">{t(`scenarios.${s.id}.description`, s.description)}</span>
                 </button>
               ))}
             </div>
