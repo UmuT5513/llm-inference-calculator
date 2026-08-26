@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Layers, AlertTriangle, CheckCircle2, DollarSign, Zap, Server } from 'lucide-react';
 import { CalculatorConfig } from '../types';
 import { GPU_PRESETS } from '../data/presets';
@@ -9,6 +10,7 @@ interface GpuComparisonTableProps {
 }
 
 export const GpuComparisonTable: React.FC<GpuComparisonTableProps> = ({ config }) => {
+  const { t } = useTranslation();
   // Compare selected model across 6 popular GPUs
   const candidateGpuIds = [
     'nvidia-b200',
@@ -51,9 +53,9 @@ export const GpuComparisonTable: React.FC<GpuComparisonTableProps> = ({ config }
           <Server className="w-4 h-4" />
         </div>
         <div>
-          <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">GPU Kümesi Karşılaştırma Matrisi</h3>
+          <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">{t('results.compare.title')}</h3>
           <p className="text-[11px] text-slate-500">
-            Seçili model ve bağlamın farklı GPU donanımlarındaki performans ve maliyet kıyası
+            {t('results.compare.subtitle')}
           </p>
         </div>
       </div>
@@ -62,14 +64,14 @@ export const GpuComparisonTable: React.FC<GpuComparisonTableProps> = ({ config }
         <table className="w-full text-left text-[11px] border-collapse">
           <thead>
             <tr className="border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider text-[10px] bg-slate-50/80">
-              <th className="py-2 px-2.5 rounded-l-lg">GPU Modeli</th>
-              <th className="py-2 px-2.5">Adet</th>
-              <th className="py-2 px-2.5">VRAM (Gerekli / Mevcut)</th>
+              <th className="py-2 px-2.5 rounded-l-lg">{t('results.compare.gpuModel')}</th>
+              <th className="py-2 px-2.5">{t('results.compare.count')}</th>
+              <th className="py-2 px-2.5">{t('results.compare.vram')}</th>
               <th className="py-2 px-2.5">TTFT</th>
               <th className="py-2 px-2.5">TPOT</th>
-              <th className="py-2 px-2.5">Kullanıcı Hızı</th>
-              <th className="py-2 px-2.5">Maliyet/Saat</th>
-              <th className="py-2 px-2.5 rounded-r-lg">Maliyet/1M Tok</th>
+              <th className="py-2 px-2.5">{t('results.compare.userSpeed')}</th>
+              <th className="py-2 px-2.5">{t('results.compare.costPerHour')}</th>
+              <th className="py-2 px-2.5 rounded-r-lg">{t('results.compare.costPer1m')}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 text-slate-700 font-mono text-[11px]">

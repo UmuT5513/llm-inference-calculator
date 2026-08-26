@@ -148,6 +148,104 @@
     "precisionLabel": "Hassasiyet:",
     "subtitle": "Model ağırlıklarının parametre başına kullandığı hassasiyet ve kalite koruma oranı"
   },
+  "results": {
+    "analyze": "Analiz Et",
+    "concurrentUsers": "{{count}} eşzamanlı kullanıcı",
+    "monthlyCost": "Aylık Maliyet",
+    "systemThroughput": "Sistem Throughput",
+    "vramUsage": "VRAM Doluluk",
+    "cloud": {
+      "cheapest": "EN UCUZ",
+      "lastUpdated": "Son güncelleme: {{date}}",
+      "livePrices": "Canlı GPU Fiyatları",
+      "lowest": "En düşük",
+      "lowestHourly": "Kazınan 3 sağlayıcı arasında en düşük saatlik kira",
+      "noPriceData": "Fiyat verisi yok",
+      "perHour": "${{cost}}/sa",
+      "perHourUnit": "/saat",
+      "perMonth": "${{cost}}/ay",
+      "refresh": "Yenile",
+      "refreshTitle": "Fiyatları yenile (npm run scrape:prices)",
+      "selectedGpu": "Seçili GPU: {{gpuName}}",
+      "subtitle": "{{gpuCount}}x {{gpuName}} için güncel resmi fiyatlandırmalar (Lambda, RunPod Pods/Serverless, Modal, Google Colab)",
+      "title": "Bulut & Serverless Çıkarım (Inference) Maliyet Karşılaştırması"
+    },
+    "compare": {
+      "costPer1m": "Maliyet/1M Tok",
+      "costPerHour": "Maliyet/Saat",
+      "count": "Adet",
+      "gpuModel": "GPU Modeli",
+      "subtitle": "Seçili model ve bağlamın farklı GPU donanımlarındaki performans ve maliyet kıyası",
+      "title": "GPU Kümesi Karşılaştırma Matrisi",
+      "userSpeed": "Kullanıcı Hızı",
+      "vram": "VRAM (Gerekli / Mevcut)"
+    },
+    "context": {
+      "subtitle": "Prompt context (1k → 128k) arttıkça KV Cache VRAM gereksinimi",
+      "title": "Context Boyutu vs VRAM Artış Eğrisi"
+    },
+    "cost": {
+      "daily": "Günlük",
+      "hardware": "Donanım: {{gpuCount}}x {{gpuName}}",
+      "hourly": "Saatlik",
+      "monthly": "Aylık"
+    },
+    "perf": {
+      "concurrentUsers": "Eşzamanlı Kullanıcı (yapılandırılan)",
+      "limitCompute": "Limit (Compute)",
+      "limitVram": "Limit (VRAM)",
+      "prefillFlops": "Prefill FLOPs",
+      "systemThroughput": "Sistem Throughput",
+      "userSpeed": "Kullanıcı Hızı"
+    },
+    "tco": {
+      "annualCooling": "Yıllık Soğutma / HVAC Gideri ($/₺):",
+      "annualElectricity": "Doğrudan Yıllık Elektrik Faturası Gir ($/₺):",
+      "annualMaintenance": "Yıllık Bakım, Parça Değişim & Destek:",
+      "annualOther": "Kabin/Colocation, İnternet, Sigorta ve Lisans:",
+      "breakEven": "Başabaş (ROI Süresi)",
+      "breakEvenMonths": "~{{months}} Ay",
+      "capex": "İlk Yatırım (CAPEX)",
+      "cloudAdvantage": "Bulut Daha Avantajlı",
+      "cloudMonthly": "Bulut Aylık",
+      "costSettings": "Maliyet Ayarları",
+      "dutyCycle": "Sunucu Yükü (%):",
+      "electricityRate": "TR Tarife (₺/kWh):",
+      "gpuUnitPrice": "Birim GPU Kartı Satın Alma Fiyatı:",
+      "monthlyAverage": "3 yıllık amortismanla aylık ortalama:",
+      "opex": "Yıllık Masraf (OPEX)",
+      "perMonthUnit": "/ay",
+      "perYear": "/ yıl",
+      "pue": "PUE Çarpanı (Enerji Verimliliği):",
+      "resetAll": "Tüm Maliyetleri Varsayılana Sıfırla",
+      "segments": {
+        "capex": "Donanım (CAPEX)",
+        "cooling": "Soğutma",
+        "electricity": "Elektrik",
+        "maintenance": "Bakım",
+        "other": "Diğer"
+      },
+      "systemBase": "Sunucu Kasa, CPU, RAM & NVMe Taban Bedeli:",
+      "threeYearTotal": "3 Yıllık Toplam: {{value}}",
+      "title": "On-Premise (Yerel Kurulum) TCO & Maliyet Bileşenleri",
+      "total": "Toplam: {{value}}",
+      "usdRate": "Dolar Kuru (USD/TRY):",
+      "yearBreakdown": "1. Yıl Maliyet Bileşenleri Dağılımı (TCO Kırılımı)",
+      "yearTotal": "1 Yıllık Toplam (TCO)"
+    },
+    "vram": {
+      "activations": "Aktivasyonlar",
+      "available": "Mevcut",
+      "cudaOverhead": "CUDA Overhead",
+      "kvCache": "KV Önbellek",
+      "kvPerUser": "KV / Kullanıcı",
+      "oomInsufficient": "[OOM] Bu donanım yetersiz. Önerilen min. GPU: {{gpus}}",
+      "perGpu": "GPU Başına ({{gpuCount}}x)",
+      "totalRequired": "Toplam Gerekli",
+      "utilization": "Doluluk",
+      "weights": "Ağırlıklar"
+    }
+  },
   "workload": {
     "activationOverhead": "Aktivasyon Bellek Faktörü (%)",
     "activationOverheadHint": "Ara katman aktivasyonlarının kapladığı tahmini dinamik oran.",

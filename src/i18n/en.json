@@ -148,6 +148,104 @@
     "precisionLabel": "Precision:",
     "subtitle": "Precision used per parameter by model weights and the quality preservation ratio"
   },
+  "results": {
+    "analyze": "Analyze",
+    "concurrentUsers": "{{count}} concurrent users",
+    "monthlyCost": "Monthly Cost",
+    "systemThroughput": "System Throughput",
+    "vramUsage": "VRAM Usage",
+    "cloud": {
+      "cheapest": "CHEAPEST",
+      "lastUpdated": "Last updated: {{date}}",
+      "livePrices": "Live GPU Prices",
+      "lowest": "Lowest",
+      "lowestHourly": "Lowest hourly rate among the 3 scraped providers",
+      "noPriceData": "No price data",
+      "perHour": "${{cost}}/hr",
+      "perHourUnit": "/hour",
+      "perMonth": "${{cost}}/mo",
+      "refresh": "Refresh",
+      "refreshTitle": "Refresh prices (npm run scrape:prices)",
+      "selectedGpu": "Selected GPU: {{gpuName}}",
+      "subtitle": "Current official pricing for {{gpuCount}}x {{gpuName}} (Lambda, RunPod Pods/Serverless, Modal, Google Colab)",
+      "title": "Cloud & Serverless Inference Cost Comparison"
+    },
+    "compare": {
+      "costPer1m": "Cost/1M Tok",
+      "costPerHour": "Cost/Hour",
+      "count": "Count",
+      "gpuModel": "GPU Model",
+      "subtitle": "Performance and cost comparison of the selected model and context across different GPU hardware",
+      "title": "GPU Cluster Comparison Matrix",
+      "userSpeed": "User Speed",
+      "vram": "VRAM (Needed / Available)"
+    },
+    "context": {
+      "subtitle": "KV Cache VRAM requirement as prompt context (1k → 128k) increases",
+      "title": "Context Size vs VRAM Scaling Curve"
+    },
+    "cost": {
+      "daily": "Daily",
+      "hardware": "Hardware: {{gpuCount}}x {{gpuName}}",
+      "hourly": "Hourly",
+      "monthly": "Monthly"
+    },
+    "perf": {
+      "concurrentUsers": "Concurrent Users (configured)",
+      "limitCompute": "Limit (Compute)",
+      "limitVram": "Limit (VRAM)",
+      "prefillFlops": "Prefill FLOPs",
+      "systemThroughput": "System Throughput",
+      "userSpeed": "User Speed"
+    },
+    "tco": {
+      "annualCooling": "Annual Cooling / HVAC Expense ($/₺):",
+      "annualElectricity": "Enter Direct Annual Electricity Bill ($/₺):",
+      "annualMaintenance": "Annual Maintenance, Parts Replacement & Support:",
+      "annualOther": "Cabinet/Colocation, Internet, Insurance and License:",
+      "breakEven": "Break-even (ROI Time)",
+      "breakEvenMonths": "~{{months}} Months",
+      "capex": "Initial Investment (CAPEX)",
+      "cloudAdvantage": "Cloud Is More Advantageous",
+      "cloudMonthly": "Cloud Monthly",
+      "costSettings": "Cost Settings",
+      "dutyCycle": "Server Duty Cycle (%):",
+      "electricityRate": "TR Tariff (₺/kWh):",
+      "gpuUnitPrice": "Unit GPU Card Purchase Price:",
+      "monthlyAverage": "Monthly average with 3-year amortization:",
+      "opex": "Annual Expense (OPEX)",
+      "perMonthUnit": "/mo",
+      "perYear": "/ year",
+      "pue": "PUE Multiplier (Energy Efficiency):",
+      "resetAll": "Reset All Costs to Defaults",
+      "segments": {
+        "capex": "Hardware (CAPEX)",
+        "cooling": "Cooling",
+        "electricity": "Electricity",
+        "maintenance": "Maintenance",
+        "other": "Other"
+      },
+      "systemBase": "Server Chassis, CPU, RAM & NVMe Base Cost:",
+      "threeYearTotal": "3-Year Total: {{value}}",
+      "title": "On-Premise TCO & Cost Components",
+      "total": "Total: {{value}}",
+      "usdRate": "Dollar Rate (USD/TRY):",
+      "yearBreakdown": "1-Year Cost Component Breakdown (TCO Split)",
+      "yearTotal": "1-Year Total (TCO)"
+    },
+    "vram": {
+      "activations": "Activations",
+      "available": "Available",
+      "cudaOverhead": "CUDA Overhead",
+      "kvCache": "KV Cache",
+      "kvPerUser": "KV / User",
+      "oomInsufficient": "[OOM] This hardware is insufficient. Recommended min. GPUs: {{gpus}}",
+      "perGpu": "Per GPU ({{gpuCount}}x)",
+      "totalRequired": "Total Required",
+      "utilization": "Utilization",
+      "weights": "Weights"
+    }
+  },
   "workload": {
     "activationOverhead": "Activation Memory Factor (%)",
     "activationOverheadHint": "Estimated dynamic ratio of memory taken by intermediate layer activations.",

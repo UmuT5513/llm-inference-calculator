@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { CalculationResults, CalculatorConfig } from '../../types';
 import { GpuPrice } from '../../hooks/useLiveGpuPrices';
 import { Badge } from '../ui/Badge';
@@ -48,6 +49,7 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
   onChangeConfig,
 }) => {
   const [tab, setTab] = useState('vram');
+  const { t } = useTranslation();
 
   return (
     <Panel className="overflow-hidden">
@@ -61,7 +63,8 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
               <Badge tone="default">{config.quantId.toUpperCase()}</Badge>
             </div>
             <p className="text-[11px] text-muted font-mono mt-1 truncate">
-              {config.gpuCount}x {results.gpuName} • {results.activeTotalUsers} eşzamanlı kullanıcı •{' '}
+              {config.gpuCount}x {results.gpuName} •{' '}
+              {t('results.concurrentUsers', { count: results.activeTotalUsers })} •{' '}
               {results.effectivePromptLen.toLocaleString()} in / {results.effectiveGenLen.toLocaleString()} out
             </p>
           </div>
@@ -71,14 +74,14 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
               className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-bold font-mono text-bg bg-accent hover:opacity-90 rounded shrink-0 transition active:scale-95"
             >
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Analiz Et</span>
+              <span>{t('results.analyze')}</span>
             </button>
           )}
         </div>
 
         <div className="mt-3">
           <div className="flex items-center justify-between text-[11px] font-mono mb-1">
-            <span className="text-muted uppercase tracking-wider">VRAM Doluluk</span>
+            <span className="text-muted uppercase tracking-wider">{t('results.vramUsage')}</span>
             <span className={results.isOom ? 'text-danger' : 'text-ok'}>
               {results.isOom ? '[OOM]' : '[OK]'} %{results.vramUtilizationPct.toFixed(0)}
             </span>
@@ -97,8 +100,8 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
       </div>
 
       <div className="grid grid-cols-2 gap-2 px-3.5 py-3 border-b border-border">
-        <Stat label="Aylık Maliyet" value={`$${results.monthlyCostUsd.toFixed(0)}`} tone={results.isOom ? 'danger' : 'accent'} />
-        <Stat label="Sistem Throughput" value={`${results.systemThroughputTokensPerSec.toFixed(0)}`} sub="tok/s" />
+        <Stat label={t('results.monthlyCost')} value={`$${results.monthlyCostUsd.toFixed(0)}`} tone={results.isOom ? 'danger' : 'accent'} />
+        <Stat label={t('results.systemThroughput')} value={`${results.systemThroughputTokensPerSec.toFixed(0)}`} sub="tok/s" />
         <Stat label="TTFT" value={`${results.ttftMs.toFixed(0)}`} sub="ms" />
         <Stat label="TPOT" value={`${results.tpotMs.toFixed(2)}`} sub="ms" />
       </div>

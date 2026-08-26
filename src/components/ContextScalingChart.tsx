@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { LineChart, Database, Layers, ArrowUpRight } from 'lucide-react';
 import { CalculatorConfig } from '../types';
 import { calculateInferenceMetrics } from '../utils/calculator';
@@ -8,6 +9,7 @@ interface ContextScalingChartProps {
 }
 
 export const ContextScalingChart: React.FC<ContextScalingChartProps> = ({ config }) => {
+  const { t } = useTranslation();
   const contextSteps = [1024, 2048, 4096, 8192, 16384, 32768, 65536, 128000];
 
   const chartData = contextSteps.map((ctx) => {
@@ -36,9 +38,9 @@ export const ContextScalingChart: React.FC<ContextScalingChartProps> = ({ config
           <Database className="w-4 h-4" />
         </div>
         <div>
-          <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Context Boyutu vs VRAM Artış Eğrisi</h3>
+          <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">{t('results.context.title')}</h3>
           <p className="text-[11px] text-slate-500">
-            Prompt context (1k → 128k) arttıkça KV Cache VRAM gereksinimi
+            {t('results.context.subtitle')}
           </p>
         </div>
       </div>
