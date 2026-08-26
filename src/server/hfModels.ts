@@ -3,6 +3,7 @@ import { getPool } from './db';
 import { refreshModels } from './modelRefresh';
 import { requireAdminSession } from './adminAuth';
 import { isFormatBlocked, isDerivativeBlocked, isTextPipeline } from './knownOrgs';
+import { pickLang, msg } from './i18nErrors';
 
 export const hfModelsRouter = express.Router();
 
@@ -43,6 +44,7 @@ export interface HfModelRow {
 // Single unified catalog: one row per model, seeded from the curated presets
 // and enriched with live HF architecture when available.
 hfModelsRouter.get('/', async (req, res) => {
+  const lang = pickLang(req);
   try {
     const pool = getPool();
     const result = await pool.query(
@@ -105,7 +107,7 @@ hfModelsRouter.get('/', async (req, res) => {
     res.json({ models: rows });
   } catch (err: any) {
     console.error('List HF models error:', err?.message);
-    res.status(500).json({ error: 'Model kataloğu yüklenemedi.' });
+    res.status(500).json({ error: msg(lang, 'Model kataloğu yüklenemedi.', 'Failed to load model catalog.') });
   }
 });
 
@@ -115,6 +117,7 @@ hfModelsRouter.get('/', async (req, res) => {
 // call is rejected with 409 (the refresh is idempotent, but running it twice
 // at once would hammer the Hub).
 hfModelsRouter.post('/refresh', requireAdminSession, async (req, res) => {
+  const lang = pickLang(req);
   try {
     const summary = await refreshModels();
     res.json({ ok: true, summary });
@@ -124,6 +127,6 @@ hfModelsRouter.post('/refresh', requireAdminSession, async (req, res) => {
       return;
     }
     console.error('Refresh HF models error:', err?.message);
-    res.status(500).json({ error: 'Model kataloğu güncellenemedi.' });
+    res.status(500).json({ error: msg(lang, 'Model kataloğu güncellenemedi.', 'Failed to refresh model catalog.') });
   }
 });

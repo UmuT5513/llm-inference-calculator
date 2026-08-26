@@ -1,6 +1,7 @@
 import express, { NextFunction, Request, Response } from 'express';
 import { SignJWT, jwtVerify } from 'jose';
 import { createHash, timingSafeEqual } from 'crypto';
+import { pickLang, msg } from './i18nErrors';
 
 const ADMIN_SESSION_COOKIE = 'llmcalc_admin_session';
 const ADMIN_SESSION_TTL_SECONDS = 60 * 60 * 24; // 24 hours
@@ -96,18 +97,19 @@ pruneTimer.unref?.();
 export const adminAuthRouter = express.Router();
 
 adminAuthRouter.post('/login', async (req, res) => {
+  const lang = pickLang(req);
   if (!credentialsConfigured()) {
-    return res.status(500).json({ error: 'ADMIN_USERNAME / ADMIN_PASSWORD ortam değişkenleri tanımlı değil.' });
+    return res.status(500).json({ error: msg(lang, 'ADMIN_USERNAME / ADMIN_PASSWORD ortam değişkenleri tanımlı değil.', 'ADMIN_USERNAME / ADMIN_PASSWORD environment variables are not set.') });
   }
 
   const ip = req.ip || 'unknown';
   if (isLocked(ip)) {
-    return res.status(429).json({ error: 'Çok fazla hatalı deneme. Lütfen 15 dakika sonra tekrar deneyin.' });
+    return res.status(429).json({ error: msg(lang, 'Çok fazla hatalı deneme. Lütfen 15 dakika sonra tekrar deneyin.', 'Too many failed attempts. Please try again in 15 minutes.') });
   }
 
   const { username, password } = req.body || {};
   if (typeof username !== 'string' || typeof password !== 'string' || !username || !password) {
-    return res.status(400).json({ error: 'Kullanıcı adı ve şifre gerekli.' });
+    return res.status(400).json({ error: msg(lang, 'Kullanıcı adı ve şifre gerekli.', 'Username and password are required.') });
   }
 
   const valid =
@@ -172,9 +174,10 @@ export async function getAdminUser(req: Request): Promise<AdminUser | null> {
 // Guards admin-only endpoints (catalog/price refresh) with the local
 // username/password admin session.
 export async function requireAdminSession(req: Request, res: Response, next: NextFunction): Promise<void> {
+  const lang = pickLang(req);
   const admin = await getAdminUser(req);
   if (!admin) {
-    res.status(401).json({ error: 'Bu işlem için yönetici oturumu gerekli.' });
+    res.status(401).json({ error: msg(lang, 'Bu işlem için yönetici oturumu gerekli.', 'An admin session is required for this operation.') });
     return;
   }
   next();

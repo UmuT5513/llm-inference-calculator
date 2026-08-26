@@ -8,6 +8,7 @@ import { seedModelCatalog } from "./src/server/modelCatalogSeed";
 import { adminAuthRouter } from "./src/server/adminAuth";
 import { gpuPricesRouter } from "./src/server/gpuPrices";
 import { hfModelsRouter } from "./src/server/hfModels";
+import { pickLang, msg } from "./src/server/i18nErrors";
 
 dotenv.config();
 
@@ -246,7 +247,7 @@ function getHeuristicRecommendation(useCase: string) {
 app.post("/api/recommend-model", async (req, res) => {
   const { useCase } = req.body;
   if (!useCase || typeof useCase !== "string" || useCase.trim().length === 0) {
-    return res.status(400).json({ error: "Lütfen bir kullanım senaryosu veya sektör belirtin." });
+    return res.status(400).json({ error: msg(pickLang(req), "Lütfen bir kullanım senaryosu veya sektör belirtin.", "Please provide a use case or industry.") });
   }
 
   try {
@@ -318,7 +319,7 @@ app.post("/api/advisor", async (req, res) => {
     const ai = getGenAI();
     if (!ai) {
       return res.status(503).json({
-        error: "Gemini API key is not configured. AI advisor feature requires GEMINI_API_KEY in server environment.",
+        error: msg(pickLang(req), "Gemini API anahtarı yapılandırılmamış. AI danışman özelliği sunucu ortamında GEMINI_API_KEY gerektirir.", "Gemini API key is not configured. AI advisor feature requires GEMINI_API_KEY in server environment."),
       });
     }
 
@@ -358,7 +359,7 @@ Keep response clear, structured in clean Markdown with headings, callout boxes, 
     res.json({ advice: response.text });
   } catch (err: any) {
     console.error("AI Advisor error:", err);
-    res.status(500).json({ error: err?.message || "Failed to generate AI advice." });
+    res.status(500).json({ error: err?.message || msg(pickLang(req), "AI danışmanlığı üretilemedi.", "Failed to generate AI advice.") });
   }
 });
 
