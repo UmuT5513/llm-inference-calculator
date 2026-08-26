@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Sparkles, AlertTriangle, Copy, Check } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { CalculationResults, CalculatorConfig } from '../types';
 
 interface AiAdvisorModalProps {
@@ -15,6 +16,7 @@ export const AiAdvisorModal: React.FC<AiAdvisorModalProps> = ({
   config,
   results,
 }) => {
+  const { t, i18n } = useTranslation();
   const [loading, setLoading] = useState<boolean>(false);
   const [advice, setAdvice] = useState<string>('');
   const [error, setError] = useState<string>('');
@@ -48,16 +50,17 @@ export const AiAdvisorModal: React.FC<AiAdvisorModalProps> = ({
           targetTtft: results.ttftMs,
           targetTpot: results.tpotMs,
           estimatedCostPerHour: results.hourlyCostUsd,
+          lang: i18n.resolvedLanguage === 'tr' ? 'tr' : 'en',
         }),
       });
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data?.error || 'Tavsiye oluşturulamadı.');
+        throw new Error(data?.error || t('advisor.adviceFailed'));
       }
       setAdvice(data.advice);
     } catch (err: any) {
-      setError(err?.message || 'Yapay zeka önerisi alınırken hata oluştu.');
+      setError(err?.message || t('advisor.errorGeneric'));
     } finally {
       setLoading(false);
     }
@@ -82,10 +85,10 @@ export const AiAdvisorModal: React.FC<AiAdvisorModalProps> = ({
             </div>
             <div className="min-w-0">
               <h2 className="text-[11px] font-bold font-mono uppercase tracking-wider text-text">
-                AI Architect & Advisor
+                {t('advisor.title')}
               </h2>
               <p className="text-[11px] text-muted mt-0.5">
-                vLLM / TensorRT-LLM optimize dağıtım parametreleri ve darboğaz analizi
+                {t('advisor.subtitle')}
               </p>
             </div>
           </div>
@@ -104,7 +107,7 @@ export const AiAdvisorModal: React.FC<AiAdvisorModalProps> = ({
             <div className="py-10 flex flex-col items-center justify-center space-y-3">
               <div className="w-8 h-8 border-3 border-accent border-t-transparent rounded-full animate-spin" />
               <p className="text-xs font-medium text-muted animate-pulse">
-                Gemini mimari ve vLLM konfigürasyonunu analiz ediyor...
+                {t('advisor.loading')}
               </p>
             </div>
           )}
@@ -113,14 +116,14 @@ export const AiAdvisorModal: React.FC<AiAdvisorModalProps> = ({
             <div className="p-4 bg-surface-2 border border-danger/40 rounded-md text-xs text-danger space-y-2">
               <div className="font-bold flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4 text-danger" />
-                Hata Oluştu
+                {t('advisor.errorTitle')}
               </div>
               <p className="text-[11px] text-muted">{error}</p>
               <button
                 onClick={fetchAdvice}
                 className="px-3 py-1.5 bg-surface-2 border border-border text-text hover:bg-surface rounded-md font-bold text-[11px] transition cursor-pointer"
               >
-                Yeniden Dene
+                {t('advisor.retry')}
               </button>
             </div>
           )}
@@ -135,12 +138,12 @@ export const AiAdvisorModal: React.FC<AiAdvisorModalProps> = ({
                   {copied ? (
                     <>
                       <Check className="w-3.5 h-3.5 text-ok" />
-                      <span className="text-ok font-bold">Kopyalandı</span>
+                      <span className="text-ok font-bold">{t('advisor.copied')}</span>
                     </>
                   ) : (
                     <>
                       <Copy className="w-3.5 h-3.5 text-muted" />
-                      <span>Raporu Kopyala</span>
+                      <span>{t('advisor.copyReport')}</span>
                     </>
                   )}
                 </button>
@@ -160,7 +163,7 @@ export const AiAdvisorModal: React.FC<AiAdvisorModalProps> = ({
             onClick={onClose}
             className="px-4 py-2 bg-surface-2 border border-border text-text hover:bg-surface text-xs font-medium rounded-md transition cursor-pointer"
           >
-            Kapat
+            {t('advisor.close')}
           </button>
         </div>
       </div>

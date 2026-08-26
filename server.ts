@@ -324,6 +324,8 @@ app.post("/api/advisor", async (req, res) => {
 
     const { modelName, quantization, gpus, totalVramNeeded, promptLen, genLen, concurrentUsers, targetTtft, targetTpot, estimatedCostPerHour } = req.body;
 
+    const adviceLang = req.body?.lang === 'en' ? 'English' : 'Turkish';
+
     const prompt = `You are a Principal AI Infrastructure Engineer and LLM Inference Specialist.
 Analyze the following deployment configuration and provide detailed optimization recommendations, engine parameters, and architecture advice.
 
@@ -336,7 +338,7 @@ Current Deployment Configuration:
 - Concurrency: ${concurrentUsers} concurrent users/streams
 - Hourly Hardware Cost: $${estimatedCostPerHour?.toFixed(2)}/hr
 
-Provide a structured analysis in Turkish (or bilingual terms) covering:
+Provide a structured analysis in ${adviceLang} (or bilingual terms) covering:
 1. **Feasibility & Bottleneck Analysis**: Is the GPU memory & bandwidth sufficient? What is the main bottleneck (Compute/Prefill bound vs Bandwidth/Decode bound)?
 2. **Recommended Engine & Framework**: Detailed setup for vLLM, TensorRT-LLM, SGLang, or Ollama/llama.cpp. Give recommended flags (e.g. --tensor-parallel-size, --gpu-memory-utilization, --max-model-len, --kv-cache-dtype).
 3. **Cost & Performance Optimization**: How to lower cost per 1M tokens or reduce latency (e.g. FP8/INT4 KV cache, speculative decoding, prefix caching, chunked prefill).

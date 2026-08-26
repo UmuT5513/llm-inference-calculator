@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Download, Copy, Check } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { CalculatorConfig, CalculationResults } from '../types';
 import { Tabs } from './ui/Tabs';
 
@@ -18,6 +19,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
   config,
   results,
 }) => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<ExportTab>('cli');
   const [copied, setCopied] = useState<boolean>(false);
 
@@ -158,10 +160,10 @@ ${results.cloudCosts.map((c) => `- **${c.providerName}:** $${c.totalHourlyCostUs
   if (activeTab === 'markdown') displayContent = markdownReport;
 
   const EXPORT_TABS: { id: ExportTab; label: string }[] = [
-    { id: 'cli', label: `${results.engineName} CLI` },
-    { id: 'k8s', label: 'K8s YAML' },
-    { id: 'markdown', label: 'Markdown' },
-    { id: 'json', label: 'JSON' },
+    { id: 'cli', label: t('export.tabCli', { engineName: results.engineName }) },
+    { id: 'k8s', label: t('export.tabK8s') },
+    { id: 'markdown', label: t('export.tabMarkdown') },
+    { id: 'json', label: t('export.tabJson') },
   ];
 
   const handleCopy = () => {
@@ -177,7 +179,7 @@ ${results.cloudCosts.map((c) => `- **${c.providerName}:** $${c.totalHourlyCostUs
         <div className="flex items-center justify-between gap-3 border-b border-border px-3.5 py-2">
           <div className="flex items-center gap-2 text-text font-bold text-[11px] font-mono uppercase tracking-wider">
             <Download className="w-4 h-4 text-accent" />
-            Dışa Aktar & Dağıtım Konfigürasyonları
+            {t('export.title')}
           </div>
           <button
             onClick={onClose}
@@ -205,12 +207,12 @@ ${results.cloudCosts.map((c) => `- **${c.providerName}:** $${c.totalHourlyCostUs
               {copied ? (
                 <>
                   <Check className="w-3.5 h-3.5 text-ok" />
-                  <span className="text-ok font-bold">Kopyalandı</span>
+                  <span className="text-ok font-bold">{t('export.copied')}</span>
                 </>
               ) : (
                 <>
                   <Copy className="w-3.5 h-3.5 text-muted" />
-                  <span>Kopyala</span>
+                  <span>{t('export.copy')}</span>
                 </>
               )}
             </button>
@@ -227,7 +229,7 @@ ${results.cloudCosts.map((c) => `- **${c.providerName}:** $${c.totalHourlyCostUs
             onClick={onClose}
             className="px-4 py-2 bg-surface-2 border border-border text-text hover:bg-surface text-xs font-medium rounded-md transition cursor-pointer"
           >
-            Kapat
+            {t('export.close')}
           </button>
         </div>
       </div>

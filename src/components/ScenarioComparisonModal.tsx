@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { X, Scale } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { CalculatorConfig, CalculationResults, FineTuningConfig, FineTuningResults } from '../types';
 import { listScenarios } from '../utils/scenarioStorage';
 
@@ -42,6 +43,7 @@ export const ScenarioComparisonModal: React.FC<ScenarioComparisonModalProps> = (
   results,
   ftResults,
 }) => {
+  const { t } = useTranslation();
   const [saved, setSaved] = useState<ScenarioRow[]>([]);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [includeCurrent, setIncludeCurrent] = useState(true);
@@ -66,8 +68,8 @@ export const ScenarioComparisonModal: React.FC<ScenarioComparisonModalProps> = (
     () => ({
       id: 'current',
       type: activeTab,
-      name: 'Geçerli Yapılandırma',
-      subtitle: 'Canlı hesap',
+      name: t('compare.currentName'),
+      subtitle: t('compare.currentSubtitle'),
       config: activeTab === 'inference' ? config : ftConfig,
       results: activeTab === 'inference' ? results : ftResults,
     }),
@@ -104,73 +106,76 @@ export const ScenarioComparisonModal: React.FC<ScenarioComparisonModalProps> = (
 
     if (activeTab === 'inference') {
       rows.push({
-        label: 'Model',
+        label: t('compare.rowModel'),
         values: columns.map((c) =>
           r(c, (cfg, res) => `${res.modelName || '—'} (${fmtNum(res.totalParamsB, 0)}B)`)
         ),
       });
       rows.push({
-        label: 'Quantization',
+        label: t('compare.rowQuantization'),
         values: columns.map((c) =>
           r(c, (cfg) => `${String(cfg.quantId || '').toUpperCase()} / KV: ${String(cfg.kvCacheQuantId || '').toUpperCase()}`)
         ),
       });
       rows.push({
-        label: 'Motor (Engine)',
+        label: t('compare.rowEngine'),
         values: columns.map((c) => r(c, (cfg, res) => res.engineName || cfg.engineId || '—')),
       });
       rows.push({
-        label: 'GPU Donanım',
+        label: t('compare.rowGpu'),
         values: columns.map((c) =>
           r(c, (cfg, res) => `${cfg.gpuCount}x ${res.gpuName || '—'} (${cfg.tensorParallelism} TP / ${cfg.pipelineParallelism} PP)`)
         ),
       });
       rows.push({
-        label: 'Eşzamanlı Kullanıcı',
+        label: t('compare.rowConcurrentUsers'),
         values: columns.map((c) => r(c, (_cfg, res) => `${fmtNum(res.activeTotalUsers, 0)} (${fmtNum(res.effectivePromptLen, 0)} in / ${fmtNum(res.effectiveGenLen, 0)} out)`)),
       });
       rows.push({
-        label: 'Toplam VRAM Gerekli',
+        label: t('compare.rowTotalVram'),
         values: columns.map((c) => r(c, (_cfg, res) => `${fmtNum(res.totalVramNeededGB)} GB / ${fmtNum(res.totalVramAvailableGB)} GB (${fmtNum(res.vramUtilizationPct, 0)}%)`)),
       });
       rows.push({
-        label: 'VRAM Yeterliliği',
+        label: t('compare.rowVramSufficiency'),
         values: columns.map((c) =>
           r(c, (_cfg, res) =>
-            res.isOom ? 'OOM! Kart başına yetersiz' : 'Yeterli'
+            res.isOom ? t('compare.oomInsufficient') : t('compare.sufficient')
           )
         ),
       });
       rows.push({
-        label: 'TTFT (İlk Token Süresi)',
+        label: t('compare.rowTtft'),
         values: columns.map((c) => r(c, (_cfg, res) => fmtTime(res.ttftMs))),
       });
       rows.push({
-        label: 'TPOT (Token Süresi)',
+        label: t('compare.rowTpot'),
         values: columns.map((c) => r(c, (_cfg, res) => fmtTime(res.tpotMs))),
       });
       rows.push({
-        label: 'Sistem Çıktısı',
+        label: t('compare.rowSystemThroughput'),
         values: columns.map((c) =>
-          r(c, (_cfg, res) => `${fmtNum(res.tokensPerSecPerUser, 1)} tok/sn/kullanıcı (${fmtNum(res.systemThroughputTokensPerSec, 1)} tok/sn sistem)`)
+          r(c, (_cfg, res) => t('compare.systemThroughputValue', {
+            userSpeed: fmtNum(res.tokensPerSecPerUser, 1),
+            systemSpeed: fmtNum(res.systemThroughputTokensPerSec, 1),
+          }))
         ),
       });
       rows.push({
-        label: 'Saatlik Maliyet',
+        label: t('compare.rowHourlyCost'),
         values: columns.map((c) => r(c, (_cfg, res) => fmtMoney(res.hourlyCostUsd))),
       });
       rows.push({
-        label: 'Aylık Maliyet',
+        label: t('compare.rowMonthlyCost'),
         values: columns.map((c) => r(c, (_cfg, res) => fmtMoney(res.monthlyCostUsd))),
       });
       rows.push({
-        label: 'Milyon Token Maliyeti',
+        label: t('compare.rowMillionTokenCost'),
         values: columns.map((c) =>
           r(c, (_cfg, res) => `${fmtMoney(res.costPerMillionTotalTokensUsd)}/M tok (${fmtMoney(res.costPerMillionInputTokensUsd)} in / ${fmtMoney(res.costPerMillionOutputTokensUsd)} out)`)
         ),
       });
       rows.push({
-        label: 'En Ucuz Bulut',
+        label: t('compare.rowCheapestCloud'),
         values: columns.map((c) =>
           r(c, (_cfg, res) => {
             const cheapest = res.cloudCosts?.find((x) => x.isCheapest);
@@ -179,46 +184,56 @@ export const ScenarioComparisonModal: React.FC<ScenarioComparisonModalProps> = (
         ),
       });
       rows.push({
-        label: '3 Yıllık On-Prem TCO',
+        label: t('compare.rowThreeYearTco'),
         values: columns.map((c) => r(c, (_cfg, res) => fmtMoney(res.onPremTco?.totalThreeYearCostUsd))),
       });
       rows.push({
-        label: 'Buluta Karşı Kırılma Noktası',
+        label: t('compare.rowBreakEven'),
         values: columns.map((c) =>
           r(c, (_cfg, res) =>
             res.onPremTco?.breakEvenMonthsVsCloud < 999
               ? `~${fmtNum(res.onPremTco.breakEvenMonthsVsCloud, 1)} ay`
-              : 'Bulut daha ekonomik'
+              : t('compare.cloudCheaper')
           )
         ),
       });
     } else {
       rows.push({
-        label: 'Model',
+        label: t('compare.rowModel'),
         values: columns.map((c) => r(c, (cfg, res) => `${res.modelName || '—'} (${fmtNum(res.totalParamsB, 0)}B)`)),
       });
       rows.push({
-        label: 'Yöntem / Framework',
+        label: t('compare.rowMethodFramework'),
         values: columns.map((c) => r(c, (cfg, res) => `${res.methodName || cfg.methodId || '—'} + ${res.frameworkName || cfg.frameworkId || '—'}`)),
       });
       rows.push({
-        label: 'Dataset',
-        values: columns.map((c) => r(c, (cfg, res) => `${fmtNum(res.totalSamples, 0)} örnek / ${fmtNum(res.totalTokens, 0)} token / ${cfg.epochs || '—'} epoch`)),
+        label: t('compare.rowDataset'),
+        values: columns.map((c) => r(c, (cfg, res) => t('compare.datasetValue', {
+          samples: fmtNum(res.totalSamples, 0),
+          tokens: fmtNum(res.totalTokens, 0),
+          epochs: cfg.epochs || '—',
+        }))),
       });
       rows.push({
-        label: 'VRAM Gerekli',
-        values: columns.map((c) => r(c, (_cfg, res) => `${fmtNum(res.totalVramNeededGB)} GB (kart başına ${fmtNum(res.vramPerGpuNeededGB)} GB)`)),
+        label: t('compare.rowVramNeeded'),
+        values: columns.map((c) => r(c, (_cfg, res) => t('compare.vramPerGpuValue', {
+          total: fmtNum(res.totalVramNeededGB),
+          perGpu: fmtNum(res.vramPerGpuNeededGB),
+        }))),
       });
       rows.push({
-        label: 'Eğitim Süresi',
+        label: t('compare.rowTrainingTime'),
         values: columns.map((c) => r(c, (_cfg, res) => res.trainingTimeFormatted || `${fmtNum(res.trainingTimeHours, 2)} saat`)),
       });
       rows.push({
-        label: 'Unsloth Kazanımı',
-        values: columns.map((c) => r(c, (_cfg, res) => `${fmtNum(res.unslothSpeedupMultiplier, 1)}x hız (${fmtNum(res.unslothTimeSavedHours, 1)} saat tasarruf)`)),
+        label: t('compare.rowUnslothGain'),
+        values: columns.map((c) => r(c, (_cfg, res) => t('compare.unslothGainValue', {
+          mult: fmtNum(res.unslothSpeedupMultiplier, 1),
+          saved: fmtNum(res.unslothTimeSavedHours, 1),
+        }))),
       });
       rows.push({
-        label: 'En Ucuz Platform',
+        label: t('compare.rowCheapestPlatform'),
         values: columns.map((c) =>
           r(c, (_cfg, res) =>
             res.cheapestPlatform
@@ -228,11 +243,11 @@ export const ScenarioComparisonModal: React.FC<ScenarioComparisonModalProps> = (
         ),
       });
       rows.push({
-        label: 'Toplam Bulut Maliyeti',
+        label: t('compare.rowTotalCloudCost'),
         values: columns.map((c) => r(c, (_cfg, res) => fmtMoney(res.platformEstimates?.reduce((a, p) => a + p.totalCostUsd, 0)))),
       });
       rows.push({
-        label: 'Yerel Elektrik Maliyeti',
+        label: t('compare.rowLocalElectricityCost'),
         values: columns.map((c) => r(c, (_cfg, res) => `${fmtNum(res.localElectricityCostTry)} TL`)),
       });
     }
@@ -249,7 +264,7 @@ export const ScenarioComparisonModal: React.FC<ScenarioComparisonModalProps> = (
           <div className="flex items-center gap-2 min-w-0">
             <Scale className="w-4 h-4 text-accent shrink-0" />
             <h2 className="text-[11px] font-bold font-mono uppercase tracking-wider text-text">
-              Senaryo Karşılaştırma
+              {t('compare.title')}
             </h2>
           </div>
           <button
@@ -268,7 +283,7 @@ export const ScenarioComparisonModal: React.FC<ScenarioComparisonModalProps> = (
               onChange={(e) => setIncludeCurrent(e.target.checked)}
               className="accent-[#FFB224]"
             />
-            Geçerli yapılandırmayı da dahil et
+            {t('compare.includeCurrent')}
           </label>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-56 overflow-y-auto">
@@ -293,7 +308,7 @@ export const ScenarioComparisonModal: React.FC<ScenarioComparisonModalProps> = (
             ))}
             {saved.length === 0 && (
               <p className="col-span-full text-sm text-muted text-center py-4">
-                Kayıtlı senaryo yok.
+                {t('compare.noSaved')}
               </p>
             )}
           </div>
@@ -304,7 +319,7 @@ export const ScenarioComparisonModal: React.FC<ScenarioComparisonModalProps> = (
                 <thead>
                   <tr className="bg-surface-2 border-b border-border">
                     <th className="text-left px-4 py-2 font-semibold text-muted w-56 min-w-44">
-                      Metrik
+                      {t('compare.metric')}
                     </th>
                     {columns.map((c) => (
                       <th
@@ -314,7 +329,7 @@ export const ScenarioComparisonModal: React.FC<ScenarioComparisonModalProps> = (
                         }`}
                       >
                         <span className="block text-[10px] text-accent mb-0.5">
-                          {c.id === 'current' ? '⚡ Canlı' : 'Senaryo'}
+                          {c.id === 'current' ? t('compare.liveBadge') : t('compare.scenarioBadge')}
                         </span>
                         {c.name}
                       </th>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { X, Info, Calculator, Database, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { useTranslation, Trans } from 'react-i18next';
 import { Panel } from './ui/Panel';
 import { SectionHeader } from './ui/SectionHeader';
 
@@ -9,6 +10,7 @@ interface AboutModalProps {
 }
 
 export const AboutModal: React.FC<AboutModalProps> = ({ isOpen, onClose }) => {
+  const { t } = useTranslation();
   if (!isOpen) return null;
 
   return (
@@ -18,7 +20,7 @@ export const AboutModal: React.FC<AboutModalProps> = ({ isOpen, onClose }) => {
           <div className="flex items-center gap-2">
             <Info className="w-4 h-4 text-accent shrink-0" />
             <h2 className="text-[11px] font-bold font-mono uppercase tracking-wider text-text">
-              Metodoloji & Hakkında
+              {t('about.title')}
             </h2>
           </div>
           <button
@@ -31,98 +33,70 @@ export const AboutModal: React.FC<AboutModalProps> = ({ isOpen, onClose }) => {
 
         <div className="p-5 space-y-4">
           <p className="text-sm text-muted leading-relaxed">
-            Bu araç, açık kaynak LLM'leri kendi donanımınızda veya bulutta çalıştırmanın VRAM,
-            gecikme ve maliyet gereksinimlerini <span className="text-text font-semibold">giriş yapmadan,
-            tamamen tarayıcınızda</span> hesaplamanız için geliştirilmiş topluluğa açık bir projedir.
+            <Trans i18nKey="about.intro" components={{ strong: <span className="text-text font-semibold" /> }} />
           </p>
 
           <Panel className="overflow-hidden">
             <SectionHeader
-              title="Çıkarım (Inference) Hesaplama Yöntemi"
+              title={t('about.inferenceTitle')}
               right={<Calculator className="w-4 h-4 text-accent shrink-0" />}
             />
             <ul className="p-3.5 space-y-2 text-xs text-muted list-disc list-inside marker:text-accent">
               <li>
-                <span className="text-text font-medium">Model belleği:</span> parametre sayısı ×
-                kuantizasyon başına bayt (örn. 70B FP8 ≈ 70 GB).
+                <Trans i18nKey="about.inf1" components={{ b: <span className="text-text font-medium" /> }} />
               </li>
               <li>
-                <span className="text-text font-medium">KV cache:</span> 2 × KV head sayısı × head
-                boyutu × katman sayısı × bağlam uzunluğu × eşzamanlı kullanıcı; parçalanma
-                (fragmentation) payı eklenir.
+                <Trans i18nKey="about.inf2" components={{ b: <span className="text-text font-medium" /> }} />
               </li>
               <li>
-                <span className="text-text font-medium">Toplam VRAM:</span> model + KV cache +
-                aktivasyon + CUDA/çalışma zamanı yükü; TP/PP verimlilik katsayıları uygulanır.
+                <Trans i18nKey="about.inf3" components={{ b: <span className="text-text font-medium" /> }} />
               </li>
               <li>
-                <span className="text-text font-medium">TTFT (ilk token):</span> prefill FLOP ihtiyacı
-                ÷ GPU'ların efektif FLOP kapasitesi (compute-bound yaklaşımı).
+                <Trans i18nKey="about.inf4" components={{ b: <span className="text-text font-medium" /> }} />
               </li>
               <li>
-                <span className="text-text font-medium">TPOT (token başına süre):</span> (aktif ağırlık
-                + KV cache baytları) ÷ bellek bant genişliği (bandwidth-bound yaklaşımı).
+                <Trans i18nKey="about.inf5" components={{ b: <span className="text-text font-medium" /> }} />
               </li>
               <li>
-                <span className="text-text font-medium">Maliyet:</span> saatlik GPU fiyatı × kart sayısı;
-                bulut karşılaştırması RunPod / Lambda / Modal fiyatlarıyla, on-prem TCO ise elektrik,
-                PUE ve amortisman varsayımlarıyla hesaplanır.
+                <Trans i18nKey="about.inf6" components={{ b: <span className="text-text font-medium" /> }} />
               </li>
             </ul>
           </Panel>
 
           <Panel className="overflow-hidden">
             <SectionHeader
-              title="Fine-Tuning Hesaplama Yöntemi"
+              title={t('about.finetuningTitle')}
               right={<Calculator className="w-4 h-4 text-accent shrink-0" />}
             />
             <ul className="p-3.5 space-y-2 text-xs text-muted list-disc list-inside marker:text-accent">
-              <li>
-                Dataset token sayısı × epoch üzerinden toplam eğitim token'ı; yöntem (QLoRA / LoRA /
-                tam) bazında VRAM ihtiyacı tahmin edilir.
-              </li>
-              <li>
-                Eğitim süresi, seçilen GPU'nun throughput'u ve framework (Unsloth vb.) hız çarpanı
-                ile hesaplanır; Colab / RunPod gibi platformların maliyet karşılaştırması sunulur.
-              </li>
+              <li>{t('about.ft1')}</li>
+              <li>{t('about.ft2')}</li>
             </ul>
           </Panel>
 
           <Panel className="overflow-hidden">
             <SectionHeader
-              title="Veri Kaynakları"
+              title={t('about.dataTitle')}
               right={<Database className="w-4 h-4 text-accent shrink-0" />}
             />
             <ul className="p-3.5 space-y-2 text-xs text-muted list-disc list-inside marker:text-accent">
-              <li>
-                Model mimarileri (parametre, katman, head, bağlam uzunluğu): Hugging Face Hub
-                kataloğu + elle derlenmiş (curated) açık kaynak model listesi.
-              </li>
-              <li>
-                GPU özellikleri: üretici/sağlayıcı spesifikasyonlarına dayanan yerleşik ön ayarlar.
-              </li>
-              <li>
-                Saatlik bulut fiyatları: RunPod, Lambda ve Modal'dan periyodik olarak toplanır;
-                sonuç panelindeki "son güncelleme" zamanına bakabilirsiniz.
-              </li>
+              <li>{t('about.data1')}</li>
+              <li>{t('about.data2')}</li>
+              <li>{t('about.data3')}</li>
             </ul>
           </Panel>
 
           <div className="flex items-start gap-2.5 bg-surface-2 border border-border rounded-md p-3.5">
             <AlertTriangle className="w-4 h-4 text-accent shrink-0 mt-0.5" />
             <p className="text-xs text-muted leading-relaxed">
-              <span className="text-text font-semibold">Önemli:</span> Tüm sonuçlar analitik
-              tahmindir; gerçek performans motor yapılandırmasına, modele, donanıma ve iş yüküne göre
-              değişir. Üretim kararı vermeden önce kendi iş yükünüzle ölçüm yapmanızı öneririz.
+              <Trans i18nKey="about.warning" components={{ strong: <span className="text-text font-semibold" /> }} />
             </p>
           </div>
 
           <div className="flex items-start gap-2.5 bg-surface-2 border border-border rounded-md p-3.5">
             <ShieldCheck className="w-4 h-4 text-ok shrink-0 mt-0.5" />
             <p className="text-xs text-muted leading-relaxed">
-              <span className="text-text font-semibold">Gizlilik (KVKK):</span> Bu uygulama giriş,
-              üyelik veya çerez gerektirmez; hiçbir kişisel veri toplanmaz ve sunucuya gönderilmez.
-              Kaydettiğiniz senaryolar yalnızca tarayıcınızın yerel depolamasında (localStorage) tutulur.
+              <Trans i18nKey="about.privacy" components={{ strong: <span className="text-text font-semibold" /> }} />
             </p>
           </div>
         </div>
