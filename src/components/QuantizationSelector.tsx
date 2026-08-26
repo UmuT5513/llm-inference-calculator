@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Database } from 'lucide-react';
 import { QUANTIZATION_OPTIONS, KV_CACHE_QUANT_OPTIONS } from '../data/presets';
 import { Panel } from './ui/Panel';
@@ -17,12 +18,13 @@ export const QuantizationSelector: React.FC<QuantizationSelectorProps> = ({
   onSelectQuant,
   onSelectKvCacheQuant,
 }) => {
+  const { t } = useTranslation();
   return (
     <Panel className="p-3.5 space-y-3">
       <SectionHeader
         index="02"
         title="Quantization"
-        description="Model ağırlıklarının parametre başına kullandığı hassasiyet ve kalite koruma oranı"
+        description={t('quant.subtitle')}
       />
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -72,7 +74,7 @@ export const QuantizationSelector: React.FC<QuantizationSelectorProps> = ({
           <div>
             <h3 className="text-xs font-bold text-text uppercase tracking-wider">KV Cache Precision</h3>
             <p className="text-[10px] text-muted">
-              Uzun bağlam pencerelerinde (128k context) bellek taşmasını engelleyen KV belleği
+              {t('quant.kvCacheDesc')}
             </p>
           </div>
         </div>
@@ -93,7 +95,7 @@ export const QuantizationSelector: React.FC<QuantizationSelectorProps> = ({
                 <div>
                   <div className="text-xs font-semibold text-text">{kv.name}</div>
                   <div className="text-[10px] text-muted font-mono">
-                    Hassasiyet: <span className="text-accent font-bold">{kv.bytesPerParam} Byte/p</span>
+                    {t('quant.precisionLabel')} <span className="text-accent font-bold">{kv.bytesPerParam} Byte/p</span>
                   </div>
                 </div>
 
