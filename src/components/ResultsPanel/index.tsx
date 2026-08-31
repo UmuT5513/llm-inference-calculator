@@ -12,6 +12,7 @@ import { PerfTab } from './PerfTab';
 import { CostTab } from './CostTab';
 import { CloudTab } from './CloudTab';
 import { TcoTab } from './TcoTab';
+import { ApiTab } from './ApiTab';
 
 export interface ResultsPanelProps {
   results: CalculationResults;
@@ -34,6 +35,7 @@ const TABS = [
   { id: 'cost', label: 'COST' },
   { id: 'cloud', label: 'CLOUD' },
   { id: 'tco', label: 'TCO' },
+  { id: 'api', label: 'API' },
 ];
 
 export const ResultsPanel: React.FC<ResultsPanelProps> = ({
@@ -152,6 +154,7 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
         {tab === 'tco' && onChangeConfig && (
           <TcoTab results={results} config={config} onChangeConfig={onChangeConfig} />
         )}
+        {tab === 'api' && <ApiTab results={results} />}
       </div>
     </Panel>
   );
