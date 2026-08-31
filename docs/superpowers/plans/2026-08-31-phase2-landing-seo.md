@@ -245,7 +245,7 @@ Expected: passes.
 
 Run:
 ```bash
-npx tsx -e "import('./src/server/seo.ts').then(m => { const s = m.renderSitemapXml(); const r = m.renderRobotsTxt(); if (!s.includes('<urlset>') || !r.includes('Sitemap:') || !m.appMeta.tr.title) throw new Error('missing seo output'); console.log('sitemap ok'); console.log(r); })"
+npx tsx -e "import('./src/server/seo.ts').then(m => { const s = m.renderSitemapXml(); const r = m.renderRobotsTxt(); if (!s.includes('<urlset') || !r.includes('Sitemap:') || !m.appMeta.tr.title) throw new Error('missing seo output'); console.log('sitemap ok'); console.log(r); })"
 ```
 Expected: prints `sitemap ok` and the robots.txt body.
 
