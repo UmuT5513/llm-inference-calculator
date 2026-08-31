@@ -564,5 +564,24 @@
         "weights": "Model Weights"
       }
     }
+  },
+  "wizard": {
+    "stepModel": "Model",
+    "stepQuantization": "Quantization",
+    "stepEngine": "Engine",
+    "stepGpu": "GPU",
+    "stepWorkload": "Workload",
+    "stepResults": "Results",
+    "stepFinetuningConfig": "Fine-Tuning Setup",
+    "back": "← Back",
+    "next": "Next →"
+  },
+  "summary": {
+    "vram": "VRAM",
+    "vramOk": "OK",
+    "vramOom": "OOM",
+    "monthlyCost": "Monthly Cost",
+    "throughput": "Tok/s",
+    "finetuningTime": "Training Time"
   }
 }
