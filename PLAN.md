@@ -129,16 +129,17 @@ Karar (2026-08-24): Render yerine kendi VPS'inde Docker Compose ile self-host. `
 - **`AGENTS.md`**: compose komutu ve `trust proxy` gotchası güncellendi.
 - **Not:** `server.ts` `trust proxy: true` kalıyor — nginx arkasında admin brute-force kilidi gerçek IP'yi görür.
 
-## SIRADAKİ: Phase 4 — Light Brutalist redesign + wizard flow
+## TAMAMLANDI: Phase 4 — Light Brutalist redesign + wizard flow (2026-08-31)
 
 Growth spec'inin Phase 4 bölümü 2026-08-31'de yenilendi: koyu "Ember Refined" pası
-yerine **açık brutalist tema + adım adım sihirbaz** geliyor. Tasarım spec'i:
+yerine **açık brutalist tema + adım adım sihirbaz** geldi. Tasarım spec'i:
 `docs/superpowers/specs/2026-08-31-light-brutalist-wizard-redesign-design.md`
-(onaylandı). Durum: **plan yazımı bekliyor** (henüz kod yok).
+(onaylandı). **Durum: tamamlandı** — tüm kod `feat/phase4-brutalist-wizard`
+dalında birleştirildi (Task 1-10 kod, Task 11 doğrulama + dokümantasyon).
 
-Özet:
+Tamamlanan özet:
 - Tema: açık (`#f5f5f3` zemin, beyaz yüzey, 2px katı siyah kenarlık, düz, keskin
-  köşe, gölge yok). Koyu tema kaldırılıyor, toggle yok. Amber CTA/logoda kalır,
+  köşe, gölge yok). Koyu tema kaldırıldı, toggle yok. Amber CTA/logoda kalır,
   mavi mono kategori label'ları için.
 - `/app` sihirbazı (hibrit): inference `Model → Quant → Engine → GPU → Workload
   → Sonuçlar` (6 adım), fine-tuning `Model → Fine-Tuning Ayarı → Sonuçlar` (3
@@ -150,8 +151,22 @@ yerine **açık brutalist tema + adım adım sihirbaz** geliyor. Tasarım spec'i
 - Modallar, results sekmeleri, footer aynı dile geçer; grafikler birleşik SVG
   stili; focus-visible/aria + loading/empty state'ler.
 
-### Doğrulama
-- `npm run lint` + `npm run build`.
-- Manuel smoke: adım gezinme, özet çubuğu, `?c=` hydration → Sonuçlar, landing →
-  app, dil değişimi, mobil tek sütun + sticky bar.
-- i18n sweep'i (kalan hardcoded Türkçe string yok).
+### Doğrulama (2026-08-31)
+- `npm run lint` ✅ (tsc --noEmit temiz), `npm run build` ✅ (yalnızca chunk-size
+  uyarısı, hata yok).
+- Headless curl smoke: `/` 200 (light brutalist marker'ları mevcut: `hero-badge`,
+  `module-num`, `LLM TOOLS · 2026`, `ACTIVE`; Accept-Language'e göre
+  "Calculator Modules" / "Hesaplayıcı Modülleri"), `/app` 200 (SPA shell),
+  `/app?c=` 200 (hydration rotası çakmıyor), `/sitemap.xml` + `/robots.txt` 200,
+  `/api/models` 200 (228 model), `/api/gpu-prices` 200.
+- i18n sweep: `rg "[A-Za-zÇĞİÖŞÜçğıöşü]" src/components` incelemesi yapıldı.
+  Kalan hardcoded UI string'lerin tamamı Phase 4 **öncesinden** kalma
+  (SectionHeader title'ları "Quantization" / "GPU Hardware" / "Inference Engine",
+  FT `Field` label'ları, "Inference + Fine-Tuning" badge'i, TTFT/TPOT/Effective
+  Batch, "PagedAttention & TensorRT"). Phase 4'ün yeni bileşenleri (Wizard,
+  WizardSummaryBar, landing) tamamen `t('…')` kullanıyor.
+- **İnsan-doğrulamalı kalan smoke maddeleri (headless ortamda çalıştırılamadı):**
+  sihirbaz adım gezinmesinin ekrandaki hissi, özet çubuğu renkleri (VRAM OK/OOM)
+  ekranda, modalların mobil genişlikte görünümü, mobil tek sütun + sticky bar
+  overflow'suz akış, dil toggle'ın görsel davranışı, grafiklerin ekrandaki
+  flat/bordered hali.
