@@ -146,8 +146,9 @@ export default function App() {
   // Load a saved scenario into the app state
   const handleLoadScenario = (type: 'inference' | 'finetuning', scenarioConfig: any, _results: any) => {
     setActiveTab(type);
-    setStepIndex(0);
-    setMaxVisited(0);
+    const resultIndex = type === 'finetuning' ? FINETUNING_STEPS.length - 1 : INFERENCE_STEPS.length - 1;
+    setStepIndex(resultIndex);
+    setMaxVisited(resultIndex);
     if (type === 'inference') {
       setConfig((prev) => ({ ...prev, ...scenarioConfig }));
     } else {
@@ -184,8 +185,11 @@ export default function App() {
     if (index <= maxVisited) setStepIndex(index);
   };
   const goNext = () => {
-    setStepIndex((i) => Math.min(lastStep, i + 1));
-    setMaxVisited((m) => Math.max(m, Math.min(lastStep, stepIndex + 1)));
+    setStepIndex((prev) => {
+      const next = Math.min(lastStep, prev + 1);
+      setMaxVisited((m) => Math.max(m, next));
+      return next;
+    });
   };
   const goBack = () => setStepIndex((i) => Math.max(0, i - 1));
 
@@ -205,6 +209,9 @@ export default function App() {
   const renderStepBody = () => {
     const stepId = steps[stepIndex].id;
     if (activeTab === 'finetuning') {
+      if (stepId === 'model') {
+        return renderModelStep();
+      }
       if (stepId === 'results') {
         return (
           <div className="space-y-4">
@@ -289,7 +296,7 @@ export default function App() {
             value: `${results.isOom ? t('summary.vramOom') : t('summary.vramOk')} ${results.totalVramNeededGB.toFixed(1)} / ${results.totalVramAvailableGB} GB`,
             tone: results.isOom ? 'danger' : 'ok',
           },
-          center: { label: t('summary.monthlyCost'), value: `$${results.monthlyCostUsd.toFixed(0)} / ay` },
+          center: { label: t('summary.monthlyCost'), value: `${results.monthlyCostUsd.toFixed(0)} ${t('summary.perMonth')}` },
           right: { label: t('summary.throughput'), value: `${results.systemThroughputTokensPerSec.toFixed(0)} tok/s` },
         }
       : {

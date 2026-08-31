@@ -582,6 +582,7 @@
     "vramOom": "OOM",
     "monthlyCost": "Aylık Maliyet",
     "throughput": "Tok/s",
-    "finetuningTime": "Eğitim Süresi"
+    "finetuningTime": "Eğitim Süresi",
+    "perMonth": "/ ay"
   }
 }
