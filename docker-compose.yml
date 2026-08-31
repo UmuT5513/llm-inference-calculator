@@ -24,25 +24,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    expose:
-      - "3000"
-
-  caddy:
-    image: caddy:2-alpine
-    restart: unless-stopped
     ports:
-      - "80:80"
-      - "443:443"
-    environment:
-      DOMAIN: ${DOMAIN:-localhost}
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - caddy_data:/data
-      - caddy_config:/config
-    depends_on:
-      - app
+      - "127.0.0.1:8081:3000"
 
 volumes:
   pgdata:
-  caddy_data:
-  caddy_config:
