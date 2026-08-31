@@ -118,4 +118,13 @@ Karar (2026-08-24): Render yerine kendi VPS'inde Docker Compose ile self-host. `
 1. VPS (Ubuntu 24.04, min 1 vCPU/2GB): Docker kur, `ufw allow 22,80,443/tcp`.
 2. Repo clone (private → deploy key veya PAT), `cp .env.example .env` ve doldur: `DOMAIN`, `POSTGRES_PASSWORD`, `APP_URL=https://domain`, `SESSION_SECRET`, `ADMIN_USERNAME/PASSWORD`, Gemini/HF key'leri. (Google OAuth kaldırıldı — gerekmez.)
 3. DNS A kaydı → VPS IP; `docker compose up -d --build`.
-4. Bakım: `docker compose logs -f app`; güncelleme `git pull && docker compose up -d --build`; yedek `docker compose exec -T db pg_dump -U llmcalc llmcalc | gzip > backup.sql.gz`.
+4. Host nginx site'ini kur: `/etc/nginx/sites-available/llminferencecalc.com.tr` → `reverse_proxy 127.0.0.1:8081`, `certbot --nginx` ile TLS.
+5. Bakım: `docker compose logs -f app`; güncelleme `git pull && docker compose up -d --build`; yedek `docker compose exec -T db pg_dump -U llmcalc llmcalc | gzip > backup.sql.gz`.
+
+## Tamamlanan oturum özeti (2026-08-31, caddy → nginx)
+- **Karar:** Caddy yerine host'ta kurulu nginx (reverse-proxy + TLS, certbot). `Caddyfile` silindi.
+- **`docker-compose.yml`**: `caddy` servisi kaldırıldı (caddy_data/caddy_config volume'ları da); `app` artık yalnızca host loopback'ine `127.0.0.1:8081:3000` bind ediyor. TLS/uç sunum tamamen host nginx'e devredildi.
+- **nginx config repo'da yok** — host'ta yönetiliyor: `/etc/nginx/sites-available/llminferencecalc.com.tr` (reverse proxy → `127.0.0.1:8081`, certbot TLS, `DOMAIN` server_name).
+- **`.env.example`**: `DOMAIN` yorumu Caddy → host nginx/certbot olarak güncellendi (compose artık okumuyor).
+- **`AGENTS.md`**: compose komutu ve `trust proxy` gotchası güncellendi.
+- **Not:** `server.ts` `trust proxy: true` kalıyor — nginx arkasında admin brute-force kilidi gerçek IP'yi görür.
