@@ -131,9 +131,9 @@ export function renderLandingPage(req: Request, cardsHtml: string, modelCount: n
 <meta property="og:description" content="${esc(c.metaDescription)}" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="${appUrl}/" />
-<meta property="og:image" content="${appUrl}/assets/og-image.svg" />
+<meta property="og:image" content="${appUrl}/assets/og-image.png" />
 <meta name="twitter:card" content="summary_large_image" />
-<script type="application/ld+json">${webAppJsonLd(appUrl, '/', lang, esc(c.metaDescription))}</script>
+<script type="application/ld+json">${webAppJsonLd(appUrl, '/', lang, c.metaDescription)}</script>
 <style>
   :root { --bg:#0f0e0d; --surface:#171615; --surface2:#1e1d1b; --border:#2a2826; --text:#edeae6; --muted:#8e8b8b; --accent:#ffb224; }
   * { box-sizing: border-box; margin: 0; padding: 0; }

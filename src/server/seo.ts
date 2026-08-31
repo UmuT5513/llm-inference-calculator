@@ -1,8 +1,18 @@
 export type SeoLang = 'tr' | 'en';
 
+let warnedAppUrl = false;
+
 export function baseUrl(): string {
   const fallback = `http://localhost:${process.env.PORT || 3000}`;
-  return (process.env.APP_URL || fallback).replace(/\/+$/, '');
+  const url = (process.env.APP_URL || fallback).replace(/\/+$/, '');
+  if (process.env.NODE_ENV === 'production' && !warnedAppUrl) {
+    const appUrl = process.env.APP_URL || '';
+    if (!appUrl || appUrl.includes('localhost')) {
+      warnedAppUrl = true;
+      console.warn('[seo] APP_URL is missing or set to localhost in production; set APP_URL to the public domain so sitemap/robots/og:url do not advertise localhost.');
+    }
+  }
+  return url;
 }
 
 function esc(s: string): string {
@@ -50,9 +60,9 @@ export function injectRouteMeta(
   <meta property="og:description" content="${esc(opts.ogDescription)}" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="${b}${opts.path}" />
-  <meta property="og:image" content="${b}/assets/og-image.svg" />
+  <meta property="og:image" content="${b}/assets/og-image.png" />
   <meta name="twitter:card" content="summary_large_image" />
-  <script type="application/ld+json">${webAppJsonLd(b, opts.path, opts.lang, esc(opts.description))}</script>`;
+  <script type="application/ld+json">${webAppJsonLd(b, opts.path, opts.lang, opts.description)}</script>`;
   return html
     .replace(/<title>[\s\S]*?<\/title>/, `<title>${esc(opts.title)}</title>`)
     .replace('<!--APP_META-->', block);

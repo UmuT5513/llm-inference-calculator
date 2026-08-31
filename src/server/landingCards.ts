@@ -14,9 +14,9 @@ interface LandingScenario {
 
 const LANDING_SCENARIOS: LandingScenario[] = [
   { modelId: 'llama-3.3-70b', gpuId: 'nvidia-h100-sxm', quantId: 'fp8', engineId: 'vllm', gpuCount: 1 },
-  { modelId: 'qwen3-32b', gpuId: 'nvidia-rtx-4090', quantId: 'fp8', engineId: 'vllm', gpuCount: 1 },
+  { modelId: 'qwen3-32b', gpuId: 'nvidia-rtx-4090', quantId: 'int4', engineId: 'vllm', gpuCount: 1 },
   { modelId: 'llama-3.1-8b', gpuId: 'nvidia-rtx-4090', quantId: 'q4_k', engineId: 'llamacpp', gpuCount: 1 },
-  { modelId: 'qwen3-30b-a3b', gpuId: 'nvidia-rtx-5090', quantId: 'fp8', engineId: 'vllm', gpuCount: 1 },
+  { modelId: 'qwen3-30b-a3b', gpuId: 'nvidia-rtx-5090', quantId: 'int4', engineId: 'vllm', gpuCount: 1 },
   { modelId: 'gemma-3-27b', gpuId: 'nvidia-rtx-6000-ada', quantId: 'fp8', engineId: 'vllm', gpuCount: 1 },
   { modelId: 'qwen3-235b-a22b', gpuId: 'nvidia-h200', quantId: 'fp8', engineId: 'sglang', gpuCount: 2 },
   { modelId: 'mistral-small-3-24b', gpuId: 'nvidia-rtx-4090', quantId: 'int4', engineId: 'vllm', gpuCount: 1 },
@@ -37,6 +37,9 @@ function makeConfig(s: LandingScenario): CalculatorConfig {
     genLen: 512,
     batchSize: 1,
     useMultiProfile: false,
+    userProfiles: [],
+    customModel: undefined as unknown as CalculatorConfig['customModel'],
+    customGpu: undefined as unknown as CalculatorConfig['customGpu'],
     requestsPerMin: 60,
   };
 }
@@ -53,7 +56,8 @@ export function buildLandingCardsHtml(): string {
   return LANDING_SCENARIOS.map((s) => {
     const config = makeConfig(s);
     const r = calculateInferenceMetrics(config, undefined, MODEL_CATALOG);
-    const gpu = GPU_PRESETS.find((g) => g.id === s.gpuId) ?? GPU_PRESETS[0];
+    const gpu = GPU_PRESETS.find((g) => g.id === s.gpuId);
+    if (!gpu) throw new Error(`Unknown gpuId in landing scenarios: ${s.gpuId}`);
     const href = `/app?c=${encodeScenario('inference', config)}`;
     const oom = r.isOom ? '<div class="card-oom">OOM</div>' : '';
     return `

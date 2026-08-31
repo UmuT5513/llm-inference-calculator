@@ -13,7 +13,6 @@ import { pickLang, msg } from "./src/server/i18nErrors";
 import { renderLandingPage, pickLandingLang, countVisibleModels } from "./src/server/landing";
 import { buildLandingCardsHtml } from "./src/server/landingCards";
 import { injectRouteMeta, appMeta, renderSitemapXml, renderRobotsTxt } from "./src/server/seo";
-import { MODEL_CATALOG } from "./src/data/modelCatalog";
 
 let viteServer: Awaited<ReturnType<typeof createViteServer>> | null = null;
 
@@ -402,40 +401,41 @@ async function startServer() {
   }
 
   const cardsHtml = buildLandingCardsHtml();
-  let modelCount = MODEL_CATALOG.length;
-  try {
-    modelCount = await countVisibleModels();
-  } catch (err) {
-    console.warn("[landing] model count fallback:", err);
-  }
+  const modelCount = await countVisibleModels();
   const shellHtml = await readShell().catch((err) => {
     console.warn("Shell index.html not found, serving without route meta:", err);
     return "";
   });
 
   app.get("/", (req, res) => {
-    const lang = pickLandingLang(req);
-    if (req.query?.lang) {
-      res.cookie("llmcalc_lang", lang, { maxAge: 31536000000 });
+    const qLang = String(req.query?.lang ?? "").toLowerCase();
+    if (qLang === "tr" || qLang === "en") {
+      res.cookie("llmcalc_lang", qLang, { maxAge: 31536000000 });
     }
+    const lang = pickLandingLang(req);
     res.type("html").send(renderLandingPage(req, cardsHtml, modelCount));
   });
 
   app.get("/app", async (req, res) => {
-    const lang = pickLang(req);
-    const meta = appMeta[lang];
-    const html = injectRouteMeta(shellHtml || "<!doctype html><html><head><title></title><!--APP_META--></head><body><div id=\"root\"></div></body></html>", {
-      lang,
-      path: "/app",
-      title: meta.title,
-      description: meta.description,
-      ogTitle: meta.title,
-      ogDescription: meta.description,
-    });
-    if (viteServer) {
-      res.type("html").send(await viteServer.transformIndexHtml(req.url, html));
-    } else {
-      res.type("html").send(html);
+    try {
+      const lang = pickLandingLang(req);
+      const meta = appMeta[lang];
+      const html = injectRouteMeta(shellHtml || "<!doctype html><html><head><title></title><!--APP_META--></head><body><div id=\"root\"></div></body></html>", {
+        lang,
+        path: "/app",
+        title: meta.title,
+        description: meta.description,
+        ogTitle: meta.title,
+        ogDescription: meta.description,
+      });
+      if (viteServer) {
+        res.type("html").send(await viteServer.transformIndexHtml(req.url, html));
+      } else {
+        res.type("html").send(html);
+      }
+    } catch (err) {
+      console.error("[app] route meta injection failed:", err);
+      res.status(500).send("Internal error");
     }
   });
 
