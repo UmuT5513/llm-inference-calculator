@@ -217,7 +217,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
                 placeholder={t('model.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="bg-surface-2 border border-border rounded pl-8 pr-2.5 py-1 text-xs font-mono text-text placeholder-muted focus:outline-none focus:border-accent w-48 sm:w-60 transition"
+                className="bg-surface-2 border-2 border-border rounded-none pl-8 pr-2.5 py-1 text-xs font-mono text-text placeholder-muted focus:outline-none focus:border-text w-48 sm:w-60 transition"
               />
             </div>
 
@@ -227,7 +227,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
                 onSelectModel('custom');
                 setShowCustomModal(true);
               }}
-              className={`flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-md transition border ${
+              className={`flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-none transition border-2 ${
                 selectedModelId === 'custom'
                   ? 'bg-accent text-bg border-accent font-bold'
                   : 'bg-surface-2 text-text border-border hover:bg-surface'
@@ -242,10 +242,10 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
 
       {/* AI Model Recommendation Assistant Banner */}
       {showAiAdvisorBox && (
-        <div className="bg-surface-2 border border-border rounded-md p-3.5 sm:p-4 space-y-3 relative overflow-hidden">
+        <div className="bg-surface-2 border-2 border-border rounded-none p-3.5 sm:p-4 space-y-3 relative overflow-hidden">
           <div className="flex items-start justify-between gap-2">
             <div className="flex items-center gap-2.5">
-              <div className="p-1.5 bg-accent text-bg rounded-md">
+              <div className="p-1.5 bg-accent text-bg rounded-none">
                 <Sparkles className="w-4 h-4" />
               </div>
               <div>
@@ -264,7 +264,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
 
             <button
               onClick={() => setShowAiAdvisorBox(false)}
-              className="text-muted hover:text-text text-xs px-1.5 py-0.5 rounded-md hover:bg-surface"
+              className="text-muted hover:text-text text-xs px-1.5 py-0.5 rounded-none hover:bg-surface"
               title={t('model.advisorHideTitle')}
             >
               ✕
@@ -287,7 +287,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
                       setUseCaseInput(preset.query);
                       handleRecommendModel(preset.query);
                     }}
-                    className="p-2 bg-surface hover:bg-surface-2 border border-border hover:border-accent/50 rounded-md text-left transition flex flex-col justify-between group disabled:opacity-50"
+                    className="p-2 bg-surface hover:bg-surface-2 border-2 border-border hover:border-accent/50 rounded-none text-left transition flex flex-col justify-between group disabled:opacity-50"
                   >
                     <div className="flex items-center gap-1.5 text-accent mb-1">
                       <Icon className="w-3.5 h-3.5 shrink-0" />
@@ -317,14 +317,14 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
                   }
                 }}
                 placeholder={t('model.useCasePlaceholder')}
-                className="w-full bg-surface-2 border border-border rounded px-3 py-2 text-xs font-mono text-text placeholder-muted focus:outline-none focus:border-accent"
+                className="w-full bg-surface-2 border-2 border-border rounded-none px-3 py-2 text-xs font-mono text-text placeholder-muted focus:outline-none focus:border-text"
               />
             </div>
 
             <button
               onClick={() => handleRecommendModel(useCaseInput)}
               disabled={isRecommending || !useCaseInput.trim()}
-              className="px-4 py-2 bg-accent hover:opacity-90 disabled:opacity-50 text-bg rounded-md text-xs font-bold transition flex items-center justify-center gap-1.5 shrink-0 active:scale-95"
+              className="px-4 py-2 bg-accent hover:opacity-90 disabled:opacity-50 text-bg rounded-none text-xs font-bold transition flex items-center justify-center gap-1.5 shrink-0 active:scale-95"
             >
               {isRecommending ? (
                 <>
@@ -342,14 +342,14 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
 
           {/* Recommendation Error */}
           {recommendationError && (
-            <div className="p-2.5 bg-danger/10 border border-danger/40 rounded-md text-danger text-xs">
+            <div className="p-2.5 bg-danger/10 border border-danger/40 rounded-none text-danger text-xs">
               {recommendationError}
             </div>
           )}
 
           {/* Active AI Recommendation Highlight Banner */}
           {recommendation && (
-            <div className="bg-surface-2 border border-border rounded-md p-3 space-y-2">
+            <div className="bg-surface-2 border-2 border-border rounded-none p-3 space-y-2">
               <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-2">
                 <div className="flex items-center gap-2">
                   <Badge tone="ok" className="text-[10px] font-bold uppercase tracking-wider">
@@ -359,7 +359,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
                   <span className="text-xs font-bold text-text">
                     {recommendation.modelName}
                   </span>
-                  <span className="text-[10px] text-accent bg-surface border border-border px-1.5 py-0.2 rounded font-medium">
+                  <span className="text-[10px] text-info bg-surface border-2 border-border px-1.5 py-0.2 rounded-none font-medium">
                     {recommendation.domainMatch}
                   </span>
                 </div>
@@ -379,8 +379,8 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
                   </p>
                 </div>
 
-                <div className="space-y-1 bg-surface p-2 rounded-md border border-border">
-                  <div className="text-[10px] font-bold text-accent uppercase tracking-wider">
+                <div className="space-y-1 bg-surface p-2 rounded-none border-2 border-border">
+                  <div className="text-[10px] font-bold text-info uppercase tracking-wider">
                     {t('model.keyStrength')}
                   </div>
                   <p className="text-text text-[10.5px] font-semibold">
@@ -400,7 +400,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
                       <button
                         key={altId}
                         onClick={() => onSelectModel(altId)}
-                        className={`px-2 py-0.5 rounded-md border transition flex items-center gap-1 ${
+                        className={`px-2 py-0.5 rounded-none border-2 transition flex items-center gap-1 ${
                           selectedModelId === altId
                             ? 'bg-accent text-bg border-accent font-bold'
                             : 'bg-surface text-text border-border hover:border-accent/40 hover:bg-surface-2'
@@ -419,13 +419,13 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
       )}
 
       {/* Deployment Suitability Filter Tabs (Yerel vs Sunucu) */}
-      <div className="flex flex-wrap items-center gap-1.5 bg-surface-2 p-1 rounded border border-border">
+      <div className="flex flex-wrap items-center gap-1.5 bg-surface-2 p-1 rounded-none border-2 border-border">
         <span className="text-[10px] font-semibold text-muted px-2 uppercase tracking-wide">{t('model.hardwareType')}</span>
         {envFilters.map((ef) => (
           <button
             key={ef.id}
             onClick={() => setActiveEnvFilter(ef.id)}
-            className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition flex items-center gap-1.5 ${
+            className={`px-2.5 py-1 rounded-none text-[11px] font-medium transition flex items-center gap-1.5 ${
               activeEnvFilter === ef.id
                 ? 'bg-accent text-bg font-bold'
                 : 'text-muted hover:text-text'
@@ -443,7 +443,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
           <button
             key={cap.id}
             onClick={() => setActiveCapability(cap.id)}
-            className={`px-2.5 py-1 rounded-md text-[11px] font-medium whitespace-nowrap transition ${
+            className={`px-2.5 py-1 rounded-none text-[11px] font-medium whitespace-nowrap transition ${
               activeCapability === cap.id
                 ? 'bg-accent text-bg font-bold'
                 : 'bg-surface-2 text-muted hover:text-text hover:bg-surface'
@@ -456,7 +456,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
 
       {/* Model Grid */}
       {filteredModels.length === 0 ? (
-        <div className="p-6 text-center text-muted text-xs border border-dashed border-border rounded-md">
+        <div className="p-6 text-center text-muted text-xs border border-dashed border-border rounded-none">
           {t('model.noModelsFound')}
         </div>
       ) : (
@@ -469,7 +469,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
               <div
                 key={m.id}
                 onClick={() => onSelectModel(m.id)}
-                className={`cursor-pointer rounded-md p-2.5 transition border text-left relative overflow-hidden flex flex-col justify-between ${
+                className={`cursor-pointer rounded-none p-2.5 transition border-2 text-left relative overflow-hidden flex flex-col justify-between ${
                   isSelected
                     ? 'bg-surface-2 border-accent ring-1 ring-accent/40'
                     : isAiRecommended
@@ -480,7 +480,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
                 {/* Badges */}
                 <div className="absolute top-0 right-0 flex items-center">
                   {isAiRecommended && (
-                    <div className="bg-surface-2 text-muted text-[8px] font-bold px-1.5 py-0.5 rounded-bl flex items-center gap-0.5">
+                    <div className="bg-surface-2 text-muted text-[8px] font-bold px-1.5 py-0.5 rounded-none flex items-center gap-0.5">
                       <Sparkles className="w-2 h-2" />
                       {t('model.aiRecommendationBadge')}
                     </div>
@@ -488,7 +488,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
                   {m.verified === false && (
                     <Badge
                       tone="danger"
-                      className="rounded-bl"
+                      className="rounded-none"
                       title={t('model.unverifiedBadgeTitle')}
                     >
                       {t('model.unverifiedBadge')}
@@ -497,14 +497,14 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
                   {m.source === 'mirror' && m.verified !== false && (
                     <Badge
                       tone="default"
-                      className="rounded-bl"
+                      className="rounded-none"
                       title={t('model.mirrorBadgeTitle', { mirrorHfId: m.mirrorHfId || t('model.communityRepo') })}
                     >
                       {t('model.mirrorBadge')}
                     </Badge>
                   )}
                   {isSelected && (
-                    <div className="bg-accent text-bg text-[8px] font-bold px-1.5 py-0.5 rounded-bl">
+                    <div className="bg-accent text-bg text-[8px] font-bold px-1.5 py-0.5 rounded-none">
                       {t('model.selectedBadge')}
                     </div>
                   )}
@@ -543,7 +543,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
       )}
 
       {/* Selected Model Architectural Summary */}
-      <div className="bg-surface-2 p-2.5 border border-border rounded-md flex flex-wrap items-center justify-between gap-3 text-[11px]">
+      <div className="bg-surface-2 p-2.5 border-2 border-border rounded-none flex flex-wrap items-center justify-between gap-3 text-[11px]">
         <div className="flex items-center gap-2 text-muted">
           <Layers className="w-3.5 h-3.5 text-accent" />
           <span className="font-semibold text-muted">{t('model.selectedArchitecture')}</span>
@@ -589,7 +589,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
       {/* Custom Model Edit Modal */}
       {showCustomModal && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-surface border border-border rounded-md max-w-lg w-full p-6 space-y-4">
+          <div className="bg-surface border-2 border-border rounded-none max-w-lg w-full p-6 space-y-4">
             <div className="flex items-center justify-between border-b border-border pb-3">
               <div className="flex items-center gap-2 text-text font-semibold text-base">
                 <Sliders className="w-5 h-5 text-accent" />
@@ -611,7 +611,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
                   onChange={(e) =>
                     onUpdateCustomModel({ ...customModel, name: e.target.value })
                   }
-                  className="w-full bg-surface-2 border border-border rounded px-3 py-1.5 text-xs text-text placeholder-muted focus:border-accent focus:outline-none"
+                  className="w-full bg-surface-2 border-2 border-border rounded-none px-3 py-1.5 text-xs text-text placeholder-muted focus:border-text focus:outline-none"
                 />
               </Field>
 
@@ -692,7 +692,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
                   onChange={(e) =>
                     onUpdateCustomModel({ ...customModel, isMoe: e.target.checked })
                   }
-                  className="rounded border-border text-accent focus:ring-0"
+                  className="rounded-none border-border text-accent"
                 />
                 {t('model.customMoE')}
               </label>
@@ -716,7 +716,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
                   onSelectModel('custom');
                   setShowCustomModal(false);
                 }}
-                className="px-4 py-2 bg-accent hover:opacity-90 text-bg rounded-md text-xs font-bold transition"
+                className="px-4 py-2 bg-accent hover:opacity-90 text-bg rounded-none text-xs font-bold transition"
               >
                 {t('model.customSave')}
               </button>
