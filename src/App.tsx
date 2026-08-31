@@ -296,7 +296,7 @@ export default function App() {
             value: `${results.isOom ? t('summary.vramOom') : t('summary.vramOk')} ${results.totalVramNeededGB.toFixed(1)} / ${results.totalVramAvailableGB} GB`,
             tone: results.isOom ? 'danger' : 'ok',
           },
-          center: { label: t('summary.monthlyCost'), value: `${results.monthlyCostUsd.toFixed(0)} ${t('summary.perMonth')}` },
+          center: { label: t('summary.monthlyCost'), value: `$${results.monthlyCostUsd.toFixed(0)} ${t('summary.perMonth')}` },
           right: { label: t('summary.throughput'), value: `${results.systemThroughputTokensPerSec.toFixed(0)} tok/s` },
         }
       : {
