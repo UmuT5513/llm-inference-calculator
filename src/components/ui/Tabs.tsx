@@ -15,7 +15,7 @@ export const Tabs: React.FC<TabsProps> = ({ tabs, active, onChange, className = 
           key={t.id}
           onClick={() => onChange(t.id)}
           className={`px-3 py-1.5 text-[11px] font-mono uppercase tracking-wider border-b-2 transition whitespace-nowrap ${
-            active === t.id ? 'text-accent border-accent' : 'text-muted border-transparent hover:text-text'
+            active === t.id ? 'text-text border-text' : 'text-muted border-transparent hover:text-text'
           }`}
         >
           {t.label}

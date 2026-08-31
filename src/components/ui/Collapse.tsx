@@ -11,7 +11,7 @@ interface CollapseProps {
 export const Collapse: React.FC<CollapseProps> = ({ title, subtitle, defaultOpen = false, children }) => {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="border border-border rounded-md bg-surface">
+    <div className="border-2 border-border rounded-none bg-surface">
       <button
         onClick={() => setOpen((o) => !o)}
         className="w-full flex items-center justify-between gap-2 px-3 py-2 text-left"

@@ -28,7 +28,7 @@ export const NumberInput: React.FC<NumberInputProps> = ({
       value={value}
       placeholder={placeholder}
       onChange={(e) => onChange(parseFloat(e.target.value))}
-      className={`w-full bg-surface-2 border border-border rounded px-2.5 py-1.5 text-xs font-mono text-text placeholder-muted focus:outline-none focus:border-accent ${className}`}
+      className={`w-full bg-surface-2 border-2 border-border rounded-none px-2.5 py-1.5 text-xs font-mono text-text placeholder-muted focus:outline-none focus:border-text ${className}`}
     />
   );
 };
