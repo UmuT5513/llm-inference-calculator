@@ -1,5 +1,6 @@
 import express from "express";
 import path from "path";
+import fs from "fs/promises";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
 import dotenv from "dotenv";
@@ -9,6 +10,12 @@ import { adminAuthRouter } from "./src/server/adminAuth";
 import { gpuPricesRouter } from "./src/server/gpuPrices";
 import { hfModelsRouter } from "./src/server/hfModels";
 import { pickLang, msg } from "./src/server/i18nErrors";
+import { renderLandingPage, pickLandingLang, countVisibleModels } from "./src/server/landing";
+import { buildLandingCardsHtml } from "./src/server/landingCards";
+import { injectRouteMeta, appMeta, renderSitemapXml, renderRobotsTxt } from "./src/server/seo";
+import { MODEL_CATALOG } from "./src/data/modelCatalog";
+
+let viteServer: Awaited<ReturnType<typeof createViteServer>> | null = null;
 
 dotenv.config();
 
@@ -378,6 +385,14 @@ Keep response clear, structured in clean Markdown with headings, callout boxes, 
   }
 });
 
+async function readShell(): Promise<string> {
+  const p =
+    process.env.NODE_ENV === "production"
+      ? path.join(process.cwd(), "dist", "index.html")
+      : path.join(process.cwd(), "index.html");
+  return fs.readFile(p, "utf8");
+}
+
 async function startServer() {
   try {
     await runMigrations();
@@ -386,8 +401,50 @@ async function startServer() {
     console.error("PostgreSQL migration failed. Check DATABASE_URL and that PostgreSQL is running:", err?.message);
   }
 
-  app.get("/", (_req, res) => {
-    res.redirect(302, "/app");
+  const cardsHtml = buildLandingCardsHtml();
+  let modelCount = MODEL_CATALOG.length;
+  try {
+    modelCount = await countVisibleModels();
+  } catch (err) {
+    console.warn("[landing] model count fallback:", err);
+  }
+  const shellHtml = await readShell().catch((err) => {
+    console.warn("Shell index.html not found, serving without route meta:", err);
+    return "";
+  });
+
+  app.get("/", (req, res) => {
+    const lang = pickLandingLang(req);
+    if (req.query?.lang) {
+      res.cookie("llmcalc_lang", lang, { maxAge: 31536000000 });
+    }
+    res.type("html").send(renderLandingPage(req, cardsHtml, modelCount));
+  });
+
+  app.get("/app", async (req, res) => {
+    const lang = pickLang(req);
+    const meta = appMeta[lang];
+    const html = injectRouteMeta(shellHtml || "<!doctype html><html><head><title></title><!--APP_META--></head><body><div id=\"root\"></div></body></html>", {
+      lang,
+      path: "/app",
+      title: meta.title,
+      description: meta.description,
+      ogTitle: meta.title,
+      ogDescription: meta.description,
+    });
+    if (viteServer) {
+      res.type("html").send(await viteServer.transformIndexHtml(req.url, html));
+    } else {
+      res.type("html").send(html);
+    }
+  });
+
+  app.get("/sitemap.xml", (_req, res) => {
+    res.type("application/xml").send(renderSitemapXml());
+  });
+
+  app.get("/robots.txt", (_req, res) => {
+    res.type("text/plain").send(renderRobotsTxt());
   });
 
   if (process.env.NODE_ENV !== "production") {
@@ -395,6 +452,7 @@ async function startServer() {
       server: { middlewareMode: true },
       appType: "spa",
     });
+    viteServer = vite;
     app.use(vite.middlewares);
   } else {
     const distPath = path.join(process.cwd(), "dist");
