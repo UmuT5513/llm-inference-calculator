@@ -128,3 +128,30 @@ Karar (2026-08-24): Render yerine kendi VPS'inde Docker Compose ile self-host. `
 - **`.env.example`**: `DOMAIN` yorumu Caddy → host nginx/certbot olarak güncellendi (compose artık okumuyor).
 - **`AGENTS.md`**: compose komutu ve `trust proxy` gotchası güncellendi.
 - **Not:** `server.ts` `trust proxy: true` kalıyor — nginx arkasında admin brute-force kilidi gerçek IP'yi görür.
+
+## SIRADAKİ: Phase 4 — Light Brutalist redesign + wizard flow
+
+Growth spec'inin Phase 4 bölümü 2026-08-31'de yenilendi: koyu "Ember Refined" pası
+yerine **açık brutalist tema + adım adım sihirbaz** geliyor. Tasarım spec'i:
+`docs/superpowers/specs/2026-08-31-light-brutalist-wizard-redesign-design.md`
+(onaylandı). Durum: **plan yazımı bekliyor** (henüz kod yok).
+
+Özet:
+- Tema: açık (`#f5f5f3` zemin, beyaz yüzey, 2px katı siyah kenarlık, düz, keskin
+  köşe, gölge yok). Koyu tema kaldırılıyor, toggle yok. Amber CTA/logoda kalır,
+  mavi mono kategori label'ları için.
+- `/app` sihirbazı (hibrit): inference `Model → Quant → Engine → GPU → Workload
+  → Sonuçlar` (6 adım), fine-tuning `Model → Fine-Tuning Ayarı → Sonuçlar` (3
+  adım); alt satırda her adımda görünen sticky özet çubuğu (VRAM uyumu / maliyet
+  / tok-s); `?c=` ve preset'ler doğrudan Sonuçlar'a atlar.
+- Landing (`/`): SSR hero kutusu (mavi mono rozet, başlık, ayraç, mono metadata)
+  + modül grid (`01` INFERENCE / `02` FINE-TUNING, bölünmüş footer butonları).
+- Header: nav-link sekmeler (aktif = siyah alt çizgi), bordered düz butonlar.
+- Modallar, results sekmeleri, footer aynı dile geçer; grafikler birleşik SVG
+  stili; focus-visible/aria + loading/empty state'ler.
+
+### Doğrulama
+- `npm run lint` + `npm run build`.
+- Manuel smoke: adım gezinme, özet çubuğu, `?c=` hydration → Sonuçlar, landing →
+  app, dil değişimi, mobil tek sütun + sticky bar.
+- i18n sweep'i (kalan hardcoded Türkçe string yok).
