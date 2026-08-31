@@ -11,7 +11,7 @@ export const LanguageSwitcher: React.FC = () => {
     <div
       role="group"
       aria-label={t('header.language')}
-      className="flex items-center rounded border border-border overflow-hidden"
+      className="flex items-center rounded-none border-2 border-border overflow-hidden"
     >
       {LANGS.map((lng) => (
         <button
