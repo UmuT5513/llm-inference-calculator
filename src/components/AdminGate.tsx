@@ -90,7 +90,7 @@ export const AdminGate: React.FC = () => {
                 onChange={(e) => setUsername(e.target.value)}
                 autoComplete="username"
                 required
-                className="w-full bg-surface-2 border border-border rounded px-2.5 py-1.5 text-xs font-mono text-text placeholder-muted focus:outline-none focus:border-accent"
+                className="w-full bg-surface-2 border-2 border-border rounded-none px-2.5 py-1.5 text-xs font-mono text-text placeholder-muted focus:outline-none focus:border-text"
               />
             </Field>
             <Field label={t('admin.password')}>
@@ -100,14 +100,14 @@ export const AdminGate: React.FC = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete="current-password"
                 required
-                className="w-full bg-surface-2 border border-border rounded px-2.5 py-1.5 text-xs font-mono text-text placeholder-muted focus:outline-none focus:border-accent"
+                className="w-full bg-surface-2 border-2 border-border rounded-none px-2.5 py-1.5 text-xs font-mono text-text placeholder-muted focus:outline-none focus:border-text"
               />
             </Field>
             {error && <p className="text-[11px] font-mono font-medium text-danger">{error}</p>}
             <button
               type="submit"
               disabled={submitting}
-              className="w-full flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-bold text-bg bg-accent hover:bg-accent/90 disabled:opacity-50 disabled:cursor-not-allowed rounded-md transition active:scale-95 cursor-pointer"
+              className="w-full flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-bold text-bg bg-accent hover:bg-accent/90 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-border rounded-none transition active:scale-95 cursor-pointer"
             >
               <ShieldCheck className="w-3.5 h-3.5" />
               {submitting ? t('admin.signingIn') : t('admin.signIn')}
@@ -129,14 +129,14 @@ export const AdminGate: React.FC = () => {
           <div className="flex items-center gap-2 shrink-0">
             <a
               href="/"
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-muted hover:text-text hover:bg-surface-2 rounded-md transition cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-muted hover:text-text hover:bg-surface-2 rounded-none transition cursor-pointer"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               {t('admin.home')}
             </a>
             <button
               onClick={handleLogout}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-danger hover:bg-surface-2 rounded-md transition cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-danger hover:bg-surface-2 rounded-none transition cursor-pointer"
             >
               <LogOut className="w-3.5 h-3.5" />
               {t('admin.logout')}

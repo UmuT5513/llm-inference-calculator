@@ -76,11 +76,11 @@ export const AiAdvisorModal: React.FC<AiAdvisorModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-surface border border-border rounded-md max-w-2xl w-full max-h-[85vh] overflow-y-auto">
+      <div className="bg-surface border-2 border-border rounded-none max-w-2xl w-full max-h-[85vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between gap-3 border-b border-border px-3.5 py-2">
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="p-1.5 bg-surface-2 text-accent border border-border rounded-md shrink-0">
+            <div className="p-1.5 bg-surface-2 text-accent border-2 border-border rounded-none shrink-0">
               <Sparkles className="w-4 h-4" />
             </div>
             <div className="min-w-0">
@@ -95,7 +95,7 @@ export const AiAdvisorModal: React.FC<AiAdvisorModalProps> = ({
 
           <button
             onClick={onClose}
-            className="text-muted hover:text-text text-sm font-bold w-7 h-7 flex items-center justify-center rounded-md hover:bg-surface-2 transition shrink-0"
+            className="text-muted hover:text-text text-sm font-bold w-7 h-7 flex items-center justify-center rounded-none hover:bg-surface-2 transition shrink-0"
           >
             ✕
           </button>
@@ -113,7 +113,7 @@ export const AiAdvisorModal: React.FC<AiAdvisorModalProps> = ({
           )}
 
           {error && (
-            <div className="p-4 bg-surface-2 border border-danger/40 rounded-md text-xs text-danger space-y-2">
+            <div className="p-4 bg-surface-2 border border-danger/40 rounded-none text-xs text-danger space-y-2">
               <div className="font-bold flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4 text-danger" />
                 {t('advisor.errorTitle')}
@@ -121,7 +121,7 @@ export const AiAdvisorModal: React.FC<AiAdvisorModalProps> = ({
               <p className="text-[11px] text-muted">{error}</p>
               <button
                 onClick={fetchAdvice}
-                className="px-3 py-1.5 bg-surface-2 border border-border text-text hover:bg-surface rounded-md font-bold text-[11px] transition cursor-pointer"
+                className="px-3 py-1.5 bg-surface-2 border-2 border-border text-text hover:bg-surface rounded-none font-bold text-[11px] transition cursor-pointer"
               >
                 {t('advisor.retry')}
               </button>
@@ -133,7 +133,7 @@ export const AiAdvisorModal: React.FC<AiAdvisorModalProps> = ({
               <div className="flex justify-end">
                 <button
                   onClick={copyToClipboard}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-medium text-text bg-surface-2 hover:bg-surface border border-border rounded-md transition cursor-pointer"
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-medium text-text bg-surface-2 hover:bg-surface border-2 border-border rounded-none transition cursor-pointer"
                 >
                   {copied ? (
                     <>
@@ -161,7 +161,7 @@ export const AiAdvisorModal: React.FC<AiAdvisorModalProps> = ({
         <div className="p-3 bg-surface-2 border-t border-border flex justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-surface-2 border border-border text-text hover:bg-surface text-xs font-medium rounded-md transition cursor-pointer"
+            className="px-4 py-2 bg-surface-2 border-2 border-border text-text hover:bg-surface text-xs font-medium rounded-none transition cursor-pointer"
           >
             {t('advisor.close')}
           </button>

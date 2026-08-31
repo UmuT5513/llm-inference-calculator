@@ -114,13 +114,13 @@ export const ScenarioModal: React.FC<ScenarioModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-16 bg-black/60 backdrop-blur-sm overflow-y-auto">
-      <div className="w-full max-w-2xl bg-surface border border-border rounded-md shadow-2xl">
+      <div className="w-full max-w-2xl bg-surface border-2 border-border rounded-none shadow-none">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-border px-3.5 py-2">
           <h2 className="text-[11px] font-bold font-mono uppercase tracking-wider text-text">{t('scenarios.title')}</h2>
           <button
             onClick={onClose}
-            className="p-1.5 text-muted hover:text-text rounded-md hover:bg-surface-2 transition cursor-pointer"
+            className="p-1.5 text-muted hover:text-text rounded-none hover:bg-surface-2 transition cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -140,19 +140,19 @@ export const ScenarioModal: React.FC<ScenarioModalProps> = ({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder={t('scenarios.namePlaceholder')}
-                className="w-full px-3 py-2 text-sm bg-surface-2 border border-border rounded-md text-text placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent/50"
+                className="w-full px-3 py-2 text-sm bg-surface-2 border-2 border-border rounded-none text-text placeholder:text-muted focus:outline-none"
               />
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder={t('scenarios.descriptionPlaceholder')}
                 rows={2}
-                className="w-full px-3 py-2 text-sm bg-surface-2 border border-border rounded-md text-text placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent/50"
+                className="w-full px-3 py-2 text-sm bg-surface-2 border-2 border-border rounded-none text-text placeholder:text-muted focus:outline-none"
               />
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="w-full py-2 text-sm font-bold text-bg bg-accent hover:bg-accent/90 rounded-md disabled:opacity-50 cursor-pointer"
+                className="w-full py-2 text-sm font-bold text-bg bg-accent hover:bg-accent/90 border-2 border-border rounded-none disabled:opacity-50 cursor-pointer"
               >
                 {saving ? t('scenarios.saving') : t('scenarios.saveButton')}
               </button>
@@ -174,7 +174,7 @@ export const ScenarioModal: React.FC<ScenarioModalProps> = ({
               {scenarios.map((s) => (
                 <div
                   key={s.id}
-                  className={`flex items-start gap-3 border rounded-md p-3 transition ${
+                  className={`flex items-start gap-3 border-2 rounded-none p-3 transition ${
                     selectedIds.has(s.id)
                       ? 'border-accent/50 bg-surface-2'
                       : 'bg-surface border-border hover:bg-surface-2'
@@ -206,14 +206,14 @@ export const ScenarioModal: React.FC<ScenarioModalProps> = ({
                         onLoadScenario(s.type, s.config, s.results);
                         onClose();
                       }}
-                      className="p-1.5 text-muted hover:text-text hover:bg-surface-2 rounded-md cursor-pointer"
+                      className="p-1.5 text-muted hover:text-text hover:bg-surface-2 rounded-none cursor-pointer"
                       title={t('scenarios.loadTitle')}
                     >
                       <ArrowUpRight className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => handleDelete(s.id)}
-                      className="p-1.5 text-danger/70 hover:text-danger hover:bg-surface-2 rounded-md cursor-pointer"
+                      className="p-1.5 text-danger/70 hover:text-danger hover:bg-surface-2 rounded-none cursor-pointer"
                       title={t('scenarios.deleteTitle')}
                     >
                       <Trash2 className="w-4 h-4" />
@@ -225,7 +225,7 @@ export const ScenarioModal: React.FC<ScenarioModalProps> = ({
               <button
                 onClick={compareSelected}
                 disabled={selectedIds.size < 2}
-                className="w-full py-2 text-sm font-bold text-bg bg-accent hover:bg-accent/90 rounded-md disabled:opacity-40 cursor-pointer"
+                className="w-full py-2 text-sm font-bold text-bg bg-accent hover:bg-accent/90 border-2 border-border rounded-none disabled:opacity-40 cursor-pointer"
               >
                 {selectedIds.size >= 2
                   ? t('scenarios.compareCount', { count: selectedIds.size })

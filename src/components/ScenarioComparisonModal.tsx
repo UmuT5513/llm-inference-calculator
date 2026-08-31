@@ -259,7 +259,7 @@ export const ScenarioComparisonModal: React.FC<ScenarioComparisonModalProps> = (
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-16 bg-black/60 backdrop-blur-sm overflow-y-auto">
-      <div className="w-full max-w-4xl bg-surface border border-border rounded-md shadow-2xl">
+      <div className="w-full max-w-4xl bg-surface border-2 border-border rounded-none shadow-none">
         <div className="flex items-center justify-between border-b border-border px-3.5 py-2">
           <div className="flex items-center gap-2 min-w-0">
             <Scale className="w-4 h-4 text-accent shrink-0" />
@@ -269,7 +269,7 @@ export const ScenarioComparisonModal: React.FC<ScenarioComparisonModalProps> = (
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-muted hover:text-text rounded-md hover:bg-surface-2 transition cursor-pointer shrink-0"
+            className="p-1.5 text-muted hover:text-text rounded-none hover:bg-surface-2 transition cursor-pointer shrink-0"
           >
             <X className="w-5 h-5" />
           </button>
@@ -290,7 +290,7 @@ export const ScenarioComparisonModal: React.FC<ScenarioComparisonModalProps> = (
             {saved.map((s) => (
               <label
                 key={s.id}
-                className={`flex items-start gap-2 border rounded-md p-2 cursor-pointer text-sm ${
+                className={`flex items-start gap-2 border-2 rounded-none p-2 cursor-pointer text-sm ${
                   selected.has(s.id) ? 'border-accent/50 bg-surface-2' : 'bg-surface border-border hover:bg-surface-2'
                 }`}
               >
@@ -314,7 +314,7 @@ export const ScenarioComparisonModal: React.FC<ScenarioComparisonModalProps> = (
           </div>
 
           {columns.length >= 2 && (
-            <div className="overflow-x-auto border border-border rounded-md">
+            <div className="overflow-x-auto border-2 border-border rounded-none">
               <table className="w-full text-[11px] font-mono">
                 <thead>
                   <tr className="bg-surface-2 border-b border-border">
@@ -328,7 +328,7 @@ export const ScenarioComparisonModal: React.FC<ScenarioComparisonModalProps> = (
                           c.id === 'current' ? 'bg-surface-2 border-l border-accent/40' : ''
                         }`}
                       >
-                        <span className="block text-[10px] text-accent mb-0.5">
+                        <span className="block text-[10px] text-info mb-0.5">
                           {c.id === 'current' ? t('compare.liveBadge') : t('compare.scenarioBadge')}
                         </span>
                         {c.name}

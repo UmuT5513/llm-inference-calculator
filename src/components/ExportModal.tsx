@@ -174,7 +174,7 @@ ${results.cloudCosts.map((c) => `- **${c.providerName}:** $${c.totalHourlyCostUs
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-surface border border-border rounded-md max-w-xl w-full max-h-[85vh] overflow-y-auto">
+      <div className="bg-surface border-2 border-border rounded-none max-w-xl w-full max-h-[85vh] overflow-y-auto">
         {/* Modal Header */}
         <div className="flex items-center justify-between gap-3 border-b border-border px-3.5 py-2">
           <div className="flex items-center gap-2 text-text font-bold text-[11px] font-mono uppercase tracking-wider">
@@ -183,7 +183,7 @@ ${results.cloudCosts.map((c) => `- **${c.providerName}:** $${c.totalHourlyCostUs
           </div>
           <button
             onClick={onClose}
-            className="text-muted hover:text-text text-sm font-bold w-7 h-7 flex items-center justify-center rounded-md hover:bg-surface-2 transition shrink-0"
+            className="text-muted hover:text-text text-sm font-bold w-7 h-7 flex items-center justify-center rounded-none hover:bg-surface-2 transition shrink-0"
           >
             ✕
           </button>
@@ -202,7 +202,7 @@ ${results.cloudCosts.map((c) => `- **${c.providerName}:** $${c.totalHourlyCostUs
           <div className="flex justify-end">
             <button
               onClick={handleCopy}
-              className="flex items-center gap-1.5 px-3 py-1 text-[11px] font-medium text-text bg-surface-2 hover:bg-surface border border-border rounded-md transition cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1 text-[11px] font-medium text-text bg-surface-2 hover:bg-surface border-2 border-border rounded-none transition cursor-pointer"
             >
               {copied ? (
                 <>
@@ -218,7 +218,7 @@ ${results.cloudCosts.map((c) => `- **${c.providerName}:** $${c.totalHourlyCostUs
             </button>
           </div>
 
-          <pre className="bg-surface-2 border border-border rounded p-3 text-[11px] font-mono text-text overflow-x-auto max-h-64 whitespace-pre-wrap leading-relaxed">
+          <pre className="bg-surface-2 border-2 border-border rounded-none p-3 text-[11px] font-mono text-text overflow-x-auto max-h-64 whitespace-pre-wrap leading-relaxed">
             {displayContent}
           </pre>
         </div>
@@ -227,7 +227,7 @@ ${results.cloudCosts.map((c) => `- **${c.providerName}:** $${c.totalHourlyCostUs
         <div className="p-3 bg-surface-2 border-t border-border flex justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-surface-2 border border-border text-text hover:bg-surface text-xs font-medium rounded-md transition cursor-pointer"
+            className="px-4 py-2 bg-surface-2 border-2 border-border text-text hover:bg-surface text-xs font-medium rounded-none transition cursor-pointer"
           >
             {t('export.close')}
           </button>
