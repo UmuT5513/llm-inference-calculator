@@ -63,7 +63,7 @@ export const CloudTab: React.FC<CloudTabProps> = ({
 
       <div className="space-y-1.5">
         {results.cloudCosts.map((cloud) => (
-          <div key={cloud.providerId} className="border border-border rounded bg-surface-2 p-2.5">
+          <div key={cloud.providerId} className="border-2 border-border rounded-none bg-surface-2 p-2.5">
             <div className="flex items-center justify-between gap-2">
               <div className="min-w-0">
                 <div className="flex items-center gap-1.5">
@@ -103,7 +103,7 @@ export const CloudTab: React.FC<CloudTabProps> = ({
           <button
             onClick={onRefreshPrices}
             title={t('results.cloud.refreshTitle')}
-            className="flex items-center gap-1 px-2 py-1 text-[10px] font-mono text-muted border border-border rounded hover:text-text transition shrink-0"
+            className="flex items-center gap-1 px-2 py-1 text-[10px] font-mono text-muted border-2 border-border rounded-none hover:text-text transition shrink-0"
           >
             <RefreshCw className={`w-3 h-3 ${pricesLoading ? 'animate-spin' : ''}`} />
             {t('results.cloud.refresh')}
@@ -111,7 +111,7 @@ export const CloudTab: React.FC<CloudTabProps> = ({
         </div>
 
         {currentPrice != null && (
-          <div className="flex items-center justify-between gap-2 border border-accent/30 bg-surface-2 rounded px-2.5 py-2 mb-2">
+          <div className="flex items-center justify-between gap-2 border border-info/30 bg-surface-2 rounded-none px-2.5 py-2 mb-2">
             <div className="min-w-0">
               <p className="text-[10px] font-mono text-text truncate">{t('results.cloud.selectedGpu', { gpuName })}</p>
               <p className="text-[9px] text-muted">{t('results.cloud.lowestHourly')}</p>
@@ -126,7 +126,7 @@ export const CloudTab: React.FC<CloudTabProps> = ({
         {pricesLoading && (
           <div className="space-y-1.5">
             {[0, 1, 2].map((i) => (
-              <div key={i} className="h-8 rounded bg-surface-2 animate-pulse" />
+              <div key={i} className="h-8 rounded-none bg-surface-2 animate-pulse" />
             ))}
           </div>
         )}

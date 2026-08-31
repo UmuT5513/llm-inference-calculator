@@ -79,10 +79,10 @@ export const TcoTab: React.FC<TcoTabProps> = ({ results, config, onChangeConfig 
         <div className="text-[11px] font-mono uppercase tracking-wider text-muted">
           {t('results.tco.title')}
         </div>
-        <div className="flex items-center bg-surface-2 border border-border rounded p-0.5 text-[10px] font-mono shrink-0">
+        <div className="flex items-center bg-surface-2 border-2 border-border rounded-none p-0.5 text-[10px] font-mono shrink-0">
           <button
             onClick={() => setShowTry(false)}
-            className={`px-2 py-0.5 rounded transition font-bold ${
+            className={`px-2 py-0.5 rounded-none transition font-bold ${
               !showTry ? 'bg-surface text-text border border-border' : 'text-muted'
             }`}
           >
@@ -90,7 +90,7 @@ export const TcoTab: React.FC<TcoTabProps> = ({ results, config, onChangeConfig 
           </button>
           <button
             onClick={() => setShowTry(true)}
-            className={`px-2 py-0.5 rounded transition font-bold ${
+            className={`px-2 py-0.5 rounded-none transition font-bold ${
               showTry ? 'bg-surface text-text border border-border' : 'text-muted'
             }`}
           >
@@ -132,7 +132,7 @@ export const TcoTab: React.FC<TcoTabProps> = ({ results, config, onChangeConfig 
             {t('results.tco.total', { value: formatMoney(onPremTco.totalFirstYearCostUsd, onPremTco.totalFirstYearCostTry) })}
           </span>
         </div>
-        <div className="flex h-2.5 w-full overflow-hidden rounded bg-surface-2 border border-border">
+        <div className="flex h-2.5 w-full overflow-hidden rounded-none bg-surface-2 border-2 border-border">
           {TCO_SEGMENTS.map((s) => {
             const usdVal = onPremTco[s.field] as number;
             return (
@@ -163,7 +163,7 @@ export const TcoTab: React.FC<TcoTabProps> = ({ results, config, onChangeConfig 
         </div>
       </div>
 
-      <div className="border border-border rounded-md p-2.5 bg-surface-2 space-y-1">
+      <div className="border-2 border-border rounded-none p-2.5 bg-surface-2 space-y-1">
         <div className="flex items-center justify-between text-[11px] font-mono">
           <span className="text-muted">{t('results.tco.cloudMonthly')}</span>
           <span className="text-text font-bold">${results.monthlyCostUsd.toFixed(0)}{t('results.tco.perMonthUnit')}</span>
@@ -242,7 +242,7 @@ export const TcoTab: React.FC<TcoTabProps> = ({ results, config, onChangeConfig 
         </div>
         <button
           onClick={resetAllCustomCosts}
-          className="mt-3 flex items-center gap-1 text-[10px] font-mono text-danger border border-danger/40 rounded px-2 py-1 hover:bg-danger/10 transition"
+          className="mt-3 flex items-center gap-1 text-[10px] font-mono text-danger border border-danger/40 rounded-none px-2 py-1 hover:bg-danger/10 transition"
         >
           <RotateCcw className="w-3 h-3" />
           {t('results.tco.resetAll')}

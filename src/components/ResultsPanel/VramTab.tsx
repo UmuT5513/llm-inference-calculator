@@ -21,7 +21,7 @@ export const VramTab: React.FC<VramTabProps> = ({ results, gpuCount, gpuVramGB }
   const total = results.totalVramNeededGB || 1;
   return (
     <div className="space-y-3">
-      <div className="flex h-3 w-full overflow-hidden rounded bg-surface-2 border border-border">
+      <div className="flex h-3 w-full overflow-hidden rounded-none bg-surface-2 border-2 border-border">
         {SEGMENTS.map((s) => (
           <div
             key={s.field}
@@ -61,7 +61,7 @@ export const VramTab: React.FC<VramTabProps> = ({ results, gpuCount, gpuVramGB }
       </div>
 
       {results.isOom && (
-        <div className="border border-danger/40 bg-danger/10 rounded p-2.5 text-[11px] font-mono text-danger">
+        <div className="border border-danger/40 bg-danger/10 rounded-none p-2.5 text-[11px] font-mono text-danger">
           {t('results.vram.oomInsufficient', { gpus: results.recommendedMinGpus })}
         </div>
       )}

@@ -86,7 +86,7 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
           {onCopyLink && (
             <button
               onClick={() => void handleCopyLink()}
-              className="p-2 text-muted hover:text-text bg-surface-2 hover:bg-surface border border-border rounded transition-colors shrink-0"
+              className="p-2 text-muted hover:text-text bg-surface-2 hover:bg-surface border-2 border-border rounded-none transition-colors shrink-0"
               title={copied ? t('common.copied') : t('common.copyLink')}
             >
               <Link2 className="w-3.5 h-3.5 text-accent" />
@@ -95,7 +95,7 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
           {onOpenAiAdvisor && (
             <button
               onClick={onOpenAiAdvisor}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-bold font-mono text-bg bg-accent hover:opacity-90 rounded shrink-0 transition active:scale-95"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-bold font-mono text-bg bg-accent hover:opacity-90 border-2 border-border rounded-none shrink-0 transition active:scale-95"
             >
               <Sparkles className="w-3.5 h-3.5" />
               <span>{t('results.analyze')}</span>
@@ -110,7 +110,7 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
               {results.isOom ? '[OOM]' : '[OK]'} %{results.vramUtilizationPct.toFixed(0)}
             </span>
           </div>
-          <div className="h-2 bg-surface-2 border border-border rounded overflow-hidden">
+          <div className="h-2 bg-surface-2 border border-border rounded-none overflow-hidden">
             <div
               className={`h-full transition-all ${results.isOom ? 'bg-danger' : 'bg-ok'}`}
               style={{ width: `${Math.min(100, results.vramUtilizationPct)}%` }}
