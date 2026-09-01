@@ -18,7 +18,7 @@ export const PerfTab: React.FC<PerfTabProps> = ({ results }) => {
         <Stat label={t('results.perf.systemThroughput')} value={`${results.systemThroughputTokensPerSec.toFixed(0)}`} sub="tok/s" />
       </div>
 
-      <div className="space-y-1 text-[11px] font-mono border border-border rounded-md p-2.5 bg-surface-2">
+      <div className="space-y-1 text-[11px] font-mono border-2 border-border rounded-none p-2.5 bg-surface-2">
         <div className="flex items-center justify-between">
           <span className="text-muted">{t('results.perf.concurrentUsers')}</span>
           <span className="text-text">{results.activeTotalUsers}</span>

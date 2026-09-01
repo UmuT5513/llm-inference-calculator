@@ -15,7 +15,7 @@ export const AboutModal: React.FC<AboutModalProps> = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-16 bg-black/60 backdrop-blur-sm overflow-y-auto">
-      <div className="w-full max-w-2xl bg-surface border border-border rounded-md shadow-2xl">
+      <div className="w-full max-w-2xl bg-surface border-2 border-border rounded-none shadow-none">
         <div className="flex items-center justify-between border-b border-border px-3.5 py-2">
           <div className="flex items-center gap-2">
             <Info className="w-4 h-4 text-accent shrink-0" />
@@ -25,7 +25,7 @@ export const AboutModal: React.FC<AboutModalProps> = ({ isOpen, onClose }) => {
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-muted hover:text-text rounded-md hover:bg-surface-2 transition cursor-pointer"
+            className="p-1.5 text-muted hover:text-text rounded-none hover:bg-surface-2 transition cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -86,14 +86,14 @@ export const AboutModal: React.FC<AboutModalProps> = ({ isOpen, onClose }) => {
             </ul>
           </Panel>
 
-          <div className="flex items-start gap-2.5 bg-surface-2 border border-border rounded-md p-3.5">
+          <div className="flex items-start gap-2.5 bg-surface-2 border-2 border-border rounded-none p-3.5">
             <AlertTriangle className="w-4 h-4 text-accent shrink-0 mt-0.5" />
             <p className="text-xs text-muted leading-relaxed">
               <Trans i18nKey="about.warning" components={{ strong: <span className="text-text font-semibold" /> }} />
             </p>
           </div>
 
-          <div className="flex items-start gap-2.5 bg-surface-2 border border-border rounded-md p-3.5">
+          <div className="flex items-start gap-2.5 bg-surface-2 border-2 border-border rounded-none p-3.5">
             <ShieldCheck className="w-4 h-4 text-ok shrink-0 mt-0.5" />
             <p className="text-xs text-muted leading-relaxed">
               <Trans i18nKey="about.privacy" components={{ strong: <span className="text-text font-semibold" /> }} />

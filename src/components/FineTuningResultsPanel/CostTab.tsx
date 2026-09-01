@@ -16,9 +16,9 @@ function HighlightCard({
 }) {
   const { t } = useTranslation();
   return (
-    <div className="p-2.5 rounded-md border border-accent/40 bg-surface-2 space-y-1.5">
+    <div className="p-2.5 rounded-none border-2 border-accent/40 bg-surface-2 space-y-1.5">
       <div className="flex items-center justify-between gap-2">
-        <span className="text-[9px] font-bold uppercase tracking-wider text-accent">{badge}</span>
+        <span className="text-[9px] font-bold uppercase tracking-wider text-info">{badge}</span>
         <span className="text-xs font-mono font-bold text-accent shrink-0">
           ${platform.totalCostUsd.toFixed(2)}
         </span>
@@ -61,7 +61,7 @@ export const CostTab: React.FC<CostTabProps> = ({ results }) => {
         )}
       </div>
 
-      <div className="bg-surface-2 border border-border rounded-md p-2.5 space-y-1.5 text-[11px] font-mono">
+      <div className="bg-surface-2 border-2 border-border rounded-none p-2.5 space-y-1.5 text-[11px] font-mono">
         <div className="flex items-center justify-between">
           <span className="text-muted">{t('ft.results.cost.localElectricityCost')}</span>
           <span className="text-text">

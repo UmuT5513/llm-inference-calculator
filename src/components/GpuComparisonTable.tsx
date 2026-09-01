@@ -47,14 +47,14 @@ export const GpuComparisonTable: React.FC<GpuComparisonTableProps> = ({ config }
   });
 
   return (
-    <div className="bg-white border border-slate-200/90 rounded-xl p-4 shadow-xs space-y-3.5">
-      <div className="flex items-center gap-2 border-b border-slate-200 pb-2.5">
-        <div className="p-1.5 bg-indigo-50 text-indigo-700 rounded-lg border border-indigo-200">
+    <div className="bg-surface border-2 border-border rounded-none p-4 shadow-none space-y-3.5">
+      <div className="flex items-center gap-2 border-b border-border pb-2.5">
+        <div className="p-1.5 bg-info/10 text-info border-2 border-border rounded-none">
           <Server className="w-4 h-4" />
         </div>
         <div>
-          <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">{t('results.compare.title')}</h3>
-          <p className="text-[11px] text-slate-500">
+          <h3 className="text-xs font-bold text-text uppercase tracking-wider">{t('results.compare.title')}</h3>
+          <p className="text-[11px] text-muted">
             {t('results.compare.subtitle')}
           </p>
         </div>
@@ -63,28 +63,28 @@ export const GpuComparisonTable: React.FC<GpuComparisonTableProps> = ({ config }
       <div className="overflow-x-auto">
         <table className="w-full text-left text-[11px] border-collapse">
           <thead>
-            <tr className="border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider text-[10px] bg-slate-50/80">
-              <th className="py-2 px-2.5 rounded-l-lg">{t('results.compare.gpuModel')}</th>
+            <tr className="border-b border-border text-muted font-bold uppercase tracking-wider text-[10px] bg-surface-2">
+              <th className="py-2 px-2.5 rounded-none">{t('results.compare.gpuModel')}</th>
               <th className="py-2 px-2.5">{t('results.compare.count')}</th>
               <th className="py-2 px-2.5">{t('results.compare.vram')}</th>
               <th className="py-2 px-2.5">TTFT</th>
               <th className="py-2 px-2.5">TPOT</th>
               <th className="py-2 px-2.5">{t('results.compare.userSpeed')}</th>
               <th className="py-2 px-2.5">{t('results.compare.costPerHour')}</th>
-              <th className="py-2 px-2.5 rounded-r-lg">{t('results.compare.costPer1m')}</th>
+              <th className="py-2 px-2.5 rounded-none">{t('results.compare.costPer1m')}</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 text-slate-700 font-mono text-[11px]">
+          <tbody className="divide-y divide-border/60 text-text font-mono text-[11px]">
             {comparisons.map(({ gpu, neededGpus, res }) => {
               const isSelected = config.gpuId === gpu.id;
               return (
                 <tr
                   key={gpu.id}
-                  className={`hover:bg-slate-50 transition ${
+                  className={`hover:bg-surface-2 transition ${
                     isSelected ? 'bg-indigo-50/70 font-semibold text-indigo-950' : ''
                   }`}
                 >
-                  <td className="py-2 px-2.5 font-medium text-slate-900 flex items-center gap-1.5">
+                  <td className="py-2 px-2.5 font-medium text-text flex items-center gap-1.5">
                     {isSelected && (
                       <span className="w-2 h-2 rounded-full bg-indigo-600" />
                     )}
@@ -92,7 +92,7 @@ export const GpuComparisonTable: React.FC<GpuComparisonTableProps> = ({ config }
                   </td>
 
                   <td className="py-2 px-2.5">
-                    <span className="bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded text-indigo-700 font-bold text-[10px]">
+                    <span className="bg-surface-2 border-2 border-border px-1.5 py-0.5 rounded-none text-indigo-700 font-bold text-[10px]">
                       {neededGpus}x
                     </span>
                   </td>
@@ -118,7 +118,7 @@ export const GpuComparisonTable: React.FC<GpuComparisonTableProps> = ({ config }
                     ${res.hourlyCostUsd.toFixed(2)}/s
                   </td>
 
-                  <td className="py-2 px-2.5 font-bold text-slate-900">
+                  <td className="py-2 px-2.5 font-bold text-text">
                     ${res.costPerMillionTotalTokensUsd.toFixed(3)}
                   </td>
                 </tr>

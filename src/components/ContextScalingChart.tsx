@@ -32,14 +32,14 @@ export const ContextScalingChart: React.FC<ContextScalingChartProps> = ({ config
   const maxVal = Math.max(...chartData.map((d) => Math.max(d.totalNeededGB, d.availableGB)));
 
   return (
-    <div className="bg-white border border-slate-200/90 rounded-xl p-4 shadow-xs space-y-3.5">
-      <div className="flex items-center gap-2 border-b border-slate-200 pb-2.5">
-        <div className="p-1.5 bg-cyan-50 text-cyan-700 rounded-lg border border-cyan-200">
+    <div className="bg-surface border-2 border-border rounded-none p-4 shadow-none space-y-3.5">
+      <div className="flex items-center gap-2 border-b border-border pb-2.5">
+        <div className="p-1.5 bg-info/10 text-info border-2 border-border rounded-none">
           <Database className="w-4 h-4" />
         </div>
         <div>
-          <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">{t('results.context.title')}</h3>
-          <p className="text-[11px] text-slate-500">
+          <h3 className="text-xs font-bold text-text uppercase tracking-wider">{t('results.context.title')}</h3>
+          <p className="text-[11px] text-muted">
             {t('results.context.subtitle')}
           </p>
         </div>
@@ -47,21 +47,21 @@ export const ContextScalingChart: React.FC<ContextScalingChartProps> = ({ config
 
       {/* Bar visual chart */}
       <div className="space-y-2.5">
-        <div className="grid grid-cols-8 gap-2 items-end h-28 bg-slate-50 rounded-xl p-3 border border-slate-200">
+        <div className="grid grid-cols-8 gap-2 items-end h-28 bg-surface-2 rounded-none p-3 border border-border">
           {chartData.map((d) => {
             const heightPct = Math.min(100, (d.totalNeededGB / maxVal) * 100);
             const isCurrent = config.promptLen === d.contextLen;
 
             return (
               <div key={d.contextLen} className="flex flex-col items-center h-full justify-end group">
-                <div className="text-[9px] font-mono text-slate-600 opacity-0 group-hover:opacity-100 transition mb-0.5 font-bold">
+                <div className="text-[9px] font-mono text-muted opacity-0 group-hover:opacity-100 transition mb-0.5 font-bold">
                   {d.totalNeededGB.toFixed(0)}G
                 </div>
 
-                <div className="w-full max-w-[20px] bg-slate-200/80 rounded-t overflow-hidden flex flex-col justify-end relative h-full">
+                <div className="w-full max-w-[20px] bg-surface-2 overflow-hidden flex flex-col justify-end relative h-full">
                   <div
                     style={{ height: `${heightPct}%` }}
-                    className={`w-full transition-all duration-300 rounded-t ${
+                    className={`w-full transition-all duration-300 ${
                       d.isOom
                         ? 'bg-rose-500'
                         : isCurrent
@@ -73,7 +73,7 @@ export const ContextScalingChart: React.FC<ContextScalingChartProps> = ({ config
 
                 <div
                   className={`text-[10px] font-mono mt-1 ${
-                    isCurrent ? 'text-indigo-700 font-bold' : 'text-slate-500'
+                    isCurrent ? 'text-indigo-700 font-bold' : 'text-muted'
                   }`}
                 >
                   {d.label}
@@ -88,13 +88,13 @@ export const ContextScalingChart: React.FC<ContextScalingChartProps> = ({ config
           {chartData.map((d) => (
             <div
               key={d.contextLen}
-              className={`p-2 rounded-lg border flex justify-between items-center ${
+              className={`p-2 rounded-none border-2 flex justify-between items-center ${
                 config.promptLen === d.contextLen
-                  ? 'bg-indigo-50 border-indigo-400 font-bold shadow-2xs'
-                  : 'bg-slate-50/70 border-slate-200'
+                  ? 'bg-indigo-50 border-indigo-400 font-bold'
+                  : 'bg-surface-2 border-border'
               }`}
             >
-              <span className="text-slate-600">{d.label}:</span>
+              <span className="text-muted">{d.label}:</span>
               <span className={`${d.isOom ? 'text-rose-600 font-bold' : 'text-indigo-700'}`}>
                 {d.totalNeededGB.toFixed(1)} GB
               </span>

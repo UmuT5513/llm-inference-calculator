@@ -585,5 +585,25 @@
         "weights": "Model Ağırlıkları"
       }
     }
+  },
+  "wizard": {
+    "stepModel": "Model",
+    "stepQuantization": "Kuantizasyon",
+    "stepEngine": "Motor",
+    "stepGpu": "GPU",
+    "stepWorkload": "İş Yükü",
+    "stepResults": "Sonuçlar",
+    "stepFinetuningConfig": "Fine-Tuning Ayarı",
+    "back": "← Geri",
+    "next": "İleri →"
+  },
+  "summary": {
+    "vram": "VRAM",
+    "vramOk": "OK",
+    "vramOom": "OOM",
+    "monthlyCost": "Aylık Maliyet",
+    "throughput": "Tok/s",
+    "finetuningTime": "Eğitim Süresi",
+    "perMonth": "/ ay"
   }
 }

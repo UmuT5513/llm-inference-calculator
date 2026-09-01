@@ -16,7 +16,7 @@ export function Select<T extends string | number>({ value, onChange, options, cl
         const raw = e.target.value;
         onChange((numeric ? Number(raw) : raw) as T);
       }}
-      className={`w-full bg-surface-2 border border-border rounded px-2.5 py-1.5 text-xs font-mono text-text focus:outline-none focus:border-accent ${className}`}
+      className={`w-full bg-surface-2 border-2 border-border rounded-none px-2.5 py-1.5 text-xs font-mono text-text focus:outline-none focus:border-text ${className}`}
     >
       {options.map((o) => (
         <option key={o.value} value={o.value} className="bg-surface text-text">

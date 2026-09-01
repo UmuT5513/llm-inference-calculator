@@ -6,5 +6,5 @@ interface PanelProps {
 }
 
 export const Panel: React.FC<PanelProps> = ({ children, className = '' }) => {
-  return <section className={`bg-surface border border-border rounded-md ${className}`}>{children}</section>;
+  return <section className={`bg-surface border-2 border-border rounded-none ${className}`}>{children}</section>;
 };

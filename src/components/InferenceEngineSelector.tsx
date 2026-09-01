@@ -23,7 +23,7 @@ export const InferenceEngineSelector: React.FC<InferenceEngineSelectorProps> = (
         title="Inference Engine"
         description={t('engine.subtitle')}
         right={
-          <div className="flex items-center gap-1.5 text-[11px] font-mono text-accent bg-surface-2 border border-border px-2 py-0.5 rounded-md font-semibold">
+          <div className="flex items-center gap-1.5 text-[11px] font-mono text-info bg-surface-2 border-2 border-border px-2 py-0.5 rounded-none font-semibold">
             <Layers className="w-3.5 h-3.5 text-accent" />
             <span>PagedAttention & TensorRT</span>
           </div>
@@ -40,7 +40,7 @@ export const InferenceEngineSelector: React.FC<InferenceEngineSelectorProps> = (
             <button
               key={eng.id}
               onClick={() => onSelectEngine(eng.id)}
-              className={`text-left p-3 rounded-md border transition relative flex flex-col justify-between ${
+              className={`text-left p-3 rounded-none border-2 transition relative flex flex-col justify-between ${
                 isSelected
                   ? 'bg-surface-2 border-accent'
                   : 'bg-surface border-border hover:border-accent/40'
@@ -75,7 +75,7 @@ export const InferenceEngineSelector: React.FC<InferenceEngineSelectorProps> = (
 
                 <div className="flex flex-wrap gap-1 mt-1.5">
                   {eng.features.slice(0, 2).map((feat, i) => (
-                    <span key={i} className="text-[9px] font-mono text-muted bg-surface-2 px-1.5 py-0.2 rounded border border-border">
+                    <span key={i} className="text-[9px] font-mono text-muted bg-surface-2 px-1.5 py-0.2 rounded-none border-2 border-border">
                       {feat}
                     </span>
                   ))}

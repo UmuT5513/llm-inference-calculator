@@ -63,13 +63,48 @@ Turn the LLM inference/fine-tuning calculator into a public tool that attracts a
 ### Scope guard
 Uses existing TCO/cost engine outputs — no new calculation math, only new presentation + static price table.
 
-## Phase 4 — Ember Refined polish wave
+## Phase 4 — Light Brutalist redesign + wizard flow (rework of "Ember Refined polish wave")
 
-After features land, so restyling happens once:
-- Keep palette/tokens; refine hierarchy: consistent section headers, tabular numerals, clearer label/value contrast.
-- Mobile: single-column flow, sticky bottom summary bar (VRAM fit / cost / tok-s), collapsible configurator sections.
-- Unified SVG chart styling (grid, axis labels, amber accent) incl. break-even chart.
-- Micro-interactions via `motion` (tab transitions, number changes); focus-visible + aria pass; loading/empty states for live price/model fetches.
+Replaces the original "restyle once" polish wave with a full visual-language and
+interaction redesign (approved 2026-08-31; see
+`docs/superpowers/specs/2026-08-31-light-brutalist-wizard-redesign-design.md`).
+Ships once, after Phases 1–3 land.
+
+### Theme — light brutalist (dark theme removed, no toggle)
+- Off-white `#f5f5f3` background, white surfaces, solid **2px black borders** on
+  all major containers/sections/buttons/inputs, **flat** (no shadows, no
+  border-radius), sharp corners.
+- Inter (headings/body) + JetBrains Mono (labels, numbers, metadata, badges).
+- Brand accent amber `#ffb224` (CTA/logo) retained; blue `#1d4ed8` for mono
+  category labels; green/red keep status meaning. Tokens live in `index.css`
+  `@theme`.
+
+### Calculator — step-by-step wizard (`/app`)
+- Hybrid: **linear wizard steps** (one visible at a time) + **sticky summary bar**
+  at the bottom always showing VRAM fit / monthly cost / tok-s.
+- Inference steps: `01 Model → 02 Quantization → 03 Engine → 04 GPU → 05
+  Workload → 06 Results`. Fine-tuning: `01 Model → 02 Fine-Tuning Config → 03
+  Results` (Platform Compare + Code Export in Results step).
+- Mono step indicator with black-filled active / checked-completed states;
+  backward nav always allowed, forward sequential; visited steps clickable.
+- `?c=` share URLs and quick-start presets jump straight to Results. No new
+  calculation logic.
+- Header restyled: `LLM-CALC` logo, nav-link tabs (Inference/Fine-Tuning, active
+  = black underline), all actions in bordered flat boxes.
+- Modals, results tabs, and footer restyled to the same language.
+
+### Landing page (`/`)
+- SSR hero box: blue mono badge (`LLM TOOLS · 2026`), bold heading, subtitle,
+  thin divider, mono metadata.
+- Modules grid: `01` INFERENCE / `02` FINE-TUNING cards (status badge, blue
+  category label, split-button footer "Hesap Aç" / "Hızlı Başlangıç").
+- Live example cards + features + stat + footer restyled.
+
+### Unified charts, a11y, states
+- Unified SVG chart styling (grid, axis labels, amber accent) incl. break-even
+  chart.
+- Focus-visible + aria pass; loading/empty states for live price/model fetches.
+- Micro-interactions kept minimal (no `motion` dependency required).
 
 ## Verification (no test framework exists)
 

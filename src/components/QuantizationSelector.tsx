@@ -34,7 +34,7 @@ export const QuantizationSelector: React.FC<QuantizationSelectorProps> = ({
             <div
               key={q.id}
               onClick={() => onSelectQuant(q.id)}
-              className={`cursor-pointer rounded-md p-2.5 border transition text-left flex flex-col justify-between ${
+              className={`cursor-pointer rounded-none p-2.5 border-2 transition text-left flex flex-col justify-between ${
                 isSelected
                   ? 'bg-surface-2 border-accent'
                   : 'bg-surface border-border hover:border-accent/40'
@@ -44,17 +44,17 @@ export const QuantizationSelector: React.FC<QuantizationSelectorProps> = ({
                 <div className="flex items-center justify-between mb-0.5">
                   <span className="text-xs font-bold text-text">{q.shortName}</span>
                   <span
-                    className={`text-[9px] font-mono px-1.5 py-0.2 rounded font-semibold ${
+                    className={`text-[9px] font-mono px-1.5 py-0.2 rounded-none font-semibold ${
                       isSelected
                         ? 'bg-accent text-bg'
-                        : 'bg-surface-2 text-accent border border-border'
+                        : 'bg-surface-2 text-info border-2 border-border'
                     }`}
                   >
                     {q.bytesPerParam} B/p
                   </span>
                 </div>
 
-                <div className="text-[10px] text-accent font-mono font-medium">
+                <div className="text-[10px] text-info font-mono font-medium">
                   {q.qualityDegradation}
                 </div>
               </div>
@@ -68,7 +68,7 @@ export const QuantizationSelector: React.FC<QuantizationSelectorProps> = ({
       {/* KV Cache Quantization */}
       <div className="border-t border-border pt-3">
         <div className="flex items-center gap-2 mb-2">
-          <div className="p-1 bg-surface-2 text-accent rounded-md border border-border">
+          <div className="p-1 bg-surface-2 text-accent rounded-none border-2 border-border">
             <Database className="w-3.5 h-3.5" />
           </div>
           <div>
@@ -86,7 +86,7 @@ export const QuantizationSelector: React.FC<QuantizationSelectorProps> = ({
               <div
                 key={kv.id}
                 onClick={() => onSelectKvCacheQuant(kv.id)}
-                className={`cursor-pointer rounded-md p-2.5 border transition text-left flex items-center justify-between ${
+                className={`cursor-pointer rounded-none p-2.5 border-2 transition text-left flex items-center justify-between ${
                   isSelected
                     ? 'bg-surface-2 border-accent'
                     : 'bg-surface border-border hover:border-accent/40'

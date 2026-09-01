@@ -27,7 +27,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenAbout }) => {
               target="_blank"
               rel="noopener noreferrer"
               title={t('footer.sourceCodeTitle')}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-muted bg-surface-2 hover:bg-surface border border-border rounded transition-colors hover:text-text"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-muted bg-surface-2 hover:bg-surface border-2 border-border rounded-none transition-colors hover:text-text"
             >
               <Github className="w-3.5 h-3.5" />
               GitHub
@@ -37,7 +37,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenAbout }) => {
               target="_blank"
               rel="noopener noreferrer"
               title={t('footer.feedbackTitle')}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-muted bg-surface-2 hover:bg-surface border border-border rounded transition-colors hover:text-text"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-muted bg-surface-2 hover:bg-surface border-2 border-border rounded-none transition-colors hover:text-text"
             >
               <MessageSquareWarning className="w-3.5 h-3.5 text-accent" />
               {t('footer.feedback')}
@@ -47,7 +47,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenAbout }) => {
               target="_blank"
               rel="noopener noreferrer"
               title="LinkedIn"
-              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-muted bg-surface-2 hover:bg-surface border border-border rounded transition-colors hover:text-text"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-muted bg-surface-2 hover:bg-surface border-2 border-border rounded-none transition-colors hover:text-text"
             >
               <Linkedin className="w-3.5 h-3.5" />
               LinkedIn
@@ -57,7 +57,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenAbout }) => {
               target="_blank"
               rel="noopener noreferrer"
               title={t('footer.mediumTitle')}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-muted bg-surface-2 hover:bg-surface border border-border rounded transition-colors hover:text-text"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-muted bg-surface-2 hover:bg-surface border-2 border-border rounded-none transition-colors hover:text-text"
             >
               <Newspaper className="w-3.5 h-3.5" />
               Medium

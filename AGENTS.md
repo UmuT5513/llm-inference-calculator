@@ -2,7 +2,7 @@
 
 Turkish-language LLM inference / fine-tuning VRAM & cost calculator. React 19 + Vite + Tailwind frontend served by one Express (TS) server; PostgreSQL-backed; generated from a Google AI Studio template. UI strings and user-facing API errors are Turkish.
 
-Unfinished work is tracked in `PLAN.md` — the unified model-catalog plan is complete (all `hfId`s verified against the HF Hub) and the Phase 2 landing page + SEO work and Phase 3 API break-even comparison are done; next planned work per the growth spec (`docs/superpowers/specs/2026-08-25-public-tool-growth-design.md`) is Phase 4 (Ember Refined polish wave).
+Unfinished work is tracked in `PLAN.md` — the unified model-catalog plan is complete (all `hfId`s verified against the HF Hub), the Phase 2 landing page + SEO work is done, and the Phase 4 light brutalist redesign + wizard flow is complete (per the growth spec `docs/superpowers/specs/2026-08-25-public-tool-growth-design.md`).
 
 ## Commands
 - `npm run dev` — runs everything: `server.ts` boots Vite in middleware mode, serving the SPA + API on http://localhost:3000. There is no separate frontend dev server.

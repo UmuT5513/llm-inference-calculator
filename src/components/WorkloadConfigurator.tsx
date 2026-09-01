@@ -91,7 +91,7 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
         right={
           <button
             onClick={() => onToggleMultiProfile(!useMultiProfile)}
-            className={`flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-mono font-bold rounded-md border transition ${
+            className={`flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-mono font-bold rounded-none border-2 transition ${
               useMultiProfile
                 ? 'bg-accent text-bg border-accent'
                 : 'bg-surface-2 text-muted border-border hover:text-text'
@@ -110,9 +110,9 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
       {/* MULTI-PROFILE WORKLOAD MODE */}
       {useMultiProfile ? (
         <div className="space-y-3">
-          <div className="flex flex-wrap items-center justify-between bg-surface-2 p-3 border border-border rounded-md text-xs">
+          <div className="flex flex-wrap items-center justify-between bg-surface-2 p-3 border-2 border-border rounded-none text-xs">
             <div className="flex items-center gap-3">
-              <span className="font-mono text-accent font-bold flex items-center gap-1">
+              <span className="font-mono text-info font-bold flex items-center gap-1">
                 <Users className="w-4 h-4 text-accent" />
                 {t('workload.totalConcurrentUsers', { count: totalMultiProfileUsers })}
               </span>
@@ -124,7 +124,7 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
 
             <button
               onClick={handleAddProfile}
-              className="flex items-center gap-1 px-3 py-1.5 text-[11px] font-mono font-bold text-bg bg-accent hover:opacity-90 rounded-md transition"
+              className="flex items-center gap-1 px-3 py-1.5 text-[11px] font-mono font-bold text-bg bg-accent hover:opacity-90 rounded-none transition"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>{t('workload.addProfile')}</span>
@@ -136,11 +136,11 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
             {userProfiles.map((profile, idx) => (
               <div
                 key={profile.id}
-                className="bg-surface-2 p-3.5 border border-border hover:border-accent/40 rounded-md transition space-y-3"
+                className="bg-surface-2 p-3.5 border-2 border-border hover:border-accent/40 rounded-none transition space-y-3"
               >
                 <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-2.5">
                   <div className="flex items-center gap-2 flex-1 min-w-[200px]">
-                    <span className="text-[10px] font-mono font-bold text-accent bg-surface border border-border px-2 py-0.5 rounded">
+                    <span className="text-[10px] font-mono font-bold text-info bg-surface border-2 border-border px-2 py-0.5 rounded-none">
                       #{idx + 1}
                     </span>
                     <input
@@ -148,7 +148,7 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
                       value={profile.name}
                       onChange={(e) => handleUpdateProfileField(profile.id, 'name', e.target.value)}
                       placeholder={t('workload.profileNamePlaceholder')}
-                      className="bg-surface border border-border rounded-lg px-2.5 py-1 text-xs text-text font-bold w-full max-w-xs focus:outline-none focus:ring-1 focus:ring-accent focus:border-accent"
+                      className="bg-surface border-2 border-border rounded-none px-2.5 py-1 text-xs text-text font-bold w-full max-w-xs focus:outline-none focus:border-text"
                     />
                   </div>
 
@@ -171,7 +171,7 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
                     {userProfiles.length > 1 && (
                       <button
                         onClick={() => handleRemoveProfile(profile.id)}
-                        className="p-1.5 text-muted hover:text-danger rounded-lg hover:bg-surface transition"
+                        className="p-1.5 text-muted hover:text-danger rounded-none hover:bg-surface transition"
                         title={t('workload.removeProfile')}
                       >
                         <Trash2 className="w-4 h-4" />
@@ -189,7 +189,7 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
                         <MessageSquareText className="w-3.5 h-3.5 text-accent" />
                         {t('workload.profilePromptTokens')}
                       </span>
-                      <span className="font-mono text-accent font-bold bg-surface border border-border px-1.5 py-0.2 rounded">
+                      <span className="font-mono text-info font-bold bg-surface border-2 border-border px-1.5 py-0.2 rounded-none">
                         {profile.promptLen.toLocaleString()} tk
                       </span>
                     </div>
@@ -202,7 +202,7 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
                       onChange={(e) =>
                         handleUpdateProfileField(profile.id, 'promptLen', parseInt(e.target.value) || 1024)
                       }
-                      className="w-full h-1.5 bg-surface-2 rounded appearance-none cursor-pointer accent-[#FFB224]"
+                      className="w-full h-1.5 bg-surface-2 rounded-none appearance-none cursor-pointer accent-[#FFB224]"
                     />
                   </div>
 
@@ -213,7 +213,7 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
                         <Activity className="w-3.5 h-3.5 text-accent" />
                         {t('workload.profileGenTokens')}
                       </span>
-                      <span className="font-mono text-accent font-bold bg-surface border border-border px-1.5 py-0.2 rounded">
+                      <span className="font-mono text-info font-bold bg-surface border-2 border-border px-1.5 py-0.2 rounded-none">
                         {profile.genLen.toLocaleString()} tk
                       </span>
                     </div>
@@ -226,7 +226,7 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
                       onChange={(e) =>
                         handleUpdateProfileField(profile.id, 'genLen', parseInt(e.target.value) || 512)
                       }
-                      className="w-full h-1.5 bg-surface-2 rounded appearance-none cursor-pointer accent-[#FFB224]"
+                      className="w-full h-1.5 bg-surface-2 rounded-none appearance-none cursor-pointer accent-[#FFB224]"
                     />
                   </div>
                 </div>
@@ -238,13 +238,13 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
         /* SINGLE BATCH MODE (Standard Sliders) */
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {/* Prompt Token Length */}
-          <div className="bg-surface-2 p-3.5 border border-border rounded-md">
+          <div className="bg-surface-2 p-3.5 border-2 border-border rounded-none">
             <div className="flex items-center justify-between mb-1.5">
               <label className="text-xs font-bold text-text uppercase tracking-wider flex items-center gap-1">
                 <MessageSquareText className="w-3.5 h-3.5 text-accent" />
                 {t('workload.promptLen')}
               </label>
-              <span className="text-xs font-mono font-bold text-accent bg-surface-2 border border-border px-2 py-0.5 rounded">
+              <span className="text-xs font-mono font-bold text-info bg-surface-2 border-2 border-border px-2 py-0.5 rounded-none">
                 {promptLen.toLocaleString()} Tokens
               </span>
             </div>
@@ -256,7 +256,7 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
               step="128"
               value={promptLen}
               onChange={(e) => onChangePromptLen(parseInt(e.target.value) || 1024)}
-              className="w-full h-2 bg-surface-2 rounded-md appearance-none cursor-pointer accent-[#FFB224]"
+              className="w-full h-2 bg-surface-2 rounded-none appearance-none cursor-pointer accent-[#FFB224]"
             />
 
             <div className="flex flex-wrap gap-1 mt-2">
@@ -264,7 +264,7 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
                 <button
                   key={p}
                   onClick={() => onChangePromptLen(p)}
-                  className={`px-2 py-0.5 text-[10px] font-mono rounded-md transition border ${
+                  className={`px-2 py-0.5 text-[10px] font-mono rounded-none transition border-2 ${
                     promptLen === p
                       ? 'bg-accent text-bg border-accent font-bold'
                       : 'bg-surface-2 text-muted border-border hover:bg-surface hover:text-text'
@@ -277,13 +277,13 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
           </div>
 
           {/* Generation Token Length */}
-          <div className="bg-surface-2 p-3.5 border border-border rounded-md">
+          <div className="bg-surface-2 p-3.5 border-2 border-border rounded-none">
             <div className="flex items-center justify-between mb-1.5">
               <label className="text-xs font-bold text-text uppercase tracking-wider flex items-center gap-1">
                 <Activity className="w-3.5 h-3.5 text-accent" />
                 {t('workload.genLen')}
               </label>
-              <span className="text-xs font-mono font-bold text-accent bg-surface-2 border border-border px-2 py-0.5 rounded">
+              <span className="text-xs font-mono font-bold text-info bg-surface-2 border-2 border-border px-2 py-0.5 rounded-none">
                 {genLen.toLocaleString()} Tokens
               </span>
             </div>
@@ -295,7 +295,7 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
               step="32"
               value={genLen}
               onChange={(e) => onChangeGenLen(parseInt(e.target.value) || 512)}
-              className="w-full h-2 bg-surface-2 rounded-md appearance-none cursor-pointer accent-[#FFB224]"
+              className="w-full h-2 bg-surface-2 rounded-none appearance-none cursor-pointer accent-[#FFB224]"
             />
 
             <div className="flex flex-wrap gap-1 mt-2">
@@ -303,7 +303,7 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
                 <button
                   key={g}
                   onClick={() => onChangeGenLen(g)}
-                  className={`px-2 py-0.5 text-[10px] font-mono rounded-md transition border ${
+                  className={`px-2 py-0.5 text-[10px] font-mono rounded-none transition border-2 ${
                     genLen === g
                       ? 'bg-accent text-bg border-accent font-bold'
                       : 'bg-surface-2 text-muted border-border hover:bg-surface hover:text-text'
@@ -316,13 +316,13 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
           </div>
 
           {/* Batch Size (Concurrency) */}
-          <div className="bg-surface-2 p-3.5 border border-border rounded-md">
+          <div className="bg-surface-2 p-3.5 border-2 border-border rounded-none">
             <div className="flex items-center justify-between mb-1.5">
               <label className="text-xs font-bold text-text uppercase tracking-wider flex items-center gap-1">
                 <Users className="w-3.5 h-3.5 text-accent" />
                 {t('workload.batchSize')}
               </label>
-              <span className="text-xs font-mono font-bold text-accent bg-surface-2 border border-border px-2 py-0.5 rounded">
+              <span className="text-xs font-mono font-bold text-info bg-surface-2 border-2 border-border px-2 py-0.5 rounded-none">
                 {t('workload.batchStreams', { count: batchSize })}
               </span>
             </div>
@@ -334,7 +334,7 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
               step="1"
               value={batchSize}
               onChange={(e) => onChangeBatchSize(parseInt(e.target.value) || 1)}
-              className="w-full h-2 bg-surface-2 rounded-md appearance-none cursor-pointer accent-[#FFB224]"
+              className="w-full h-2 bg-surface-2 rounded-none appearance-none cursor-pointer accent-[#FFB224]"
             />
 
             <div className="flex flex-wrap gap-1 mt-2">
@@ -342,7 +342,7 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
                 <button
                   key={b}
                   onClick={() => onChangeBatchSize(b)}
-                  className={`px-2 py-0.5 text-[10px] font-mono rounded-md transition border ${
+                  className={`px-2 py-0.5 text-[10px] font-mono rounded-none transition border-2 ${
                     batchSize === b
                       ? 'bg-accent text-bg border-accent font-bold'
                       : 'bg-surface-2 text-muted border-border hover:bg-surface hover:text-text'
@@ -355,13 +355,13 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
           </div>
 
           {/* Requests Per Minute */}
-          <div className="bg-surface-2 p-3.5 border border-border rounded-md">
+          <div className="bg-surface-2 p-3.5 border-2 border-border rounded-none">
             <div className="flex items-center justify-between mb-1.5">
               <label className="text-xs font-bold text-text uppercase tracking-wider flex items-center gap-1">
                 <Activity className="w-3.5 h-3.5 text-accent" />
                 {t('workload.requestsPerMin')}
               </label>
-              <span className="text-xs font-mono font-bold text-accent bg-surface-2 border border-border px-2 py-0.5 rounded">
+              <span className="text-xs font-mono font-bold text-info bg-surface-2 border-2 border-border px-2 py-0.5 rounded-none">
                 {requestsPerMin} req/min ({(requestsPerMin / 60).toFixed(1)} rps)
               </span>
             </div>
@@ -373,7 +373,7 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
               step="10"
               value={requestsPerMin}
               onChange={(e) => onChangeRequestsPerMin(parseInt(e.target.value) || 60)}
-              className="w-full h-2 bg-surface-2 rounded-md appearance-none cursor-pointer accent-[#FFB224]"
+              className="w-full h-2 bg-surface-2 rounded-none appearance-none cursor-pointer accent-[#FFB224]"
             />
 
             <div className="flex justify-between text-[10px] text-muted font-mono mt-2">

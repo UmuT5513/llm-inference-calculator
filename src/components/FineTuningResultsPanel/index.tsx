@@ -39,7 +39,7 @@ export const FineTuningResultsPanel: React.FC<FineTuningResultsPanelProps> = ({ 
               {results.isOom ? '[OOM]' : '[OK]'} %{results.vramUtilizationPct.toFixed(0)}
             </span>
           </div>
-          <div className="h-2 bg-surface-2 border border-border rounded overflow-hidden">
+          <div className="h-2 bg-surface-2 border border-border rounded-none overflow-hidden">
             <div
               className={`h-full transition-all ${results.isOom ? 'bg-danger' : 'bg-ok'}`}
               style={{ width: `${Math.min(100, results.vramUtilizationPct)}%` }}

@@ -87,7 +87,7 @@ export const GpuConfigurator: React.FC<GpuConfiguratorProps> = ({
                 placeholder={t('gpu.searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="bg-surface-2 border border-border rounded pl-8 pr-2.5 py-1 text-xs font-mono text-text placeholder-muted focus:outline-none focus:border-accent w-48 sm:w-60 transition"
+                className="bg-surface-2 border-2 border-border rounded-none pl-8 pr-2.5 py-1 text-xs font-mono text-text placeholder-muted focus:outline-none focus:border-text w-48 sm:w-60 transition"
               />
             </div>
 
@@ -96,7 +96,7 @@ export const GpuConfigurator: React.FC<GpuConfiguratorProps> = ({
                 onSelectGpu('custom');
                 setShowCustomGpuModal(true);
               }}
-              className={`flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-md transition border ${
+              className={`flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-none transition border-2 ${
                 selectedGpuId === 'custom'
                   ? 'bg-accent text-bg border-accent font-bold'
                   : 'bg-surface-2 text-text border-border hover:bg-surface'
@@ -121,7 +121,7 @@ export const GpuConfigurator: React.FC<GpuConfiguratorProps> = ({
           <button
             key={cat.id}
             onClick={() => setActiveTier(cat.id)}
-            className={`px-2.5 py-1 rounded-md text-[11px] font-medium whitespace-nowrap transition ${
+            className={`px-2.5 py-1 rounded-none text-[11px] font-medium whitespace-nowrap transition ${
               activeTier === cat.id
                 ? 'bg-accent text-bg font-bold'
                 : 'bg-surface-2 text-muted hover:text-text hover:bg-surface'
@@ -140,7 +140,7 @@ export const GpuConfigurator: React.FC<GpuConfiguratorProps> = ({
             <div
               key={g.id}
               onClick={() => onSelectGpu(g.id)}
-              className={`cursor-pointer rounded-md p-3 border transition text-left flex flex-col justify-between relative ${
+              className={`cursor-pointer rounded-none p-3 border-2 transition text-left flex flex-col justify-between relative ${
                 isSelected
                   ? 'bg-surface-2 border-accent ring-1 ring-accent/40'
                   : 'bg-surface border-border hover:border-accent/40 hover:bg-surface-2'
@@ -151,7 +151,7 @@ export const GpuConfigurator: React.FC<GpuConfiguratorProps> = ({
                   <span className="text-[10px] font-bold text-muted uppercase tracking-wider">
                     {g.vendor} {g.tier && `• ${g.tier}`}
                   </span>
-                  <span className="text-[10px] font-mono font-bold text-accent bg-surface-2 border border-border px-1.5 py-0.2 rounded">
+                  <span className="text-[10px] font-mono font-bold text-info bg-surface-2 border-2 border-border px-1.5 py-0.2 rounded-none">
                     {g.vramGB} GB VRAM
                   </span>
                 </div>
@@ -188,7 +188,7 @@ export const GpuConfigurator: React.FC<GpuConfiguratorProps> = ({
       </div>
 
       {/* GPU Count & Parallelism Sliders */}
-      <div className="bg-surface-2 p-3.5 border border-border rounded-md grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="bg-surface-2 p-3.5 border-2 border-border rounded-none grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* GPU Count */}
         <div>
           <div className="flex items-center justify-between mb-1.5">
@@ -196,7 +196,7 @@ export const GpuConfigurator: React.FC<GpuConfiguratorProps> = ({
               <Server className="w-3.5 h-3.5 text-accent" />
               {t('gpu.count')}
             </label>
-            <span className="text-xs font-mono font-bold text-accent bg-surface-2 border border-border px-2 py-0.5 rounded">
+            <span className="text-xs font-mono font-bold text-info bg-surface-2 border-2 border-border px-2 py-0.5 rounded-none">
               {gpuCount}x GPU ({totalVramAvailableGB} GB VRAM)
             </span>
           </div>
@@ -214,7 +214,7 @@ export const GpuConfigurator: React.FC<GpuConfiguratorProps> = ({
                 onChangeTp(Math.min(val, 8));
               }
             }}
-            className="w-full h-2 bg-surface-2 rounded-md appearance-none cursor-pointer accent-[#FFB224]"
+            className="w-full h-2 bg-surface-2 rounded-none appearance-none cursor-pointer accent-[#FFB224]"
           />
 
           <div className="flex justify-between text-[9px] text-muted font-mono mt-1">
@@ -235,7 +235,7 @@ export const GpuConfigurator: React.FC<GpuConfiguratorProps> = ({
               <Zap className="w-3.5 h-3.5 text-accent" />
               Tensor Parallelism (TP)
             </label>
-            <span className="text-xs font-mono font-bold text-accent bg-surface-2 border border-border px-2 py-0.5 rounded">
+            <span className="text-xs font-mono font-bold text-info bg-surface-2 border-2 border-border px-2 py-0.5 rounded-none">
               TP = {tensorParallelism}
             </span>
           </div>
@@ -246,7 +246,7 @@ export const GpuConfigurator: React.FC<GpuConfiguratorProps> = ({
                 key={tp}
                 disabled={tp > gpuCount}
                 onClick={() => onChangeTp(tp)}
-                className={`flex-1 py-1 text-[11px] font-mono font-bold rounded-md transition border ${
+                className={`flex-1 py-1 text-[11px] font-mono font-bold rounded-none transition border-2 ${
                   tensorParallelism === tp
                     ? 'bg-accent text-bg border-accent'
                     : tp > gpuCount
@@ -267,7 +267,7 @@ export const GpuConfigurator: React.FC<GpuConfiguratorProps> = ({
       {/* Custom GPU Modal */}
       {showCustomGpuModal && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-surface border border-border rounded-md max-w-lg w-full p-6 space-y-4">
+          <div className="bg-surface border-2 border-border rounded-none max-w-lg w-full p-6 space-y-4">
             <div className="flex items-center justify-between border-b border-border pb-3">
               <div className="flex items-center gap-2 text-text font-semibold text-base">
                 <Sliders className="w-5 h-5 text-accent" />
@@ -290,7 +290,7 @@ export const GpuConfigurator: React.FC<GpuConfiguratorProps> = ({
                     onChange={(e) =>
                       onUpdateCustomGpu({ ...customGpu, name: e.target.value })
                     }
-                    className="w-full bg-surface-2 border border-border rounded px-3 py-2 text-xs text-text placeholder-muted focus:border-accent focus:outline-none"
+                    className="w-full bg-surface-2 border-2 border-border rounded-none px-3 py-2 text-xs text-text placeholder-muted focus:border-text focus:outline-none"
                   />
                 </Field>
               </div>
@@ -333,7 +333,7 @@ export const GpuConfigurator: React.FC<GpuConfiguratorProps> = ({
                   onSelectGpu('custom');
                   setShowCustomGpuModal(false);
                 }}
-                className="px-4 py-2 bg-accent hover:opacity-90 text-bg rounded-md text-xs font-bold transition"
+                className="px-4 py-2 bg-accent hover:opacity-90 text-bg rounded-none text-xs font-bold transition"
               >
                 {t('gpu.customSave')}
               </button>

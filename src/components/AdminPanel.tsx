@@ -80,7 +80,7 @@ export const AdminPanelContent: React.FC<AdminPanelContentProps> = ({ onModelsRe
             <button
               onClick={runModelRefresh}
               disabled={modelsState.busy}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-bg bg-accent hover:bg-accent/90 disabled:opacity-50 disabled:cursor-not-allowed rounded-md transition active:scale-95 shrink-0 cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-bg bg-accent hover:bg-accent/90 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-border rounded-none transition active:scale-95 shrink-0 cursor-pointer"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${modelsState.busy ? 'animate-spin' : ''}`} />
               {modelsState.busy ? t('admin.updating') : t('admin.refresh')}
@@ -110,7 +110,7 @@ export const AdminPanelContent: React.FC<AdminPanelContentProps> = ({ onModelsRe
             <button
               onClick={runPricesRefresh}
               disabled={pricesState.busy}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-bg bg-accent hover:bg-accent/90 disabled:opacity-50 disabled:cursor-not-allowed rounded-md transition active:scale-95 shrink-0 cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-bg bg-accent hover:bg-accent/90 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-border rounded-none transition active:scale-95 shrink-0 cursor-pointer"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${pricesState.busy ? 'animate-spin' : ''}`} />
               {pricesState.busy ? t('admin.updating') : t('admin.refresh')}
@@ -145,7 +145,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, onModel
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-surface border border-border rounded-md w-full max-w-lg max-h-[85vh] overflow-y-auto">
+      <div className="bg-surface border-2 border-border rounded-none w-full max-w-lg max-h-[85vh] overflow-y-auto">
         <div className="flex items-center justify-between border-b border-border px-3.5 py-2">
           <div className="flex items-center gap-2 min-w-0">
             <Database className="w-4 h-4 text-accent shrink-0" />
@@ -153,7 +153,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, onModel
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-muted hover:text-text hover:bg-surface-2 rounded-md transition cursor-pointer shrink-0"
+            className="p-1.5 text-muted hover:text-text hover:bg-surface-2 rounded-none transition cursor-pointer shrink-0"
           >
             <X className="w-4 h-4" />
           </button>
