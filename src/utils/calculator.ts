@@ -124,7 +124,8 @@ export function calculateInferenceMetrics(
   const recommendedMinGpus = Math.ceil(totalVramNeededGB / (gpu.vramGB * 0.9)); // 90% target safety limit
 
   // F. Performance Estimation (Prefill / TTFT & Decode / TPOT)
-  const tpEfficiency = (config.tpEfficiencyPct || 85) / 100;
+  // Sabit çoklu-GPU iletişim verimliliği (çıkarım motorunun tipik AllReduce verimi).
+  const tpEfficiency = 0.85;
   
   // Prefill Phase: Compute Bound
   const totalPrefillFlops = 2 * activeParamsB * 1e9 * effectivePromptLen * activeTotalUsers;

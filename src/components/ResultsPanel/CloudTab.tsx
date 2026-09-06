@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { RefreshCw } from 'lucide-react';
+import { Apple } from 'lucide-react';
 import { CalculationResults } from '../../types';
 import { GpuPrice } from '../../hooks/useLiveGpuPrices';
 import { Badge } from '../ui/Badge';
@@ -14,7 +14,6 @@ interface CloudTabProps {
   overrides: Record<string, number>;
   lastUpdated: string | null;
   pricesLoading: boolean;
-  onRefreshPrices: () => void;
 }
 
 const PROVIDER_LABELS: Record<string, string> = {
@@ -39,9 +38,9 @@ export const CloudTab: React.FC<CloudTabProps> = ({
   overrides,
   lastUpdated,
   pricesLoading,
-  onRefreshPrices,
 }) => {
   const { t } = useTranslation();
+  const isApple = gpuId.startsWith('apple-') || (gpuId === 'custom' && (results.gpuName.toLowerCase().includes('apple') || results.gpuName.toLowerCase().includes('mac')));
   const currentPrice = overrides[gpuId];
   const grouped: Record<string, GpuPrice[]> = {};
   prices
@@ -60,6 +59,13 @@ export const CloudTab: React.FC<CloudTabProps> = ({
           {t('results.cloud.subtitle', { gpuCount, gpuName })}
         </div>
       </div>
+
+      {isApple && (
+        <div className="flex items-start gap-2 bg-surface-2 border-2 border-border rounded-none p-2.5 text-[11px] text-muted">
+          <Apple className="w-4 h-4 text-accent shrink-0 mt-0.5" />
+          <p>{t('results.cloud.appleNote')}</p>
+        </div>
+      )}
 
       <div className="space-y-1.5">
         {results.cloudCosts.map((cloud) => (
@@ -100,14 +106,6 @@ export const CloudTab: React.FC<CloudTabProps> = ({
               </span>
             )}
           </div>
-          <button
-            onClick={onRefreshPrices}
-            title={t('results.cloud.refreshTitle')}
-            className="flex items-center gap-1 px-2 py-1 text-[10px] font-mono text-muted border-2 border-border rounded-none hover:text-text transition shrink-0"
-          >
-            <RefreshCw className={`w-3 h-3 ${pricesLoading ? 'animate-spin' : ''}`} />
-            {t('results.cloud.refresh')}
-          </button>
         </div>
 
         {currentPrice != null && (

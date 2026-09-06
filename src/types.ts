@@ -73,6 +73,11 @@ export interface InferenceEngine {
   throughputMultiplier: number; // multiplier on tokens/sec
   kvCacheFragmentationPct: number; // fragmentation overhead percentage
   description: string;
+  details: string; // extended explanation shown in an info tooltip
+  supportedVendors: ('NVIDIA' | 'AMD' | 'Apple' | 'Custom')[]; // GPU vendors this engine runs on
+  supportedQuants: string[]; // quant ids this engine supports (e.g. 'fp16', 'int4', 'q4_k')
+  vendorReason?: string; // tooltip text shown when the engine is incompatible with a GPU vendor
+  quantReason?: string; // tooltip text shown when the engine is incompatible with a quantization
   features: string[];
 }
 
@@ -175,8 +180,6 @@ export interface CalculatorConfig {
   gpuId: string;
   customGpu: GpuPreset;
   gpuCount: number;
-  tensorParallelism: number;
-  pipelineParallelism: number;
   promptLen: number; // Default input context length in tokens
   genLen: number; // Default output generation length in tokens
   batchSize: number; // Default active concurrent user streams
@@ -185,7 +188,6 @@ export interface CalculatorConfig {
   requestsPerMin: number; // Target query rate for monthly cost/throughput estimation
   cudaOverheadGB: number; // Overhead per GPU in GB (e.g., 1.5)
   activationOverheadPct: number; // Percentage for activations (e.g., 10%)
-  tpEfficiencyPct: number; // Inter-GPU communication efficiency (e.g., 85%)
 
   // On-Premise & Turkey TCO Parameters
   electricityRateTryPerKwh: number; // Turkey electricity price in TL (default: 4.20 TL / kWh)

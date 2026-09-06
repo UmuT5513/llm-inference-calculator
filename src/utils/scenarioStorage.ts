@@ -12,6 +12,16 @@ export interface SavedScenario {
 }
 
 const STORAGE_KEY = 'llmcalc:scenarios';
+export const SCENARIOS_CHANGED_EVENT = 'llmcalc:scenarios-changed';
+
+// Notify open panels (e.g. the sidebar) that the scenario list changed.
+function notifyChanged(): void {
+  try {
+    window.dispatchEvent(new Event(SCENARIOS_CHANGED_EVENT));
+  } catch {
+    // Non-browser environment.
+  }
+}
 
 export function listScenarios(): SavedScenario[] {
   try {
@@ -53,9 +63,11 @@ export function saveScenario(input: NewScenarioInput): SavedScenario {
     updated_at: now,
   };
   persist([scenario, ...listScenarios()]);
+  notifyChanged();
   return scenario;
 }
 
 export function deleteScenario(id: string): void {
   persist(listScenarios().filter((s) => s.id !== id));
+  notifyChanged();
 }

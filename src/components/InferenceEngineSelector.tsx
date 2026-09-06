@@ -2,24 +2,27 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Layers, CheckCircle2 } from 'lucide-react';
 import { INFERENCE_ENGINES } from '../data/presets';
+import { isQuantSupportedByEngine } from '../utils/engineCompatibility';
 import { Panel } from './ui/Panel';
 import { SectionHeader } from './ui/SectionHeader';
 import { Badge } from './ui/Badge';
+import { InfoTooltip } from './ui/InfoTooltip';
 
 interface InferenceEngineSelectorProps {
   selectedEngineId: string;
+  selectedQuantId: string;
   onSelectEngine: (engineId: string) => void;
 }
 
 export const InferenceEngineSelector: React.FC<InferenceEngineSelectorProps> = ({
   selectedEngineId,
+  selectedQuantId,
   onSelectEngine,
 }) => {
   const { t } = useTranslation();
   return (
     <Panel className="p-3.5 space-y-3">
       <SectionHeader
-        index="03"
         title="Inference Engine"
         description={t('engine.subtitle')}
         right={
@@ -33,16 +36,27 @@ export const InferenceEngineSelector: React.FC<InferenceEngineSelectorProps> = (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
         {INFERENCE_ENGINES.map((eng) => {
           const isSelected = eng.id === selectedEngineId;
+          const incompatible = !isQuantSupportedByEngine(selectedQuantId, eng.id);
           const speedPct = Math.round((eng.throughputMultiplier - 1) * 100);
           const speedText = speedPct > 0 ? t('engine.speedBoost', { pct: speedPct }) : speedPct < 0 ? t('engine.speedPenalty', { pct: speedPct }) : t('engine.speedReference');
 
           return (
-            <button
+            <div
               key={eng.id}
-              onClick={() => onSelectEngine(eng.id)}
-              className={`text-left p-3 rounded-none border-2 transition relative flex flex-col justify-between ${
+              role="button"
+              tabIndex={incompatible ? -1 : 0}
+              aria-disabled={incompatible}
+              onClick={() => {
+                if (!incompatible) onSelectEngine(eng.id);
+              }}
+              onKeyDown={(e) => {
+                if (!incompatible && (e.key === 'Enter' || e.key === ' ')) onSelectEngine(eng.id);
+              }}
+              className={`text-left p-3 rounded-none border-2 transition relative flex flex-col justify-between cursor-pointer ${
                 isSelected
                   ? 'bg-surface-2 border-accent'
+                  : incompatible
+                  ? 'bg-surface-2/50 border-border opacity-50 cursor-not-allowed'
                   : 'bg-surface border-border hover:border-accent/40'
               }`}
             >
@@ -51,6 +65,7 @@ export const InferenceEngineSelector: React.FC<InferenceEngineSelectorProps> = (
                   <div className="flex items-center gap-1.5">
                     <span className="font-bold text-xs text-text">{eng.name}</span>
                     <Badge tone="accent">{eng.badge}</Badge>
+                    <InfoTooltip text={eng.details} title={eng.name} />
                   </div>
 
                   {isSelected && (
@@ -61,6 +76,11 @@ export const InferenceEngineSelector: React.FC<InferenceEngineSelectorProps> = (
                 <p className="text-[11px] text-muted leading-snug line-clamp-2 mb-2">
                   {eng.description}
                 </p>
+                {incompatible && (
+                  <p className="text-[10px] text-danger font-semibold mb-1">
+                    {eng.quantReason || t('engine.quantIncompatible', { quant: selectedQuantId.toUpperCase() })}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -81,7 +101,7 @@ export const InferenceEngineSelector: React.FC<InferenceEngineSelectorProps> = (
                   ))}
                 </div>
               </div>
-            </button>
+            </div>
           );
         })}
       </div>

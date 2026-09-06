@@ -1,9 +1,11 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Database } from 'lucide-react';
-import { QUANTIZATION_OPTIONS, KV_CACHE_QUANT_OPTIONS } from '../data/presets';
+import { QUANTIZATION_OPTIONS, KV_CACHE_QUANT_OPTIONS, INFERENCE_ENGINES } from '../data/presets';
+import { isQuantSupportedByEngine } from '../utils/engineCompatibility';
 import { Panel } from './ui/Panel';
 import { SectionHeader } from './ui/SectionHeader';
+import { InfoTooltip } from './ui/InfoTooltip';
 
 interface QuantizationSelectorProps {
   selectedQuantId: string;
@@ -19,10 +21,15 @@ export const QuantizationSelector: React.FC<QuantizationSelectorProps> = ({
   onSelectKvCacheQuant,
 }) => {
   const { t } = useTranslation();
+
+  const supportingEngines = (quantId: string): string =>
+    INFERENCE_ENGINES.filter((e) => isQuantSupportedByEngine(quantId, e.id))
+      .map((e) => e.shortName)
+      .join(', ');
+
   return (
     <Panel className="p-3.5 space-y-3">
       <SectionHeader
-        index="02"
         title="Quantization"
         description={t('quant.subtitle')}
       />
@@ -42,7 +49,10 @@ export const QuantizationSelector: React.FC<QuantizationSelectorProps> = ({
             >
               <div>
                 <div className="flex items-center justify-between mb-0.5">
-                  <span className="text-xs font-bold text-text">{q.shortName}</span>
+                  <span className="text-xs font-bold text-text flex items-center gap-1">
+                    {q.shortName}
+                    <InfoTooltip text={`${q.description} Destekleyen motorlar: ${supportingEngines(q.id)}.`} title={q.name} />
+                  </span>
                   <span
                     className={`text-[9px] font-mono px-1.5 py-0.2 rounded-none font-semibold ${
                       isSelected
@@ -93,7 +103,10 @@ export const QuantizationSelector: React.FC<QuantizationSelectorProps> = ({
                 }`}
               >
                 <div>
-                  <div className="text-xs font-semibold text-text">{kv.name}</div>
+                  <div className="text-xs font-semibold text-text flex items-center gap-1">
+                    {kv.name}
+                    <InfoTooltip text={t('quant.kvInfo', { bits: kv.bytesPerParam * 16 })} />
+                  </div>
                   <div className="text-[10px] text-muted font-mono">
                     {t('quant.precisionLabel')} <span className="text-accent font-bold">{kv.bytesPerParam} Byte/p</span>
                   </div>
