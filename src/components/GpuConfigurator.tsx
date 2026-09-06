@@ -1,21 +1,25 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Edit3, Sliders, Server, Zap, Search } from 'lucide-react';
+import { Edit3, Sliders, Server, Search, AlertTriangle } from 'lucide-react';
 import { GpuPreset } from '../types';
-import { GPU_PRESETS, DEFAULT_CUSTOM_GPU } from '../data/presets';
+import { GPU_PRESETS, INFERENCE_ENGINES } from '../data/presets';
+import { isEngineSupportedByVendor, engineVendorReason, pickCompatibleEngine } from '../utils/engineCompatibility';
+import { getCustomGpu, saveCustomGpu } from '../utils/customModelStorage';
 import { Panel } from './ui/Panel';
 import { SectionHeader } from './ui/SectionHeader';
 import { Field } from './ui/Field';
 import { NumberInput } from './ui/NumberInput';
+import { InfoTooltip } from './ui/InfoTooltip';
 
 interface GpuConfiguratorProps {
   selectedGpuId: string;
   gpuCount: number;
   customGpu: GpuPreset;
-  tensorParallelism: number;
+  engineId: string;
+  selectedQuantId: string;
   onSelectGpu: (gpuId: string) => void;
   onChangeGpuCount: (count: number) => void;
-  onChangeTp: (tp: number) => void;
+  onChangeEngine: (engineId: string) => void;
   onUpdateCustomGpu: (gpu: GpuPreset) => void;
 }
 
@@ -23,10 +27,11 @@ export const GpuConfigurator: React.FC<GpuConfiguratorProps> = ({
   selectedGpuId,
   gpuCount,
   customGpu,
-  tensorParallelism,
+  engineId,
+  selectedQuantId,
   onSelectGpu,
   onChangeGpuCount,
-  onChangeTp,
+  onChangeEngine,
   onUpdateCustomGpu,
 }) => {
   const { t } = useTranslation();
@@ -38,6 +43,16 @@ export const GpuConfigurator: React.FC<GpuConfiguratorProps> = ({
     selectedGpuId === 'custom'
       ? customGpu
       : GPU_PRESETS.find((g) => g.id === selectedGpuId) || GPU_PRESETS[2];
+
+  const engine = INFERENCE_ENGINES.find((e) => e.id === engineId);
+
+  const selectedVendorConflict = engineVendorReason(engineId, selectedGpu.vendor);
+  const autoEngineId = pickCompatibleEngine({
+    engineId,
+    quantId: selectedQuantId,
+    gpuId: selectedGpuId,
+    customGpu,
+  });
 
   const filteredGpus = GPU_PRESETS.filter((g) => {
     const matchesTier =
@@ -72,10 +87,22 @@ export const GpuConfigurator: React.FC<GpuConfiguratorProps> = ({
 
   const totalVramAvailableGB = selectedGpu.vramGB * gpuCount;
 
+  const handleOpenCustomGpu = () => {
+    const saved = getCustomGpu();
+    if (saved) onUpdateCustomGpu(saved);
+    onSelectGpu('custom');
+    setShowCustomGpuModal(true);
+  };
+
+  const handleSaveCustomGpu = () => {
+    onSelectGpu('custom');
+    onUpdateCustomGpu(saveCustomGpu(customGpu));
+    setShowCustomGpuModal(false);
+  };
+
   return (
     <Panel className="p-3.5 space-y-3">
       <SectionHeader
-        index="04"
         title="GPU Hardware"
         description={t('gpu.subtitle')}
         right={
@@ -92,10 +119,7 @@ export const GpuConfigurator: React.FC<GpuConfiguratorProps> = ({
             </div>
 
             <button
-              onClick={() => {
-                onSelectGpu('custom');
-                setShowCustomGpuModal(true);
-              }}
+              onClick={handleOpenCustomGpu}
               className={`flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-none transition border-2 ${
                 selectedGpuId === 'custom'
                   ? 'bg-accent text-bg border-accent font-bold'
@@ -132,10 +156,28 @@ export const GpuConfigurator: React.FC<GpuConfiguratorProps> = ({
         ))}
       </div>
 
+      {/* Engine / Vendor conflict warning */}
+      {selectedVendorConflict && engine && (
+        <div className="flex items-start gap-2 bg-danger/10 border-2 border-danger/40 rounded-none p-2.5 text-[11px] text-danger">
+          <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="font-bold">{engine.name} + {selectedGpu.name} uyumsuz.</p>
+            <p className="text-danger/80 mt-0.5">{selectedVendorConflict}</p>
+            <button
+              onClick={() => onChangeEngine(autoEngineId)}
+              className="mt-1.5 px-2.5 py-1 bg-accent text-bg text-[11px] font-bold rounded-none hover:opacity-90 transition"
+            >
+              {t('gpu.autoSwitchEngine', { engine: autoEngineId })}
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* GPU Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 max-h-96 overflow-y-auto pr-1">
         {filteredGpus.map((g) => {
           const isSelected = selectedGpuId === g.id;
+          const vendorIncompatible = !isEngineSupportedByVendor(engineId, g.vendor);
           return (
             <div
               key={g.id}
@@ -143,6 +185,8 @@ export const GpuConfigurator: React.FC<GpuConfiguratorProps> = ({
               className={`cursor-pointer rounded-none p-3 border-2 transition text-left flex flex-col justify-between relative ${
                 isSelected
                   ? 'bg-surface-2 border-accent ring-1 ring-accent/40'
+                  : vendorIncompatible
+                  ? 'bg-surface border-border opacity-60 hover:opacity-90'
                   : 'bg-surface border-border hover:border-accent/40 hover:bg-surface-2'
               }`}
             >
@@ -156,7 +200,13 @@ export const GpuConfigurator: React.FC<GpuConfiguratorProps> = ({
                   </span>
                 </div>
 
-                <div className="text-xs font-bold text-text mb-1">{g.name}</div>
+                <div className="text-xs font-bold text-text mb-1 flex items-center gap-1">
+                  {g.name}
+                  <InfoTooltip
+                    text={`${g.description}${vendorIncompatible && engine ? ` ⚠ ${engine.name} bu donanımda çalışmaz: ${engineVendorReason(engineId, g.vendor)}` : ''}`}
+                    title={g.name}
+                  />
+                </div>
 
                 <div className="grid grid-cols-2 gap-1 text-[10px] text-muted font-mono mb-1.5">
                   <div>
@@ -187,80 +237,40 @@ export const GpuConfigurator: React.FC<GpuConfiguratorProps> = ({
         })}
       </div>
 
-      {/* GPU Count & Parallelism Sliders */}
-      <div className="bg-surface-2 p-3.5 border-2 border-border rounded-none grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* GPU Count */}
-        <div>
-          <div className="flex items-center justify-between mb-1.5">
-            <label className="text-xs font-bold text-text uppercase tracking-wider flex items-center gap-1">
-              <Server className="w-3.5 h-3.5 text-accent" />
-              {t('gpu.count')}
-            </label>
-            <span className="text-xs font-mono font-bold text-info bg-surface-2 border-2 border-border px-2 py-0.5 rounded-none">
-              {gpuCount}x GPU ({totalVramAvailableGB} GB VRAM)
-            </span>
-          </div>
-
-          <input
-            type="range"
-            min="1"
-            max="64"
-            step="1"
-            value={gpuCount}
-            onChange={(e) => {
-              const val = parseInt(e.target.value) || 1;
-              onChangeGpuCount(val);
-              if (tensorParallelism > val) {
-                onChangeTp(Math.min(val, 8));
-              }
-            }}
-            className="w-full h-2 bg-surface-2 rounded-none appearance-none cursor-pointer accent-[#FFB224]"
-          />
-
-          <div className="flex justify-between text-[9px] text-muted font-mono mt-1">
-            <span>1x</span>
-            <span>2x</span>
-            <span>4x</span>
-            <span>8x</span>
-            <span>16x</span>
-            <span>32x</span>
-            <span>64x</span>
-          </div>
+      {/* GPU Count */}
+      <div className="bg-surface-2 p-3.5 border-2 border-border rounded-none">
+        <div className="flex items-center justify-between mb-1.5">
+          <span className="text-xs font-bold text-text uppercase tracking-wider flex items-center gap-1">
+            <Server className="w-3.5 h-3.5 text-accent" />
+            {t('gpu.count')}
+            <InfoTooltip text={selectedGpu.vendor === 'Apple' ? t('gpu.appleGpuCountHint') : t('gpu.gpuCountHint')} />
+          </span>
+          <span className="text-xs font-mono font-bold text-info bg-surface-2 border-2 border-border px-2 py-0.5 rounded-none">
+            {gpuCount}x GPU ({totalVramAvailableGB} GB VRAM)
+          </span>
         </div>
 
-        {/* Tensor Parallelism */}
-        <div>
-          <div className="flex items-center justify-between mb-1.5">
-            <label className="text-xs font-bold text-text uppercase tracking-wider flex items-center gap-1">
-              <Zap className="w-3.5 h-3.5 text-accent" />
-              Tensor Parallelism (TP)
-            </label>
-            <span className="text-xs font-mono font-bold text-info bg-surface-2 border-2 border-border px-2 py-0.5 rounded-none">
-              TP = {tensorParallelism}
-            </span>
-          </div>
+        <input
+          type="range"
+          min="1"
+          max="64"
+          step="1"
+          value={gpuCount}
+          onChange={(e) => {
+            const val = parseInt(e.target.value) || 1;
+            onChangeGpuCount(val);
+          }}
+          className="w-full h-2 bg-surface-2 rounded-none appearance-none cursor-pointer accent-[#FFB224]"
+        />
 
-          <div className="flex items-center gap-1">
-            {[1, 2, 4, 8, 16, 32].map((tp) => (
-              <button
-                key={tp}
-                disabled={tp > gpuCount}
-                onClick={() => onChangeTp(tp)}
-                className={`flex-1 py-1 text-[11px] font-mono font-bold rounded-none transition border-2 ${
-                  tensorParallelism === tp
-                    ? 'bg-accent text-bg border-accent'
-                    : tp > gpuCount
-                    ? 'bg-surface-2 text-muted border-border cursor-not-allowed'
-                    : 'bg-surface-2 text-text border-border hover:bg-surface'
-                }`}
-              >
-                TP {tp}
-              </button>
-            ))}
-          </div>
-          <p className="text-[10px] text-muted mt-1">
-            {t('gpu.tpHint')}
-          </p>
+        <div className="flex justify-between text-[9px] text-muted font-mono mt-1">
+          <span>1x</span>
+          <span>2x</span>
+          <span>4x</span>
+          <span>8x</span>
+          <span>16x</span>
+          <span>32x</span>
+          <span>64x</span>
         </div>
       </div>
 
@@ -329,10 +339,7 @@ export const GpuConfigurator: React.FC<GpuConfiguratorProps> = ({
 
             <div className="flex justify-end gap-2 pt-4 border-t border-border">
               <button
-                onClick={() => {
-                  onSelectGpu('custom');
-                  setShowCustomGpuModal(false);
-                }}
+                onClick={handleSaveCustomGpu}
                 className="px-4 py-2 bg-accent hover:opacity-90 text-bg rounded-none text-xs font-bold transition"
               >
                 {t('gpu.customSave')}

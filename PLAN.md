@@ -170,3 +170,55 @@ Tamamlanan özet:
   ekranda, modalların mobil genişlikte görünümü, mobil tek sütun + sticky bar
   overflow'suz akış, dil toggle'ın görsel davranışı, grafiklerin ekrandaki
   flat/bordered hali.
+## TAMAMLANDI: Tutarlılık & Kullanılabilirlik Revizyonu (2026-09-06, `origin/main` tabanlı)
+
+İlk denemede yanlışlıkla güncellenmemiş yerel `main`'den (Phase 4 öncesi) dal
+açılmıştı; bu PR **`origin/main`** (canlı/cloud: Phase 4 wizard + ışık landing +
+API break-even) üzerine yeniden uygulandı. Revizyon + landing değişiklikleri tek
+PR (#4). Önemli kararlar:
+
+- **Sıralama numaraları kaldırıldı:** Header sekmeleri "1. Çıkarım / 2.
+  Fine-Tuning" → "Çıkarım / Fine-Tuning"; `SectionHeader ▸ 0N` ve **Wizard adım
+  sekmesi "01–06"** numaraları silindi.
+- **Tensor Parallelism kaldırıldı:** `tensorParallelism`/`pipelineParallelism`/
+  `tpEfficiencyPct` hesaba hiç girmiyordu; seçiciler + UI + CLI parametreleri
+  temizlendi, `calculator.ts` sabit 0.85 verimlilik kullanır. Eski share URL'leri
+  alanları yoksayarak açılır.
+- **Header sadeleşti:** Kaydet/Kopyala/Karşılaştır/AI Mimar/Dışa Aktar/şablon
+  dropdown'ı çıktı; kalan: logo, mod sekmeleri, dil, sıfırlama.
+- **Sol Senaryo çubuğu (`ScenarioSidebar`):** hazır şablonlar + kayıtlı senaryo
+  listesi (dinamik, `llmcalc:scenarios-changed` event'i ile), tıklayınca açılan
+  detay mini-paneli (Yükle / **Dışa Aktar MD** / Sil), altta Karşılaştır.
+- **Sonuç eylemleri:** inference + fine-tuning sonuç panellerinde belirgin
+  "Senaryoyu Kaydet", "Bağlantıyı Kopyala" (paylaşım bilgisi ikonu), "Markdown
+  Dışa Aktar". Yeni **API sekmesi**: CLI / K8s / JSON (MLX komutu dahil) +
+  mevcut **break-even** tek tab altında birleştirildi. CloudTab'daki kamuya açık
+  "Yenile" butonu kaldırıldı (fiyat yenileme yalnızca admin).
+- **AI özellikleri kaldırıldı:** Akıllı Model Seçimi + AI Mimar; `/api/recommend-model`
+  + `/api/advisor` + `@google/genai` silindi; yerine Model adımında "Model nasıl
+  seçilir?" bilgi ikonu.
+- **Engine uyumluluk matrisi:** `INFERENCE_ENGINES`'e `supportedVendors`/
+  `supportedQuants`/`details`/reasons + yeni **MLX** motoru; engine seçicide
+  quant uyumsuzları devre dışı, GPU üretici çakışması uyarı + quant-aware
+  otomatik geçiş (`pickCompatibleEngine`), preset/quant değişimlerinde de
+  uzlaştırma.
+- **Apple Silicon GPU'ları:** M6, M5 Pro, M5 Max, M3 Ultra, M5 Ultra
+  (`tier:'unified'`, yerel maliyet 0) + TCO `GPU_HARDWARE_SPECS` + CloudTab
+  Apple notu.
+- **Custom model/GPU localStorage:** `customModelStorage.ts`
+  (`llmcalc:customModels`, `llmcalc:customGpu`); ModelSelector "Özel Modellerim"
+  + **yapımcı kurum (provider) filtresi**.
+- **Bilgi ikonları:** `ui/InfoTooltip` (engine detayları, quant, GPU, model
+  seçim rehberi, sonuç metrikleri, KV cache).
+- **Hata düzeltmeleri:** fine-tuning `vramPerGpuNeededGB` / `gpuCount`; AboutModal
+  TP/PP iddiası; DB boot retry (`initDb`); `SESSION_SECRET` rastgele fallback;
+  admin login 503; ölü bileşenler silindi (GpuComparisonTable, ContextScalingChart).
+- **Landing:** "Calculator Modules" grid kaldırıldı; "Real scenarios, real
+  numbers" → "Scenarios and numbers" (TR: "Senaryolar ve rakamlar"); senaryo
+  kartları + "Start Calculating" ortalandı; **metodoloji** ve **veri
+  kaynağı/şeffaflık** bölümleri eklendi (fiyatlar RunPod/Lambda/Modal'dan
+  periyodik çekilir, **sponsorluk yok**; modeller HF Hub + derlenmiş katalog);
+  **model + GPU sayısı** gösterilir.
+- **Doğrulama:** `npm run lint` ✅, `npm run build` ✅, dev smoke (`/`, `/app`,
+  `/api/models`, `/api/gpu-prices` 200; `/api/advisor` 404; landing'de modüller
+  yok, yeni bölümler var), reconciliation runtime testi ✅, i18n eksik anahtar 0 ✅.

@@ -31,8 +31,6 @@ function makeConfig(s: LandingScenario): CalculatorConfig {
     quantId: s.quantId,
     engineId: s.engineId,
     gpuCount: s.gpuCount,
-    tensorParallelism: s.gpuCount,
-    pipelineParallelism: 1,
     promptLen: 2048,
     genLen: 512,
     batchSize: 1,

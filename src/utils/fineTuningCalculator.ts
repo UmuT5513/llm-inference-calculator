@@ -119,7 +119,8 @@ export function calculateFineTuningMetrics(config: FineTuningConfig, catalog?: M
   // E. CUDA Overhead
   const cudaOverheadGB = config.frameworkId === 'unsloth' ? 1.1 : 1.6;
 
-  // Total required VRAM for a single GPU worker
+  // Total required VRAM across the whole cluster (single-job footprint);
+  // divided by gpuCount below to get the per-GPU share.
   const totalVramNeededGB = weightVramGB + gradientVramGB + optimizerVramGB + activationVramGB + cudaOverheadGB;
   const recommendedMinVramGB = Math.ceil(totalVramNeededGB * 1.12); // +12% safety headroom
 
@@ -135,7 +136,7 @@ export function calculateFineTuningMetrics(config: FineTuningConfig, catalog?: M
 
   const gpuCount = Math.max(1, config.gpuCount || 1);
   const totalVramAvailableGB = gpu.vramGB * gpuCount;
-  const vramPerGpuNeededGB = totalVramNeededGB;
+  const vramPerGpuNeededGB = totalVramNeededGB / gpuCount;
   const vramUtilizationPct = Math.min(250, (vramPerGpuNeededGB / gpu.vramGB) * 100);
   const isOom = vramPerGpuNeededGB > gpu.vramGB;
   const recommendedMinGpus = Math.ceil(totalVramNeededGB / (gpu.vramGB * 0.88));

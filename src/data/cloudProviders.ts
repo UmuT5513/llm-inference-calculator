@@ -38,6 +38,13 @@ export const GPU_HARDWARE_SPECS: Record<string, GpuHardwareSpec> = {
   'nvidia-rtx-4080-super': { tdpWatts: 320, retailPriceUsd: 999, systemBaseCapexUsd: 1400 },
   'nvidia-rtx-4070ti-super': { tdpWatts: 285, retailPriceUsd: 799, systemBaseCapexUsd: 1200 },
   'nvidia-rtx-3090': { tdpWatts: 350, retailPriceUsd: 950, systemBaseCapexUsd: 1200 },
+
+  // Apple Silicon (unified memory cihazlar — cihazın kendisi tüm donanım maliyetini içerir)
+  'apple-m6': { tdpWatts: 40, retailPriceUsd: 899, systemBaseCapexUsd: 0 },
+  'apple-m5-pro': { tdpWatts: 45, retailPriceUsd: 2400, systemBaseCapexUsd: 0 },
+  'apple-m5-max': { tdpWatts: 75, retailPriceUsd: 3200, systemBaseCapexUsd: 0 },
+  'apple-m3-ultra': { tdpWatts: 110, retailPriceUsd: 3999, systemBaseCapexUsd: 0 },
+  'apple-m5-ultra': { tdpWatts: 120, retailPriceUsd: 5499, systemBaseCapexUsd: 0 },
 };
 
 // Official Hardware & Instance Mappings for RunPod, Lambda, and Modal

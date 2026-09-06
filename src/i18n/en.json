@@ -9,7 +9,7 @@
     "inferenceTitle": "Inference Calculation Method",
     "inf1": "<b>Model memory:</b> number of parameters × bytes per quantization (e.g. 70B FP8 ≈ 70 GB).",
     "inf2": "<b>KV cache:</b> 2 × KV head count × head size × layer count × context length × concurrent users; a fragmentation allowance is added.",
-    "inf3": "<b>Total VRAM:</b> model + KV cache + activations + CUDA/runtime overhead; TP/PP efficiency factors are applied.",
+    "inf3": "<b>Total VRAM:</b> model + KV cache + activations + CUDA/runtime overhead; a multi-GPU communication efficiency factor is applied.",
     "inf4": "<b>TTFT (first token):</b> prefill FLOP requirement ÷ the GPUs' effective FLOP capacity (compute-bound approach).",
     "inf5": "<b>TPOT (time per token):</b> (active weights + KV cache bytes) ÷ memory bandwidth (bandwidth-bound approach).",
     "inf6": "<b>Cost:</b> hourly GPU price × number of cards; cloud comparison uses RunPod / Lambda / Modal prices, while on-prem TCO is computed from electricity, PUE and amortization assumptions.",
@@ -48,18 +48,6 @@
     "refreshErrorSuffix": " (error)",
     "pricesTotalSummary": "Total: {{total}}",
     "pricesRefreshError": "Failed to refresh GPU prices."
-  },
-  "advisor": {
-    "title": "AI Architect & Advisor",
-    "subtitle": "vLLM / TensorRT-LLM optimized deployment parameters and bottleneck analysis",
-    "loading": "Gemini is analyzing the architecture and vLLM configuration...",
-    "errorTitle": "An Error Occurred",
-    "errorGeneric": "An error occurred while fetching the AI suggestion.",
-    "adviceFailed": "Could not generate advice.",
-    "retry": "Retry",
-    "copied": "Copied",
-    "copyReport": "Copy Report",
-    "close": "Close"
   },
   "compare": {
     "title": "Scenario Comparison",
@@ -103,14 +91,14 @@
     "unslothGainValue": "{{mult}}x speed ({{saved}} hours saved)"
   },
   "export": {
-    "title": "Export & Deployment Configurations",
     "tabCli": "{{engineName}} CLI",
     "tabK8s": "K8s YAML",
-    "tabMarkdown": "Markdown",
     "tabJson": "JSON",
     "copied": "Copied",
     "copy": "Copy",
-    "close": "Close"
+    "markdownTitle": "Markdown Report",
+    "download": "Download (.md)",
+    "tabBreakEven": "API Break-Even"
   },
   "scenarios": {
     "title": "Scenario Management",
@@ -147,14 +135,27 @@
     "compareCount": "Compare ({{count}} scenarios)",
     "compareMin": "Compare (select at least 2)",
     "errorMinCompare": "Select at least 2 scenarios to compare.",
-    "storageNote": "Scenarios are stored only in this browser (no sign-in required)."
+    "storageNote": "Scenarios are stored only in this browser (no sign-in required).",
+    "saveTitle": "Save Scenario",
+    "compareTitle": "Compare scenarios",
+    "selectForCompare": "Select for comparison",
+    "exportMarkdown": "Export (MD)",
+    "detailModel": "Model:",
+    "detailEngine": "Engine:",
+    "detailTtft": "TTFT:",
+    "detailThroughput": "Output:",
+    "detailDuration": "Duration:",
+    "detailMethod": "Method:",
+    "detailCheapest": "Cheapest:",
+    "detailSamples": "Samples:"
   },
   "engine": {
     "kvIsolated": "KV Isolated: ~%{{pct}}",
     "speedBoost": "+{{pct}}% Token/s",
     "speedPenalty": "{{pct}}% Token/s",
     "speedReference": "Reference Speed",
-    "subtitle": "vLLM, TensorRT-LLM, llama.cpp, SGLang, TGI or Ollama optimization architecture"
+    "subtitle": "vLLM, TensorRT-LLM, llama.cpp, SGLang, TGI or Ollama optimization architecture",
+    "quantIncompatible": "This quantization ({{quant}}) is not supported by this engine. GGUF K-quants work with llama.cpp/Ollama/MLX; FP16/FP8/AWQ/GPTQ work with vLLM/TensorRT/SGLang/TGI."
   },
   "footer": {
     "description": "LLM inference and fine-tuning hardware/cost calculator. A free, community-driven project; you can reach out via GitHub for contributions and feedback.",
@@ -182,34 +183,21 @@
     "hourlyCost": "${{price}}/hr",
     "localFree": "Local (Free)",
     "searchPlaceholder": "Search GPUs (e.g. 5090, MI300X, H200, B200)...",
-    "subtitle": "GPU hardware, VRAM capacity, memory bandwidth and Tensor Parallelism (TP)",
-    "tpHint": "Partitioning model layers across GPUs (TP=2..8 recommended with NVLink).",
-    "unitCost": "Unit Cost:"
+    "subtitle": "GPU hardware, VRAM capacity, memory bandwidth and engine compatibility",
+    "unitCost": "Unit Cost:",
+    "autoSwitchEngine": "Switch to compatible engine: {{engine}}",
+    "appleGpuCountHint": "Apple Silicon is a single unified-memory device; GPU count should usually be 1 (multi-Mac clusters are rare). macOS reserves ~25% of memory by default.",
+    "gpuCountHint": "Multiple GPUs require splitting the model weights across cards; engines handle this distribution automatically."
   },
   "header": {
     "language": "Language",
-    "tabInference": "1. Inference",
-    "tabFinetuning": "2. Fine-Tuning",
-    "scenarios": "Scenarios",
+    "tabInference": "Inference",
+    "tabFinetuning": "Fine-Tuning",
     "scenarioTemplates": "Scenario Templates",
-    "save": "Save",
-    "saveTitle": "Save / manage scenarios",
-    "compare": "Compare",
-    "compareTitle": "Compare scenarios",
-    "aiAdvisor": "AI Architect",
-    "export": "Export",
-    "exportTitle": "Get configuration and command output",
     "resetTitle": "Reset to defaults",
     "subtitle": "Inference Sizing • Fine-Tuning Cost • Unsloth • Colab & Cloud TCO"
   },
   "model": {
-    "advisorBadge": "AI Powered",
-    "advisorDesc": "Choose or describe your use case; the AI analyzes whether you need <strong>long context length</strong> for healthcare data, <strong>agentic capabilities</strong> for coding, or <strong>thinking/reasoning</strong> power for logic, and automatically picks the ideal model.",
-    "advisorHideTitle": "Hide box",
-    "advisorTitle": "What are you doing these calculations for? (Smart Model Selection)",
-    "aiRecommendationBadge": "AI RECOMMENDATION",
-    "alternativeSuggestions": "Alternative suggestions:",
-    "analysisReason": "💡 AI Analysis Rationale:",
     "capabilityAll": "All",
     "capabilityFrontier": "🚀 Frontier",
     "capabilityTurkish": "🇹🇷 Turkish",
@@ -245,20 +233,12 @@
     "envServer": "🏢 Server / Enterprise",
     "envServerDesc": "80GB+ H100/A100 / GPU Cluster",
     "hardwareType": "Hardware Type:",
-    "keyStrength": "🎯 Key Strength:",
     "layers": "Layers:",
     "mirrorBadge": "COMMUNITY MIRROR",
     "mirrorBadgeTitle": "Architecture info sourced from a community mirror instead of the vendor's gated repo: {{mirrorHfId}}",
     "mirrorShort": "Community mirror",
     "mirrorShortTitle": "Architecture info sourced from a community mirror: {{mirrorHfId}}",
     "noModelsFound": "No models match the selected criteria. Try resetting the filters.",
-    "quickScenario": "Pick a quick scenario:",
-    "recommendAndSelect": "Recommend & Select Model with AI",
-    "recommendError": "An error occurred while getting a model recommendation.",
-    "recommendServiceError": "Could not connect to the recommendation service.",
-    "recommendedAutoSelected": "Recommended model auto-selected",
-    "recommendationNote": "You can select another model from the list below at any time.",
-    "recommending": "Analyzing models...",
     "searchPlaceholder": "Search models (e.g. Gemma 4, Qwen 3.5)...",
     "selectedArchitecture": "Selected Architecture:",
     "selectedBadge": "SELECTED",
@@ -269,33 +249,22 @@
     "unverifiedBadgeTitle": "This model's architecture info could not be verified from Hugging Face (it may be gated/access-restricted). The shown values are stored presets.",
     "unverifiedShort": "Not verified from HF — preset values",
     "unverifiedShortTitle": "This model's architecture info could not be verified from Hugging Face (gated/access-restricted). The shown values are stored presets.",
-    "useCaseCoding": "Software & Agentic Coding",
-    "useCaseCodingQuery": "I will do repository analysis, agentic refactoring, debugging and multi-step code generation on a large codebase.",
-    "useCaseCodingSub": "Tool Use & Code",
-    "useCaseHealth": "Health & Epicrisis Analysis",
-    "useCaseHealthQuery": "Analysis of hospital records, clinical patient epicrises and long medical reports in the healthcare sector (requires 128k long context and high RAG fidelity).",
-    "useCaseHealthSub": "Long Context & RAG",
-    "useCaseLawFinance": "Legal & Finance Documents",
-    "useCaseLawFinanceQuery": "In-depth RAG analysis of hundreds of pages of legal contracts, regulatory texts and financial reports.",
-    "useCaseLawFinanceSub": "128k+ Large RAG",
-    "useCaseLocalEdge": "Local PC / Mac & Low Budget",
-    "useCaseLocalEdgeQuery": "Local and fast inference with minimum VRAM on a single consumer GPU (RTX 4060/3060) or Apple Mac.",
-    "useCaseLocalEdgeSub": "Lightweight 8B Edge LLM",
-    "useCasePlaceholder": "Or describe your project: (e.g. 'I will scan patient epicrises in healthcare' or 'Python agentic code refactoring')...",
-    "useCaseReasoning": "Logic & Deep Reasoning",
-    "useCaseReasoningQuery": "Tasks requiring mathematical problem solving, logical inference, scientific research and step-by-step chain-of-thought thinking.",
-    "useCaseReasoningSub": "Thinking & Math",
-    "useCaseTurkish": "Turkish Customer Service",
-    "useCaseTurkishQuery": "Call center, Turkish customer support, local language nuances and a high-speed chatbot.",
-    "useCaseTurkishSub": "Local NLP & Chatbot"
+    "selectGuideTitle": "How to choose a model?",
+    "selectGuide": "When choosing a model: (1) Define your task (coding, Turkish, long RAG, reasoning). (2) Pick a parameter size that fits your VRAM (70B FP8 ≈ 70 GB). (3) MoE models are faster on the same VRAM (fewer active params). (4) Use the 🇹🇷 filter for Turkish and the “Hardware Type” and “Provider” filters for your setup. (5) Balance size vs quality with quantization: GGUF works with llama.cpp/Ollama/MLX, FP16/FP8/AWQ with vLLM/TensorRT/SGLang/TGI.",
+    "providerAll": "All Providers",
+    "providerFilter": "Provider Filter",
+    "customModelsTitle": "My Custom Models ({{count}})",
+    "loadCustomTitle": "Load this model",
+    "editCustomTitle": "Edit",
+    "deleteCustomTitle": "Delete"
   },
   "quant": {
     "kvCacheDesc": "KV memory that prevents memory overflow in long context windows (128k context)",
     "precisionLabel": "Precision:",
-    "subtitle": "Precision used per parameter by model weights and the quality preservation ratio"
+    "subtitle": "Precision used per parameter by model weights and the quality preservation ratio",
+    "kvInfo": "KV cache precision: {{bits}}-bit equivalent. Lower precision uses less VRAM but risks quality loss with long contexts."
   },
   "results": {
-    "analyze": "Analyze",
     "concurrentUsers": "{{count}} concurrent users",
     "monthlyCost": "Monthly Cost",
     "systemThroughput": "System Throughput",
@@ -331,11 +300,10 @@
       "perHour": "${{cost}}/hr",
       "perHourUnit": "/hour",
       "perMonth": "${{cost}}/mo",
-      "refresh": "Refresh",
-      "refreshTitle": "Refresh prices (npm run scrape:prices)",
       "selectedGpu": "Selected GPU: {{gpuName}}",
       "subtitle": "Current official pricing for {{gpuCount}}x {{gpuName}} (Lambda, RunPod Pods/Serverless, Modal, Google Colab)",
-      "title": "Cloud & Serverless Inference Cost Comparison"
+      "title": "Cloud & Serverless Inference Cost Comparison",
+      "appleNote": "Cloud renting is uncommon for Apple Silicon; these devices are meant for local use. Hourly cost is calculated as 0."
     },
     "compare": {
       "costPer1m": "Cost/1M Tok",
@@ -411,6 +379,19 @@
       "totalRequired": "Total Required",
       "utilization": "Utilization",
       "weights": "Weights"
+    },
+    "saveScenario": "Save Scenario",
+    "exportMarkdown": "Export Markdown",
+    "shareInfo": "Anyone opening this link will see the same model, GPU and calculation configuration.",
+    "tips": {
+      "monthlyCost": "GPU count × hourly price × 730 hours. Uses the live rate when available.",
+      "throughput": "Total tokens the system can produce per second (per-user speed × concurrent users).",
+      "ttft": "Time to First Token: latency of the prefill phase, bound by compute.",
+      "tpot": "Time per Output Token: decode speed bound by memory bandwidth.",
+      "trainingTime": "Estimated total training time on the selected hardware and framework.",
+      "ftVram": "Total VRAM required during fine-tuning (weights + gradients + optimizer + activations).",
+      "localElectricity": "Estimated electricity cost of training on local hardware (450W assumption).",
+      "unslothSavings": "Estimated cost savings from Unsloth accelerated kernels vs standard PyTorch HF."
     }
   },
   "workload": {
@@ -438,9 +419,7 @@
     "singleBatchDesc": "Fixed single batch size and homogeneous input/output token sizes",
     "singleBatchToggle": "Single Batch Mode",
     "title": "Workload & User Profiles",
-    "totalConcurrentUsers": "Total Concurrent Users: {{count}}",
-    "tpEfficiency": "TP Communication Efficiency (%)",
-    "tpEfficiencyHint": "AllReduce communication efficiency across GPUs (~85%-95% for NVLink)."
+    "totalConcurrentUsers": "Total Concurrent Users: {{count}}"
   },
   "ft": {
     "code": {
@@ -605,5 +584,9 @@
     "throughput": "Tok/s",
     "finetuningTime": "Training Time",
     "perMonth": "/ mo"
+  },
+  "sidebar": {
+    "show": "Show Scenarios",
+    "hide": "Hide Scenarios"
   }
 }

@@ -9,10 +9,10 @@ import { FineTuningConfigPanel } from './components/FineTuningConfigPanel';
 import { FineTuningResultsPanel } from './components/FineTuningResultsPanel';
 import { FineTuningPlatformCompare } from './components/FineTuningPlatformCompare';
 import { FineTuningCodeExport } from './components/FineTuningCodeExport';
-import { AiAdvisorModal } from './components/AiAdvisorModal';
-import { ExportModal } from './components/ExportModal';
 import { ScenarioModal } from './components/ScenarioModal';
 import { ScenarioComparisonModal } from './components/ScenarioComparisonModal';
+import { ScenarioSidebar } from './components/ScenarioSidebar';
+import { MarkdownExportModal, MarkdownExportData } from './components/MarkdownExportModal';
 import { AdminGate } from './components/AdminGate';
 import { ResultsPanel } from './components/ResultsPanel';
 import { Footer } from './components/Footer';
@@ -21,14 +21,17 @@ import { Wizard, WizardStepDef } from './components/Wizard';
 import { WizardSummaryBar, SummaryCell } from './components/WizardSummaryBar';
 import { useTranslation } from 'react-i18next';
 
-import { CalculatorConfig, PresetScenario, FineTuningConfig } from './types';
+import { CalculatorConfig, PresetScenario, FineTuningConfig, GpuPreset } from './types';
+import { SavedScenario } from './utils/scenarioStorage';
 import { GPU_PRESETS, MODEL_PRESETS } from './data/presets';
 import { DEFAULT_INFERENCE_CONFIG, DEFAULT_FINETUNING_CONFIG } from './data/defaults';
 import { calculateInferenceMetrics } from './utils/calculator';
 import { calculateFineTuningMetrics } from './utils/fineTuningCalculator';
+import { pickCompatibleEngine } from './utils/engineCompatibility';
 import { useLiveGpuPrices } from './hooks/useLiveGpuPrices';
 import { useLiveModels } from './hooks/useLiveModels';
 import { buildShareUrl, readScenarioFromLocation } from './utils/shareUrl';
+import { ChevronDown, ChevronRight, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 
 const INFERENCE_STEPS: WizardStepDef[] = [
   { id: 'model', titleKey: 'wizard.stepModel' },
@@ -51,9 +54,9 @@ export default function App() {
     return <AdminGate />;
   }
 
-  const [initialScenario] = useState(readScenarioFromLocation);
-
   const { t } = useTranslation();
+
+  const [initialScenario] = useState(readScenarioFromLocation);
 
   const initialResultIndex = initialScenario
     ? initialScenario.type === 'finetuning'
@@ -78,12 +81,12 @@ export default function App() {
     initialScenario?.type === 'finetuning' ? (initialScenario.config as FineTuningConfig) : { ...DEFAULT_FINETUNING_CONFIG }
   );
 
-  const [isAiModalOpen, setIsAiModalOpen] = useState<boolean>(false);
-  const [isExportModalOpen, setIsExportModalOpen] = useState<boolean>(false);
   const [isScenarioModalOpen, setIsScenarioModalOpen] = useState<boolean>(false);
   const [isCompareModalOpen, setIsCompareModalOpen] = useState<boolean>(false);
   const [isAboutModalOpen, setIsAboutModalOpen] = useState<boolean>(false);
   const [compareInitialIds, setCompareInitialIds] = useState<string[]>([]);
+  const [markdownExport, setMarkdownExport] = useState<MarkdownExportData | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(true);
 
   const hydratedFromUrl = useRef(initialScenario !== null);
   const hydratedSnapshot = useRef(initialScenario?.config ?? null);
@@ -99,7 +102,7 @@ export default function App() {
   }, [config, ftConfig]);
 
   // Live scraped GPU prices (RunPod / Modal / Lambda)
-  const { prices: livePrices, overrides: liveOverrides, lastUpdated, loading: pricesLoading, refetch: refetchPrices } = useLiveGpuPrices();
+  const { prices: livePrices, overrides: liveOverrides, lastUpdated, loading: pricesLoading } = useLiveGpuPrices();
 
   // Live unified model catalog from the server (curated + discovered);
   // falls back to the static presets when the API is unavailable.
@@ -125,12 +128,53 @@ export default function App() {
     return calculateFineTuningMetrics(ftConfig, modelCatalog);
   }, [ftConfig, modelCatalog]);
 
-  const handleSelectPreset = (scenario: PresetScenario) => {
-    setActiveTab('inference');
+  // Reconcile the engine so it always supports the current quant AND GPU vendor.
+  const reconcileEngine = (next: {
+    engineId?: string;
+    quantId: string;
+    gpuId: string;
+    customGpu: GpuPreset;
+  }): string => pickCompatibleEngine(next);
+
+  // Auto-switch the engine when the selected GPU vendor is incompatible.
+  const handleSelectGpu = (gpuId: string) => {
     setConfig((prev) => ({
       ...prev,
-      ...scenario.config,
+      gpuId,
+      engineId: reconcileEngine({ engineId: prev.engineId, quantId: prev.quantId, gpuId, customGpu: prev.customGpu }),
     }));
+  };
+
+  const handleUpdateCustomGpu = (customGpu: GpuPreset) => {
+    setConfig((prev) => ({
+      ...prev,
+      customGpu,
+      engineId: reconcileEngine({ engineId: prev.engineId, quantId: prev.quantId, gpuId: prev.gpuId, customGpu }),
+    }));
+  };
+
+  const handleSelectQuant = (quantId: string) => {
+    setConfig((prev) => ({
+      ...prev,
+      quantId,
+      engineId: reconcileEngine({ engineId: prev.engineId, quantId, gpuId: prev.gpuId, customGpu: prev.customGpu }),
+    }));
+  };
+
+  const handleSelectPreset = (scenario: PresetScenario) => {
+    setActiveTab('inference');
+    setConfig((prev) => {
+      const merged = { ...prev, ...scenario.config };
+      return {
+        ...merged,
+        engineId: reconcileEngine({
+          engineId: merged.engineId,
+          quantId: merged.quantId,
+          gpuId: merged.gpuId,
+          customGpu: merged.customGpu,
+        }),
+      };
+    });
     if (scenario.config.modelId) {
       setFtConfig((prev) => ({ ...prev, modelId: scenario.config.modelId! }));
     }
@@ -170,6 +214,23 @@ export default function App() {
     return activeTab === 'finetuning'
       ? buildShareUrl('finetuning', ftConfig)
       : buildShareUrl('inference', config);
+  };
+
+  const handleExportCurrent = () => {
+    setMarkdownExport({
+      type: activeTab,
+      config: activeTab === 'inference' ? config : ftConfig,
+      results: activeTab === 'inference' ? results : ftResults,
+    });
+  };
+
+  const handleExportSavedScenario = (scenario: SavedScenario) => {
+    setMarkdownExport({
+      type: scenario.type,
+      name: scenario.name,
+      config: scenario.config,
+      results: scenario.results,
+    });
   };
 
   const steps = activeTab === 'inference' ? INFERENCE_STEPS : FINETUNING_STEPS;
@@ -215,7 +276,12 @@ export default function App() {
       if (stepId === 'results') {
         return (
           <div className="space-y-4">
-            <FineTuningResultsPanel results={ftResults} />
+            <FineTuningResultsPanel
+              results={ftResults}
+              onCopyLink={handleCopyLink}
+              onSaveScenario={() => setIsScenarioModalOpen(true)}
+              onExportMarkdown={handleExportCurrent}
+            />
             <FineTuningPlatformCompare results={ftResults} />
             <FineTuningCodeExport results={ftResults} />
           </div>
@@ -227,20 +293,34 @@ export default function App() {
       case 'model':
         return renderModelStep();
       case 'quantization':
-        return <QuantizationSelector selectedQuantId={config.quantId} selectedKvCacheQuantId={config.kvCacheQuantId} onSelectQuant={(quantId) => setConfig((prev) => ({ ...prev, quantId }))} onSelectKvCacheQuant={(kvCacheQuantId) => setConfig((prev) => ({ ...prev, kvCacheQuantId }))} />;
+        return (
+          <QuantizationSelector
+            selectedQuantId={config.quantId}
+            selectedKvCacheQuantId={config.kvCacheQuantId}
+            onSelectQuant={handleSelectQuant}
+            onSelectKvCacheQuant={(kvCacheQuantId) => setConfig((prev) => ({ ...prev, kvCacheQuantId }))}
+          />
+        );
       case 'engine':
-        return <InferenceEngineSelector selectedEngineId={config.engineId} onSelectEngine={(engineId) => setConfig((prev) => ({ ...prev, engineId }))} />;
+        return (
+          <InferenceEngineSelector
+            selectedEngineId={config.engineId}
+            selectedQuantId={config.quantId}
+            onSelectEngine={(engineId) => setConfig((prev) => ({ ...prev, engineId }))}
+          />
+        );
       case 'gpu':
         return (
           <GpuConfigurator
             selectedGpuId={config.gpuId}
             gpuCount={config.gpuCount}
             customGpu={config.customGpu}
-            tensorParallelism={config.tensorParallelism}
-            onSelectGpu={(gpuId) => setConfig((prev) => ({ ...prev, gpuId }))}
+            engineId={config.engineId}
+            selectedQuantId={config.quantId}
+            onSelectGpu={handleSelectGpu}
             onChangeGpuCount={(gpuCount) => setConfig((prev) => ({ ...prev, gpuCount }))}
-            onChangeTp={(tensorParallelism) => setConfig((prev) => ({ ...prev, tensorParallelism }))}
-            onUpdateCustomGpu={(customGpu) => setConfig((prev) => ({ ...prev, customGpu }))}
+            onChangeEngine={(engineId) => setConfig((prev) => ({ ...prev, engineId }))}
+            onUpdateCustomGpu={handleUpdateCustomGpu}
           />
         );
       case 'workload':
@@ -252,7 +332,6 @@ export default function App() {
             requestsPerMin={config.requestsPerMin}
             cudaOverheadGB={config.cudaOverheadGB}
             activationOverheadPct={config.activationOverheadPct}
-            tpEfficiencyPct={config.tpEfficiencyPct}
             userProfiles={config.userProfiles}
             useMultiProfile={config.useMultiProfile}
             onChangePromptLen={(promptLen) => setConfig((prev) => ({ ...prev, promptLen }))}
@@ -261,7 +340,6 @@ export default function App() {
             onChangeRequestsPerMin={(requestsPerMin) => setConfig((prev) => ({ ...prev, requestsPerMin }))}
             onChangeCudaOverhead={(cudaOverheadGB) => setConfig((prev) => ({ ...prev, cudaOverheadGB }))}
             onChangeActivationOverhead={(activationOverheadPct) => setConfig((prev) => ({ ...prev, activationOverheadPct }))}
-            onChangeTpEfficiency={(tpEfficiencyPct) => setConfig((prev) => ({ ...prev, tpEfficiencyPct }))}
             onToggleMultiProfile={(useMultiProfile) => setConfig((prev) => ({ ...prev, useMultiProfile }))}
             onUpdateProfiles={(userProfiles) => setConfig((prev) => ({ ...prev, userProfiles }))}
           />
@@ -277,10 +355,10 @@ export default function App() {
             overrides={liveOverrides}
             lastUpdated={lastUpdated}
             pricesLoading={pricesLoading}
-            onRefreshPrices={refetchPrices}
-            onOpenAiAdvisor={() => setIsAiModalOpen(true)}
             onChangeConfig={(updater) => setConfig(updater)}
             onCopyLink={handleCopyLink}
+            onSaveScenario={() => setIsScenarioModalOpen(true)}
+            onExportMarkdown={handleExportCurrent}
           />
         );
       default:
@@ -315,48 +393,55 @@ export default function App() {
       <Header
         activeTab={activeTab}
         onChangeTab={handleChangeTab}
-        onSelectPreset={handleSelectPreset}
-        onOpenAiAdvisor={() => setIsAiModalOpen(true)}
-        onOpenExport={() => setIsExportModalOpen(true)}
         onReset={handleReset}
-        onOpenSave={() => setIsScenarioModalOpen(true)}
-        onOpenCompare={() => handleOpenCompare()}
-        onCopyLink={handleCopyLink}
       />
 
       {/* Main Container */}
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-28">
-        <Wizard
-          steps={steps}
-          currentIndex={stepIndex}
-          maxVisited={maxVisited}
-          onNavigate={goToStep}
-          onNext={goNext}
-          onBack={goBack}
-        >
-          {renderStepBody()}
-        </Wizard>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-28">
+        <div className="flex flex-col lg:flex-row gap-4 items-start">
+          {/* Left sidebar — scenarios */}
+          <div className="w-full lg:w-72 shrink-0">
+            <button
+              onClick={() => setSidebarOpen((v) => !v)}
+              className="lg:hidden w-full flex items-center justify-between px-3 py-2 text-xs font-bold font-mono uppercase tracking-wider bg-surface border-2 border-border rounded-none mb-2"
+            >
+              <span className="flex items-center gap-1.5">
+                {sidebarOpen ? <PanelLeftClose className="w-3.5 h-3.5 text-accent" /> : <PanelLeftOpen className="w-3.5 h-3.5 text-accent" />}
+                {sidebarOpen ? t('sidebar.hide') : t('sidebar.show')}
+              </span>
+              {sidebarOpen ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
+            </button>
+            <div className={sidebarOpen ? 'block' : 'hidden'}>
+              <div className="lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto">
+                <ScenarioSidebar
+                  onSelectPreset={handleSelectPreset}
+                  onLoadScenario={handleLoadScenario}
+                  onCompare={handleOpenCompare}
+                  onExportScenario={handleExportSavedScenario}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Wizard */}
+          <div className="flex-1 min-w-0">
+            <Wizard
+              steps={steps}
+              currentIndex={stepIndex}
+              maxVisited={maxVisited}
+              onNavigate={goToStep}
+              onNext={goNext}
+              onBack={goBack}
+            >
+              {renderStepBody()}
+            </Wizard>
+          </div>
+        </div>
       </main>
 
       <WizardSummaryBar left={summaryProps.left} center={summaryProps.center} right={summaryProps.right} />
 
-      {/* AI Advisor Modal */}
-      <AiAdvisorModal
-        isOpen={isAiModalOpen}
-        onClose={() => setIsAiModalOpen(false)}
-        config={config}
-        results={results}
-      />
-
-      {/* Export Modal */}
-      <ExportModal
-        isOpen={isExportModalOpen}
-        onClose={() => setIsExportModalOpen(false)}
-        config={config}
-        results={results}
-      />
-
-      {/* Scenario Save/Manage Modal */}
+      {/* Scenario Save Modal */}
       <ScenarioModal
         isOpen={isScenarioModalOpen}
         onClose={() => setIsScenarioModalOpen(false)}
@@ -365,8 +450,6 @@ export default function App() {
         ftConfig={ftConfig}
         results={results}
         ftResults={ftResults}
-        onLoadScenario={handleLoadScenario}
-        onOpenCompare={(ids) => handleOpenCompare(ids)}
       />
 
       {/* Scenario Comparison Modal */}
@@ -379,6 +462,13 @@ export default function App() {
         ftConfig={ftConfig}
         results={results}
         ftResults={ftResults}
+      />
+
+      {/* Markdown export modal (current results or a saved scenario) */}
+      <MarkdownExportModal
+        isOpen={markdownExport !== null}
+        onClose={() => setMarkdownExport(null)}
+        data={markdownExport}
       />
 
       {/* Methodology & About Modal */}

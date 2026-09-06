@@ -1,6 +1,6 @@
 import express, { NextFunction, Request, Response } from 'express';
 import { SignJWT, jwtVerify } from 'jose';
-import { createHash, timingSafeEqual } from 'crypto';
+import { createHash, randomBytes, timingSafeEqual } from 'crypto';
 import { pickLang, msg } from './i18nErrors';
 
 const ADMIN_SESSION_COOKIE = 'llmcalc_admin_session';
@@ -29,9 +29,19 @@ interface LockState {
 // In-memory brute-force lockout keyed by client IP. Resets on server restart.
 const lockout = new Map<string, LockState>();
 
+// Never fall back to a known hardcoded secret in production: generate a
+// random secret so sessions are invalidated on restart and cannot be forged.
+let generatedSecret: Uint8Array | null = null;
 function getSecretKey(): Uint8Array {
-  const secret = process.env.SESSION_SECRET || 'insecure-dev-secret-change-me';
-  return new TextEncoder().encode(secret);
+  const configured = process.env.SESSION_SECRET;
+  if (!configured) {
+    if (!generatedSecret) {
+      generatedSecret = new Uint8Array(randomBytes(32));
+      console.warn('[adminAuth] SESSION_SECRET tanımlı değil; rastgele oturum anahtarı üretildi (sunucu her yeniden başladığında admin oturumları geçersiz olur).');
+    }
+    return generatedSecret;
+  }
+  return new TextEncoder().encode(configured);
 }
 
 function safeEqual(a: string, b: string): boolean {
@@ -99,7 +109,7 @@ export const adminAuthRouter = express.Router();
 adminAuthRouter.post('/login', async (req, res) => {
   const lang = pickLang(req);
   if (!credentialsConfigured()) {
-    return res.status(500).json({ error: msg(lang, 'ADMIN_USERNAME / ADMIN_PASSWORD ortam değişkenleri tanımlı değil.', 'ADMIN_USERNAME / ADMIN_PASSWORD environment variables are not set.') });
+    return res.status(503).json({ error: msg(lang, 'Yönetici girişi yapılandırılmamış (ADMIN_USERNAME / ADMIN_PASSWORD eksik).', 'Admin login is not configured (ADMIN_USERNAME / ADMIN_PASSWORD missing).') });
   }
 
   const ip = req.ip || 'unknown';

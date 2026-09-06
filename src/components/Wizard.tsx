@@ -50,9 +50,8 @@ export const Wizard: React.FC<WizardProps> = ({
                     : 'bg-surface text-muted cursor-not-allowed'
               }`}
             >
-              <span className="font-mono text-[11px] font-bold">{String(i + 1).padStart(2, '0')}</span>
-              {isDone && <Check className="w-3.5 h-3.5" />}
               <span className="font-mono text-[11px] uppercase tracking-wider truncate">{t(s.titleKey)}</span>
+              {isDone && <Check className="w-3.5 h-3.5 shrink-0" />}
             </button>
           );
         })}

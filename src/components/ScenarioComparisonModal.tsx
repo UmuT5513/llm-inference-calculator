@@ -124,7 +124,7 @@ export const ScenarioComparisonModal: React.FC<ScenarioComparisonModalProps> = (
       rows.push({
         label: t('compare.rowGpu'),
         values: columns.map((c) =>
-          r(c, (cfg, res) => `${cfg.gpuCount}x ${res.gpuName || '—'} (${cfg.tensorParallelism} TP / ${cfg.pipelineParallelism} PP)`)
+          r(c, (cfg, res) => `${cfg.gpuCount}x ${res.gpuName || '—'}`)
         ),
       });
       rows.push({

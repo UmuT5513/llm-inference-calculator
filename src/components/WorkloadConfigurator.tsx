@@ -15,7 +15,6 @@ interface WorkloadConfiguratorProps {
   requestsPerMin: number;
   cudaOverheadGB: number;
   activationOverheadPct: number;
-  tpEfficiencyPct: number;
   userProfiles: UserProfile[];
   useMultiProfile: boolean;
   onChangePromptLen: (len: number) => void;
@@ -24,7 +23,6 @@ interface WorkloadConfiguratorProps {
   onChangeRequestsPerMin: (rpm: number) => void;
   onChangeCudaOverhead: (gb: number) => void;
   onChangeActivationOverhead: (pct: number) => void;
-  onChangeTpEfficiency: (pct: number) => void;
   onToggleMultiProfile: (enabled: boolean) => void;
   onUpdateProfiles: (profiles: UserProfile[]) => void;
 }
@@ -36,7 +34,6 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
   requestsPerMin,
   cudaOverheadGB,
   activationOverheadPct,
-  tpEfficiencyPct,
   userProfiles,
   useMultiProfile,
   onChangePromptLen,
@@ -45,7 +42,6 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
   onChangeRequestsPerMin,
   onChangeCudaOverhead,
   onChangeActivationOverhead,
-  onChangeTpEfficiency,
   onToggleMultiProfile,
   onUpdateProfiles,
 }) => {
@@ -81,7 +77,6 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
   return (
     <Panel className="p-3.5 space-y-3">
       <SectionHeader
-        index="05"
         title={t('workload.title')}
         description={
           useMultiProfile
@@ -389,7 +384,7 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
 
       {/* Advanced Settings Drawer */}
       <Collapse title={t('workload.advancedTitle')}>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
           <Field label={t('workload.cudaOverhead')}>
             <NumberInput
               value={cudaOverheadGB}
@@ -408,16 +403,6 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
             />
             <p className="text-[10px] text-muted mt-1">
               {t('workload.activationOverheadHint')}
-            </p>
-          </Field>
-
-          <Field label={t('workload.tpEfficiency')}>
-            <NumberInput
-              value={tpEfficiencyPct}
-              onChange={(v) => onChangeTpEfficiency(v || 85)}
-            />
-            <p className="text-[10px] text-muted mt-1">
-              {t('workload.tpEfficiencyHint')}
             </p>
           </Field>
         </div>
