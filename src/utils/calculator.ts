@@ -1,6 +1,26 @@
 import { CalculatorConfig, CalculationResults, ModelPreset, GpuPreset, CloudProviderCost, OnPremisesTco } from '../types';
 import { MODEL_PRESETS, GPU_PRESETS, QUANTIZATION_OPTIONS, INFERENCE_ENGINES, CLOUD_PROVIDERS, CLOUD_PROVIDER_EQUIVALENTS, GPU_HARDWARE_SPECS, DEFAULT_CUSTOM_MODEL, DEFAULT_CUSTOM_GPU } from '../data/presets';
 
+/**
+ * Media (image/audio) input tokens for a single request.
+ * Only multimodal models count media input; for text-only models this is always 0.
+ * 1 image ≈ `imageTokensPerImage` tokens, audio ≈ `audioTokensPerSecond` tokens/second.
+ */
+export function mediaTokensForModel(
+  model: Pick<ModelPreset, 'isMultimodal'>,
+  images: number,
+  audioSeconds: number,
+  imageTokensPerImage: number,
+  audioTokensPerSecond: number
+): number {
+  if (!model.isMultimodal) return 0;
+  const safeImages = Math.max(0, images || 0);
+  const safeAudioSeconds = Math.max(0, audioSeconds || 0);
+  const safeImageTokens = Math.max(0, imageTokensPerImage || 0);
+  const safeAudioTokens = Math.max(0, audioTokensPerSecond || 0);
+  return safeImages * safeImageTokens + safeAudioSeconds * safeAudioTokens;
+}
+
 export function calculateInferenceMetrics(
   config: CalculatorConfig,
   priceOverrides?: Record<string, number>,
@@ -18,6 +38,10 @@ export function calculateInferenceMetrics(
   // 2. Resolve Quantization
   const quant = QUANTIZATION_OPTIONS.find((q) => q.id === config.quantId) || QUANTIZATION_OPTIONS[0];
   const bytesPerWeight = quant.bytesPerParam;
+
+  // Multimodal media token conversion factors (fallbacks keep older serialized scenarios working).
+  const imageTokensPerImage = config.imageTokensPerImage ?? 1024;
+  const audioTokensPerSecond = config.audioTokensPerSecond ?? 50;
 
   // Resolve KV Cache Quantization
   let bytesPerKvParam = 2.0;
@@ -56,33 +80,56 @@ export function calculateInferenceMetrics(
   let effectivePromptLen = 0;
   let effectiveGenLen = 0;
   let totalKvCacheBytes = 0;
+  // Prompt length actually fed through prefill / cost / KV: text prompt + multimodal media tokens.
+  // In multi-profile mode effectivePromptLen already folds in a weighted media average; in
+  // single-batch mode effectivePromptLen stays the TEXT prompt and inputLen adds the media tokens.
+  let inputLen = 0;
 
   if (config.useMultiProfile && config.userProfiles && config.userProfiles.length > 0) {
     let sumPromptUser = 0;
     let sumGenUser = 0;
+    let sumMediaUser = 0;
 
     config.userProfiles.forEach((p) => {
       const uCount = Math.max(0, p.userCount || 0);
       const pLen = Math.max(1, p.promptLen || 1024);
       const gLen = Math.max(1, p.genLen || 512);
+      const mediaTokens = mediaTokensForModel(
+        model,
+        p.imagesPerRequest ?? 0,
+        p.audioSecondsPerRequest ?? 0,
+        imageTokensPerImage,
+        audioTokensPerSecond
+      );
 
       activeTotalUsers += uCount;
       sumPromptUser += uCount * pLen;
       sumGenUser += uCount * gLen;
+      sumMediaUser += uCount * mediaTokens;
 
-      // KV bytes for this user persona group
-      const seqContext = pLen + gLen;
+      // KV bytes for this user persona group (media tokens occupy KV context too)
+      const seqContext = pLen + mediaTokens + gLen;
       const kvBytesPerSeq = kvBytesPerTokenPerLayer * numLayers * seqContext;
       totalKvCacheBytes += kvBytesPerSeq * uCount;
     });
 
     if (activeTotalUsers > 0) {
-      effectivePromptLen = Math.round(sumPromptUser / activeTotalUsers);
+      effectivePromptLen = Math.round((sumPromptUser + sumMediaUser) / activeTotalUsers);
       effectiveGenLen = Math.round(sumGenUser / activeTotalUsers);
+      inputLen = effectivePromptLen;
     } else {
       activeTotalUsers = 1;
-      effectivePromptLen = config.promptLen || 2048;
+      const fallbackProfile = config.userProfiles[0];
+      const fallbackMediaTokens = mediaTokensForModel(
+        model,
+        fallbackProfile?.imagesPerRequest ?? 0,
+        fallbackProfile?.audioSecondsPerRequest ?? 0,
+        imageTokensPerImage,
+        audioTokensPerSecond
+      );
+      effectivePromptLen = (config.promptLen || 2048) + fallbackMediaTokens;
       effectiveGenLen = config.genLen || 512;
+      inputLen = effectivePromptLen;
       const seqContext = effectivePromptLen + effectiveGenLen;
       totalKvCacheBytes = kvBytesPerTokenPerLayer * numLayers * seqContext;
     }
@@ -90,8 +137,16 @@ export function calculateInferenceMetrics(
     activeTotalUsers = Math.max(1, config.batchSize || 1);
     effectivePromptLen = Math.max(128, config.promptLen || 2048);
     effectiveGenLen = Math.max(32, config.genLen || 512);
+    const mediaTokens = mediaTokensForModel(
+      model,
+      config.perRequestImages ?? 0,
+      config.audioSecondsPerRequest ?? 0,
+      imageTokensPerImage,
+      audioTokensPerSecond
+    );
+    inputLen = effectivePromptLen + mediaTokens;
 
-    const totalContextLen = effectivePromptLen + effectiveGenLen;
+    const totalContextLen = inputLen + effectiveGenLen;
     const kvBytesPerSequence = kvBytesPerTokenPerLayer * numLayers * totalContextLen;
     totalKvCacheBytes = kvBytesPerSequence * activeTotalUsers;
   }
@@ -128,7 +183,7 @@ export function calculateInferenceMetrics(
   const tpEfficiency = 0.85;
   
   // Prefill Phase: Compute Bound
-  const totalPrefillFlops = 2 * activeParamsB * 1e9 * effectivePromptLen * activeTotalUsers;
+  const totalPrefillFlops = 2 * activeParamsB * 1e9 * inputLen * activeTotalUsers;
   
   const computeEfficiency = 0.35;
   const totalFlopsPerSec = gpuCount * (gpu.fp16Tflops * 1e12) * tpEfficiency * computeEfficiency;
@@ -166,7 +221,7 @@ export function calculateInferenceMetrics(
 
   const targetRpm = Math.max(1, config.requestsPerMin || 60);
   const requestsPerHour = targetRpm * 60;
-  const totalTokensPerRequest = effectivePromptLen + effectiveGenLen;
+  const totalTokensPerRequest = inputLen + effectiveGenLen;
   const totalTokensPerHour = requestsPerHour * totalTokensPerRequest;
 
   const costPerMillionTotalTokensUsd = totalTokensPerHour > 0

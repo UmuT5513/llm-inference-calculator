@@ -86,6 +86,22 @@ ALTER TABLE hf_models ADD COLUMN IF NOT EXISTS target_env TEXT;
 ALTER TABLE hf_models ADD COLUMN IF NOT EXISTS curated BOOLEAN NOT NULL DEFAULT false;
 ALTER TABLE hf_models ADD COLUMN IF NOT EXISTS verified BOOLEAN NOT NULL DEFAULT false;
 
+-- Multi-provider catalog fields (2026-09-23). All additive.
+ALTER TABLE hf_models ADD COLUMN IF NOT EXISTS canonical_id TEXT;
+ALTER TABLE hf_models ADD COLUMN IF NOT EXISTS sources JSONB NOT NULL DEFAULT '[]';
+ALTER TABLE hf_models ADD COLUMN IF NOT EXISTS released_at TIMESTAMPTZ;
+ALTER TABLE hf_models ADD COLUMN IF NOT EXISTS released_label TEXT;
+ALTER TABLE hf_models ADD COLUMN IF NOT EXISTS is_multimodal BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE hf_models ADD COLUMN IF NOT EXISTS modalities TEXT[] NOT NULL DEFAULT '{}';
+ALTER TABLE hf_models ADD COLUMN IF NOT EXISTS vision_params_b NUMERIC NOT NULL DEFAULT 0;
+ALTER TABLE hf_models ADD COLUMN IF NOT EXISTS expert_intermediate_size INTEGER;
+ALTER TABLE hf_models ADD COLUMN IF NOT EXISTS num_shared_experts INTEGER NOT NULL DEFAULT 0;
+
+-- One row per real model across providers. Existing HF rows keep hf_id as the
+-- canonical key; non-HF rows get 'ms:<id>' / 'ollama:<key>' synthetic keys.
+UPDATE hf_models SET canonical_id = hf_id WHERE canonical_id IS NULL AND hf_id IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_hf_models_canonical ON hf_models(canonical_id) WHERE canonical_id IS NOT NULL;
+
 -- Drop the old per-snapshot index (replaced by the unique hf_id catalog key).
 DROP INDEX IF EXISTS idx_hf_models_hf_id;
 

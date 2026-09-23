@@ -78,8 +78,23 @@ curl -H "Authorization: Bearer $HUGGINGFACE_API_KEY" https://huggingface.co/api/
 - Eski kötü çalışmanın junk satırları DB'de tutulur (silme yok) ama API'de gizlenir — temizlemek istersen: `DELETE FROM hf_models WHERE NOT curated AND (hf_id ~* '<format veya derivative regex>')`.
 - Refresh idempotent ve yeniden çalıştırılabilir; admin koruması kullanıcı sonra ekleyecek (mevcut `POST /api/models/refresh` şimdilik korumasız, middleware kolayca takılabilir).
 
-## Notlar / tuzaklar
-- Seed (`modelCatalogSeed.ts`): `ON CONFLICT (hf_id)` upsert — mimariyi/raw_json'u korur, curated alanlarını günceller, keşfedilen satırları silmez.
+## TAMAMLANDI: Çok sağlayıcılı katalog (HF+ModelScope+Ollama) + MoE/Multimodal hesap düzeltmesi + veri yenileme (2026-09-23)
+
+Tasarım onayı (`docs/superpowers/plans/2026-09-23-multi-provider-moe-multimodal.md`), paralel ajanlarla uygulandı. Özet:
+- **Model kaynakları:** ModelScope (token'sız Hub API: `PUT /api/v1/models` + `resolve/.../config.json`, HF config formatında) ve Ollama (resmi API yok → HTML scraping: `ollama.com/library` + model sayfaları; mimari yalnızca HF/ModelScope eşlemesiyle gelir) eklendi. `src/server/modelScopeClient.ts`, `ollamaClient.ts`.
+- **Ortak config ayrıştırma:** `src/server/modelConfig.ts` (HF+MS ortak). **MoE aktif-param formülü düzeltildi:** kapalı form (GQA + ortak uzman + expertsPerTok×expert FFN) → DeepSeek-V3 aktif **37.6B** ✅ (eski `total×k/N` tahmini ~21B veriyordu). Multimodal tespiti + `vision_params_b` (Qwen2.5-VL-7B → 1.2B).
+- **Dedup/identite:** `knownOrgs.ts`'te `computeIdentity`; refresh satır başına bir model (`canonical_id`), `sources[]` linkleri + `released_at`/`released_label`, `linked` özet sayacı; yalnızca bir sağlayıcı mimari çözer (tekrar çekme yok).
+- **API/UI:** `/api/models` → `sources/releasedAt/releasedLabel/isMultimodal/modalities/visionParamsB/expertIntermediateSize/numSharedExperts`. Model adımı **iki kolonlu** (sol: mevcut seçici, sağ: sticky `ModelDetailsPanel` — çıkış tarihi, HF/ModelScope/Ollama linkleri, mimari, multimodal). Kartlara MULTİMODAL rozeti.
+- **Hesap motoru:** `calculator.ts` medya token'larını girdi yanına ekler (KV/prefill/maliyet; yalnızca `isMultimodal`); `WorkloadConfigurator` tek-kullanıcı + profil kartlarında görsel/ses girdileri (1 görsel ≈ 1024 tok, ses ≈ 50 tok/sn, ayarlanabilir).
+- **Veri yenileme:** CLI `npm run scrape:models` (`scripts/refresh-models.ts`) restore edildi. Gerçek çalıştırma: **fetched=122 updated=122 mirrored=29 discovered=146 linked=107 failed=2**; DB 444 satır (124 curated + 320 keşif; hepsi canonical-id'li, 270'i sources'lı). GPU fiyatları da tazelendi: runpod 19 / modal 11 / lambda 10 (B200 $6.69).
+- **Doğrulama:** `npm run lint` ✅, `npm run build` ✅, `/api/models` (304 görünür model; 223 çıkış-tarihli; 100 multimodal) + `/api/gpu-prices` (39 satır) ✅, `/`, `/app`, sitemap/robots 200 ✅, i18n eksik anahtar 0 ✅.
+
+### Notlar / tuzaklar
+- ModelScope/Ollama hiçbir anahtara/ücrete tabi değil; HF limitleri aynen geçerli (anonim 500 istek/5dk → refresh 150ms gecikmeyle rahat). Ücretli kıyas: HF PRO $9/ay → 2.500 istek/5dk; ModelScope API-Inference ücretsiz 2.000 çağrı/gün (model başına 500), ücretli = API-Provider bağlama (DashScope vb.); Ollama kataloğu için ücretli yok.
+- Ollama satırlarında kesin çıkış tarihi yok → `released_label` (göreli). Mimari yoksa `verified=false`.
+- `hf_id` yeni MS/Ollama satırlarında `ms:<id>` / `ollama:<name>` (NOT NULL+UNIQUE nedeniyle) — frontend linkleri `sources`'tan render etmeli, `hfId`'nin gerçek HF repo olduğunu varsaymamalı.
+
+## Notlar / tuzaklar (eski, geçerliliğini korur)
 - Refresh (`modelRefresh.ts`): curated hf_id'lerini HF'den çeker, `raw_json=source:huggingface`, `scraped_at=now()`, `verified=true`; gated modeller 401/403 → `failed` listesinde, `verified=false` işaretlenir, curated fallback korunur.
 - `verified`: mimarinin canlı HF config'inden teyit edildiğini gösterir. `false` = gated/404 (preset fallback). Keşif satırları her zaman `true`.
 - Keşif yalnızca INSERT (yeni) + UPDATE (mevcut) yapar; silme yapmaz — katalogdan çıkarmak istediğin keşif satırlarını elle `DELETE ... WHERE NOT curated` ile temizle.

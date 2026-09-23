@@ -17,26 +17,34 @@ export async function seedModelCatalog(): Promise<number> {
     const row = toCatalogRow(model);
     await pool.query(
       `INSERT INTO hf_models
-        (hf_id, slug_id, name, provider, category, capabilities, target_env, curated,
+        (hf_id, slug_id, canonical_id, name, provider, category, capabilities, target_env, curated,
          total_params_b, active_params_b, num_layers, num_heads, num_kv_heads,
          head_dim, hidden_size, default_context_len, max_context_len,
-         is_moe, num_experts, active_experts, downloads, likes, description, raw_json)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8,
-         $9, $10, $11, $12, $13, $14, $15, $16, $17,
-         $18, $19, $20, $21, $22, $23, $24)
+         is_moe, num_experts, active_experts, downloads, likes, description, raw_json,
+         sources, released_at, released_label,
+         is_multimodal, modalities, vision_params_b, expert_intermediate_size, num_shared_experts)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9,
+         $10, $11, $12, $13, $14, $15, $16, $17, $18,
+         $19, $20, $21, $22, $23, $24, $25,
+         $26::jsonb, $27, $28, $29, $30::text[], $31, $32, $33)
        ON CONFLICT (hf_id) DO UPDATE SET
          slug_id = EXCLUDED.slug_id,
+         canonical_id = COALESCE(hf_models.canonical_id, EXCLUDED.canonical_id),
          name = EXCLUDED.name,
          provider = EXCLUDED.provider,
          category = EXCLUDED.category,
          capabilities = EXCLUDED.capabilities,
          target_env = EXCLUDED.target_env,
          curated = true,
-         description = EXCLUDED.description
+         description = EXCLUDED.description,
+         sources = CASE
+           WHEN jsonb_array_length(COALESCE(hf_models.sources, '[]'::jsonb)) = 0
+           THEN EXCLUDED.sources ELSE hf_models.sources END
        RETURNING hf_id`,
       [
         row.hf_id,
         row.slug_id,
+        row.canonical_id,
         row.name,
         row.provider,
         row.category,
@@ -59,6 +67,14 @@ export async function seedModelCatalog(): Promise<number> {
         null, // likes
         row.description,
         JSON.stringify({ source: 'curated' }),
+        JSON.stringify(row.sources),
+        row.released_at,
+        row.released_label,
+        row.is_multimodal,
+        row.modalities,
+        row.vision_params_b,
+        row.expert_intermediate_size,
+        row.num_shared_experts,
       ]
     );
     seeded += 1;
@@ -77,6 +93,7 @@ function toCatalogRow(model: ModelPreset): Record<string, any> {
   return {
     hf_id: model.hfId,
     slug_id: model.id,
+    canonical_id: model.hfId,
     name: model.name,
     provider: model.provider,
     category: model.category,
@@ -95,6 +112,17 @@ function toCatalogRow(model: ModelPreset): Record<string, any> {
     num_experts: model.numExperts ?? null,
     active_experts: model.activeExperts ?? null,
     description: model.description,
+    sources:
+      model.sources && model.sources.length > 0
+        ? model.sources
+        : [{ provider: 'huggingface', id: model.hfId, url: `https://huggingface.co/${model.hfId}` }],
+    released_at: model.releasedAt ?? null,
+    released_label: model.releasedLabel ?? null,
+    is_multimodal: model.isMultimodal ?? false,
+    modalities: model.modalities ?? ['text'],
+    vision_params_b: model.visionParamsB ?? 0,
+    expert_intermediate_size: model.expertIntermediateSize ?? null,
+    num_shared_experts: model.numSharedExperts ?? 0,
   };
 }
 

@@ -210,6 +210,15 @@ export default function App() {
       ? config.customGpu
       : GPU_PRESETS.find((g) => g.id === config.gpuId) || GPU_PRESETS[2];
 
+  // Selected inference model — used to gate multimodal media inputs in the workload step.
+  const activeModel = useMemo(
+    () =>
+      config.modelId === 'custom'
+        ? config.customModel
+        : modelCatalog.find((m) => m.id === config.modelId) || modelCatalog[0],
+    [config.modelId, config.customModel, modelCatalog]
+  );
+
   const handleCopyLink = (): string => {
     return activeTab === 'finetuning'
       ? buildShareUrl('finetuning', ftConfig)
@@ -342,6 +351,12 @@ export default function App() {
             onChangeActivationOverhead={(activationOverheadPct) => setConfig((prev) => ({ ...prev, activationOverheadPct }))}
             onToggleMultiProfile={(useMultiProfile) => setConfig((prev) => ({ ...prev, useMultiProfile }))}
             onUpdateProfiles={(userProfiles) => setConfig((prev) => ({ ...prev, userProfiles }))}
+            isMultimodal={Boolean(activeModel?.isMultimodal)}
+            imageTokensPerImage={config.imageTokensPerImage ?? 1024}
+            audioTokensPerSecond={config.audioTokensPerSecond ?? 50}
+            perRequestImages={config.perRequestImages ?? 0}
+            audioSecondsPerRequest={config.audioSecondsPerRequest ?? 0}
+            onMediaChange={(patch) => setConfig((prev) => ({ ...prev, ...patch }))}
           />
         );
       case 'results':

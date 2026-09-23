@@ -2,7 +2,6 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Edit3,
-  Layers,
   Sliders,
   Laptop,
   Server,
@@ -20,6 +19,7 @@ import { Badge } from './ui/Badge';
 import { Field } from './ui/Field';
 import { NumberInput } from './ui/NumberInput';
 import { InfoTooltip } from './ui/InfoTooltip';
+import { ModelDetailsPanel } from './ModelDetailsPanel';
 
 interface ModelSelectorProps {
   selectedModelId: string;
@@ -155,7 +155,9 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
   };
 
   return (
-    <Panel className="p-3.5 space-y-3">
+    <Panel className="p-3.5">
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_300px] gap-3">
+        <div className="space-y-3 min-w-0">
       <SectionHeader
         title={t('model.title')}
         description={t('model.subtitle')}
@@ -324,6 +326,11 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
                       {t('model.mirrorBadge')}
                     </Badge>
                   )}
+                  {m.isMultimodal && (
+                    <Badge tone="accent" className="rounded-none">
+                      {t('model.multimodalBadge')}
+                    </Badge>
+                  )}
                   {isSelected && (
                     <div className="bg-accent text-bg text-[8px] font-bold px-1.5 py-0.5 rounded-none">
                       {t('model.selectedBadge')}
@@ -363,47 +370,11 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
         </div>
       )}
 
-      {/* Selected Model Architectural Summary */}
-      <div className="bg-surface-2 p-2.5 border-2 border-border rounded-none flex flex-wrap items-center justify-between gap-3 text-[11px]">
-        <div className="flex items-center gap-2 text-muted">
-          <Layers className="w-3.5 h-3.5 text-accent" />
-          <span className="font-semibold text-muted">{t('model.selectedArchitecture')}</span>
-          <span className="text-text font-bold">{selectedModel.name}</span>
-          {getEnvBadge(selectedModel.targetEnv)}
-          {selectedModel.verified === false && (
-            <Badge
-              tone="danger"
-              title={t('model.unverifiedShortTitle')}
-            >
-              {t('model.unverifiedShort')}
-            </Badge>
-          )}
-          {selectedModel.source === 'mirror' && selectedModel.verified !== false && (
-            <Badge
-              tone="default"
-              title={t('model.mirrorShortTitle', { mirrorHfId: selectedModel.mirrorHfId || t('model.communityRepo') })}
-            >
-              {t('model.mirrorShort')}
-            </Badge>
-          )}
         </div>
 
-        <div className="flex flex-wrap items-center gap-3 text-muted font-mono text-[10px]">
-          <div>
-            {t('model.layers')} <strong className="text-accent">{selectedModel.numLayers}</strong>
-          </div>
-          <div>
-            Heads: <strong className="text-accent">{selectedModel.numHeads}</strong> (KV: {selectedModel.numKvHeads})
-          </div>
-          <div>
-            Head Dim: <strong className="text-accent">{selectedModel.headDim}</strong>
-          </div>
-          <div>
-            Hidden: <strong className="text-accent">{selectedModel.hiddenSize}</strong>
-          </div>
-          <div>
-            GQA: <strong className="text-accent">{(selectedModel.numHeads / selectedModel.numKvHeads).toFixed(1)}:1</strong>
-          </div>
+        {/* Selected model details (sticky on large screens) */}
+        <div className="min-w-0">
+          <ModelDetailsPanel model={selectedModel} />
         </div>
       </div>
 

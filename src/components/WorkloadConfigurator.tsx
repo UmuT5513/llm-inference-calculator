@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Users, MessageSquareText, Activity, Plus, Trash2, UserCheck, ToggleLeft, ToggleRight } from 'lucide-react';
+import { Users, MessageSquareText, Activity, Plus, Trash2, UserCheck, ToggleLeft, ToggleRight, Image as ImageIcon } from 'lucide-react';
 import { UserProfile } from '../types';
 import { Panel } from './ui/Panel';
 import { SectionHeader } from './ui/SectionHeader';
@@ -25,6 +25,13 @@ interface WorkloadConfiguratorProps {
   onChangeActivationOverhead: (pct: number) => void;
   onToggleMultiProfile: (enabled: boolean) => void;
   onUpdateProfiles: (profiles: UserProfile[]) => void;
+  // Multimodal media input (optional so existing call-sites keep compiling)
+  isMultimodal?: boolean;
+  imageTokensPerImage?: number;
+  audioTokensPerSecond?: number;
+  perRequestImages?: number;
+  audioSecondsPerRequest?: number;
+  onMediaChange?: (patch: { perRequestImages: number; audioSecondsPerRequest: number }) => void;
 }
 
 export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
@@ -44,6 +51,12 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
   onChangeActivationOverhead,
   onToggleMultiProfile,
   onUpdateProfiles,
+  isMultimodal = false,
+  imageTokensPerImage = 1024,
+  audioTokensPerSecond = 50,
+  perRequestImages = 0,
+  audioSecondsPerRequest = 0,
+  onMediaChange,
 }) => {
   const { t } = useTranslation();
   const contextPresets = [512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 128000];
@@ -225,6 +238,32 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
                     />
                   </div>
                 </div>
+
+                {/* Multimodal media input per profile */}
+                {isMultimodal && (
+                  <div className="grid grid-cols-2 gap-3">
+                    <Field label={t('workload.mediaImagesShort')}>
+                      <NumberInput
+                        value={profile.imagesPerRequest ?? 0}
+                        min={0}
+                        step={1}
+                        onChange={(v) =>
+                          handleUpdateProfileField(profile.id, 'imagesPerRequest', Math.max(0, v || 0))
+                        }
+                      />
+                    </Field>
+                    <Field label={t('workload.mediaAudioShort')}>
+                      <NumberInput
+                        value={profile.audioSecondsPerRequest ?? 0}
+                        min={0}
+                        step={0.5}
+                        onChange={(v) =>
+                          handleUpdateProfileField(profile.id, 'audioSecondsPerRequest', Math.max(0, v || 0))
+                        }
+                      />
+                    </Field>
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -379,6 +418,49 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
               <span>{t('workload.rpmTick', { value: '3,000' })}</span>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Multimodal media input (single batch mode) */}
+      {!useMultiProfile && isMultimodal && (
+        <div className="bg-surface-2 p-3.5 border-2 border-border rounded-none space-y-2">
+          <div className="flex items-center gap-1.5 text-xs font-bold text-text uppercase tracking-wider">
+            <ImageIcon className="w-3.5 h-3.5 text-accent" />
+            {t('workload.mediaTitle')}
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <Field label={t('workload.mediaImagesLabel')}>
+              <NumberInput
+                value={perRequestImages}
+                min={0}
+                step={1}
+                onChange={(v) =>
+                  onMediaChange?.({
+                    perRequestImages: Math.max(0, v || 0),
+                    audioSecondsPerRequest,
+                  })
+                }
+              />
+            </Field>
+            <Field label={t('workload.mediaAudioLabel')}>
+              <NumberInput
+                value={audioSecondsPerRequest}
+                min={0}
+                step={0.5}
+                onChange={(v) =>
+                  onMediaChange?.({
+                    perRequestImages,
+                    audioSecondsPerRequest: Math.max(0, v || 0),
+                  })
+                }
+              />
+            </Field>
+          </div>
+
+          <p className="font-mono text-[10px] text-muted">
+            {t('workload.mediaHint', { img: imageTokensPerImage, aud: audioTokensPerSecond })}
+          </p>
         </div>
       )}
 

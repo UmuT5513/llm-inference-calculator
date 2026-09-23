@@ -198,6 +198,7 @@
     "subtitle": "Inference Sizing • Fine-Tuning Cost • Unsloth • Colab & Cloud TCO"
   },
   "model": {
+    "multimodalBadge": "MULTIMODAL",
     "capabilityAll": "All",
     "capabilityFrontier": "🚀 Frontier",
     "capabilityTurkish": "🇹🇷 Turkish",
@@ -395,6 +396,12 @@
     }
   },
   "workload": {
+    "mediaTitle": "Multimodal Media Input",
+    "mediaImagesLabel": "Avg. Images per Request",
+    "mediaAudioLabel": "Audio per Request (seconds)",
+    "mediaHint": "1 image ≈ {{img}} tokens · audio ≈ {{aud}} tok/s",
+    "mediaImagesShort": "Images / Request",
+    "mediaAudioShort": "Audio / Request (s)",
     "activationOverhead": "Activation Memory Factor (%)",
     "activationOverheadHint": "Estimated dynamic ratio of memory taken by intermediate layer activations.",
     "addProfile": "Add New User Type",
@@ -588,5 +595,30 @@
   "sidebar": {
     "show": "Show Scenarios",
     "hide": "Hide Scenarios"
+  },
+  "provider": {
+    "huggingface": "Hugging Face",
+    "modelscope": "ModelScope",
+    "ollama": "Ollama"
+  },
+  "modelDetails": {
+    "title": "Model Details",
+    "releaseDate": "Release Date",
+    "unknown": "Unknown",
+    "sources": "Sources",
+    "multimodal": "MULTIMODAL",
+    "modalities": "Modalities: {{list}}",
+    "visionEncode": "Vision encoder ≈ {{b}} GB (FP16)",
+    "architecture": "Architecture",
+    "layers": "Layers",
+    "heads": "Heads",
+    "headDim": "Head Dim",
+    "hidden": "Hidden",
+    "gqa": "GQA",
+    "context": "Context",
+    "downloads": "Downloads",
+    "likes": "Likes",
+    "moe": "MoE ({{active}}B active / {{total}}B total)",
+    "dense": "Dense"
   }
 }

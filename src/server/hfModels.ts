@@ -7,12 +7,19 @@ import { pickLang, msg } from './i18nErrors';
 
 export const hfModelsRouter = express.Router();
 
-export type ModelSource = 'huggingface' | 'mirror' | 'curated' | 'unknown';
+export type ModelSource = 'huggingface' | 'modelscope' | 'ollama' | 'mirror' | 'curated' | 'unknown';
+
+export interface HfModelSourceLink {
+  provider: 'huggingface' | 'modelscope' | 'ollama';
+  id: string;
+  url: string;
+}
 
 export interface HfModelRow {
   id: string;
   slugId: string | null;
   hfId: string;
+  canonicalId: string | null;
   name: string;
   provider: string;
   category: string | null;
@@ -22,6 +29,14 @@ export interface HfModelRow {
   source: ModelSource;
   mirrorOf: string | null;
   mirrorHfId: string | null;
+  sources: HfModelSourceLink[];
+  releasedAt: string | null;
+  releasedLabel: string | null;
+  isMultimodal: boolean;
+  modalities: string[];
+  visionParamsB: number;
+  expertIntermediateSize: number | null;
+  numSharedExperts: number;
   totalParamsB: number;
   activeParamsB: number;
   numLayers: number;
@@ -48,17 +63,19 @@ hfModelsRouter.get('/', async (req, res) => {
   try {
     const pool = getPool();
     const result = await pool.query(
-      `SELECT id, hf_id, slug_id, name, provider, category, capabilities, target_env, curated,
+      `SELECT id, hf_id, slug_id, canonical_id, name, provider, category, capabilities, target_env, curated,
          total_params_b, active_params_b, num_layers, num_heads, num_kv_heads, head_dim,
          hidden_size, default_context_len, max_context_len, is_moe, num_experts, active_experts,
-         downloads, likes, description, scraped_at, verified, raw_json
+         downloads, likes, description, scraped_at, verified, raw_json,
+         sources, released_at, released_label,
+         is_multimodal, modalities, vision_params_b, expert_intermediate_size, num_shared_experts
        FROM hf_models
        ORDER BY curated DESC, downloads DESC NULLS LAST, name ASC`
     );
     // Discovered rows that match the quantized-format / fine-tune blocklist, or
-// that are tagged with a non-text pipeline (embedding/ASR/image generation/...),
-// are never surfaced: they can only have been inserted by an older buggy run
-// and are not real catalog entries. Curated rows are never filtered.
+    // that are tagged with a non-text pipeline (embedding/ASR/image generation/...),
+    // are never surfaced: they can only have been inserted by an older buggy run
+    // and are not real catalog entries. Curated rows are never filtered.
     const visible = result.rows.filter(
       (r) =>
         r.curated ||
@@ -69,13 +86,29 @@ hfModelsRouter.get('/', async (req, res) => {
     const rows: HfModelRow[] = visible.map((r) => {
       const raw = r.raw_json ?? {};
       const source: ModelSource =
-        raw.source === 'mirror' || raw.source === 'huggingface' || raw.source === 'curated'
+        raw.source === 'mirror' ||
+        raw.source === 'huggingface' ||
+        raw.source === 'modelscope' ||
+        raw.source === 'ollama' ||
+        raw.source === 'curated'
           ? raw.source
           : 'unknown';
+      const sources: HfModelSourceLink[] = Array.isArray(r.sources)
+        ? r.sources
+            .filter((s: any) => s && typeof s.url === 'string' && typeof s.provider === 'string')
+            .map((s: any) => ({ provider: s.provider, id: String(s.id ?? ''), url: String(s.url) }))
+        : [];
+      if (
+        sources.length === 0 &&
+        (raw.source === 'huggingface' || raw.source === 'mirror' || raw.source === 'curated')
+      ) {
+        sources.push({ provider: 'huggingface', id: r.hf_id, url: `https://huggingface.co/${r.hf_id}` });
+      }
       return {
         id: r.id,
         slugId: r.slug_id,
         hfId: r.hf_id,
+        canonicalId: r.canonical_id ?? null,
         name: r.name,
         provider: r.provider,
         category: r.category,
@@ -85,6 +118,15 @@ hfModelsRouter.get('/', async (req, res) => {
         source,
         mirrorOf: raw.source === 'mirror' ? (raw.official ?? null) : null,
         mirrorHfId: raw.source === 'mirror' ? (raw.mirror ?? null) : null,
+        sources,
+        releasedAt: r.released_at ? new Date(r.released_at).toISOString() : null,
+        releasedLabel: r.released_label ?? null,
+        isMultimodal: Boolean(r.is_multimodal),
+        modalities: r.modalities ?? ['text'],
+        visionParamsB: Number(r.vision_params_b ?? 0),
+        expertIntermediateSize:
+          r.expert_intermediate_size != null ? Number(r.expert_intermediate_size) : null,
+        numSharedExperts: Number(r.num_shared_experts ?? 0),
         totalParamsB: Number(r.total_params_b),
         activeParamsB: Number(r.active_params_b),
         numLayers: Number(r.num_layers),

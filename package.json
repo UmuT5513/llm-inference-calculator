@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "clean": "rm -rf dist server.cjs",
     "lint": "tsc --noEmit",
-    "scrape:prices": "uv run --python .venv/bin/python scripts/scraper/sync_gpu_prices.py"
+    "scrape:prices": "uv run --python .venv/bin/python scripts/scraper/sync_gpu_prices.py",
+    "scrape:models": "tsx scripts/refresh-models.ts"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",

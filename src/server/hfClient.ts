@@ -1,23 +1,21 @@
 // Hugging Face Hub client (server-side). Uses HF_TOKEN (optional) so gated
-// repos like gated Meta/Google models can be fetched too.
+// repos like gated Meta/Google models can be fetched too. Config parsing lives
+// in ./modelConfig (shared with the ModelScope/Ollama paths).
 import { familySizeKey, isCandidateMirror } from './knownOrgs';
+import {
+  ModelConfig,
+  fetchWithRetry,
+  resolveHyperparamConfig,
+  sleep,
+  toModelConfig,
+} from './modelConfig';
+
+// Re-export the shared parser so existing call sites keep importing it from
+// here (modelConfig is the single source of truth).
+export type { ModelConfig, ConfigMeta } from './modelConfig';
+export { resolveHyperparamConfig, parseParams, toModelConfig } from './modelConfig';
 
 const HF_API = 'https://huggingface.co/api';
-
-export interface ModelConfig {
-  totalParamsB: number;
-  activeParamsB: number;
-  numLayers: number;
-  numHeads: number;
-  numKvHeads: number;
-  headDim: number;
-  hiddenSize: number;
-  defaultContextLen: number;
-  maxContextLen: number;
-  isMoe: boolean;
-  numExperts: number | null;
-  activeExperts: number | null;
-}
 
 export interface MirrorArchitecture {
   cfg: ModelConfig;
@@ -40,20 +38,22 @@ function headers(): Record<string, string> {
 // be read (e.g. gated repos without granted access). The /models/:id endpoint
 // gives the authoritative safetensors total; newer/multimodal models no longer
 // expose hyperparams there, so we fall back to the repo's config.json and
-// unwrap the text backbone (text_config / language_model).
+// unwrap the text backbone (text_config / language_model). `releasedAt` is the
+// repo's createdAt (HF release date).
 export async function fetchModelConfig(hfId: string): Promise<ModelConfig | null> {
   const info = await fetchJson<any>(`${HF_API}/models/${hfId}`);
   if (!info) return null;
 
-  let cfg = resolveHyperparamConfig(info?.config);
-  if (!cfg) {
-    const raw = await fetchJson(`https://huggingface.co/${hfId}/resolve/main/config.json`);
-    if (!raw) return null;
-    cfg = resolveHyperparamConfig(raw);
-    if (!cfg) return null;
-  }
+  const pipelineTag = typeof info.pipeline_tag === 'string' ? info.pipeline_tag : null;
+  const modelType = info?.config?.model_type ?? info?.config?.text_config?.model_type ?? null;
+  const rawCfg = resolveHyperparamConfig(info?.config)
+    ? info?.config
+    : await fetchJson(`https://huggingface.co/${hfId}/resolve/main/config.json`);
+  if (!rawCfg) return null;
 
-  return toModelConfig(cfg, Number(info?.safetensors?.total ?? 0));
+  const cfg = toModelConfig(rawCfg, Number(info?.safetensors?.total ?? 0), { pipelineTag, modelType });
+  cfg.releasedAt = typeof info?.createdAt === 'string' ? info.createdAt : null;
+  return cfg;
 }
 
 // Community-mirror fallback for gated / unreadable curated models. Searches the
@@ -92,55 +92,6 @@ export async function fetchArchitectureFromMirrors(
   return null;
 }
 
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-// Configs can be multimodal wrappers (Qwen3_5ForConditionalGeneration,
-// PaliGemma, …) whose numbers live under text_config / language_model. Unwrap
-// to the text backbone so architecture fields resolve; null when no hyperparams
-// are present (e.g. the API's tokenizer-only config). MoE-only keys like
-// num_experts_per_tok are deliberately ignored here — they alone don't make a
-// config usable.
-function resolveHyperparamConfig(cfg: any): any | null {
-  if (!cfg || typeof cfg !== 'object') return null;
-  const nested = cfg.text_config ?? cfg.language_model ?? cfg.text_model ?? cfg.moe_config;
-  const base = nested && typeof nested === 'object' ? nested : cfg;
-  const hasArch =
-    Boolean(base.hidden_size) ||
-    Boolean(base.num_hidden_layers) ||
-    Boolean(base.num_layers) ||
-    Boolean(base.num_attention_heads);
-  return hasArch ? base : null;
-}
-
-// Shared conversion from an unwrapped transformers config to a ModelConfig.
-function toModelConfig(cfg: any, totalRaw: number): ModelConfig {
-  const params = parseParams(cfg, totalRaw);
-  const numLayers =
-    cfg.num_hidden_layers ??
-    cfg.num_layers ??
-    (Array.isArray(cfg.layers_block_type) ? cfg.layers_block_type.length : 0);
-  const numHeads = cfg.num_attention_heads ?? cfg.num_heads ?? 0;
-  const headDim =
-    cfg.head_dim ??
-    (cfg.hidden_size > 0 && numHeads > 0 ? Math.round(cfg.hidden_size / numHeads) : 0);
-  return {
-    totalParamsB: params.total,
-    activeParamsB: params.active,
-    numLayers,
-    numHeads,
-    numKvHeads: cfg.num_key_value_heads ?? numHeads,
-    headDim,
-    hiddenSize: cfg.hidden_size ?? 0,
-    defaultContextLen: cfg.max_position_embeddings ?? 0,
-    maxContextLen: cfg.max_position_embeddings ?? 0,
-    isMoe: Boolean(cfg.num_experts || cfg.num_local_experts || cfg.n_routed_experts),
-    numExperts: cfg.num_experts ?? cfg.num_local_experts ?? cfg.n_routed_experts ?? null,
-    activeExperts: cfg.num_experts_per_tok ?? null,
-  };
-}
-
 // List model ids under an org, in repo-desc order. `full` includes pipeline_tag
 // and other metadata used for filtering; filtering happens later.
 export async function listOrgRepos(
@@ -177,60 +128,12 @@ function mapRepos(data: any): Array<{ id: string; downloads: number; likes: numb
 }
 
 async function fetchJson<T>(url: string): Promise<T | null> {
-  const maxAttempts = 4;
-  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    try {
-      const res = await fetch(url, { headers: headers() });
-      if (res.status === 429 || res.status === 500 || res.status === 503) {
-        // Rate limited / temporary server error: back off and retry.
-        const wait = 500 * 2 ** (attempt - 1) + Math.random() * 400;
-        await new Promise((r) => setTimeout(r, wait));
-        continue;
-      }
-      if (!res.ok) {
-        // 404: repo doesn't exist. 401/403: gated without token.
-        if (res.status === 404) return null;
-        if (res.status === 401 || res.status === 403) return null;
-        console.error(`[hf] ${url} -> ${res.status}`);
-        return null;
-      }
-      return (await res.json()) as T;
-    } catch (err: any) {
-      if (attempt === maxAttempts) {
-        console.error(`[hf] fetch error ${url}:`, err?.message);
-        return null;
-      }
-      await new Promise((r) => setTimeout(r, 300 * attempt));
-    }
+  const res = await fetchWithRetry(url, { headers: headers() }, 'hf');
+  if (!res) return null;
+  try {
+    return (await res.json()) as T;
+  } catch (err: any) {
+    console.error(`[hf] json error ${url}:`, err?.message);
+    return null;
   }
-  return null;
-}
-
-// Total / active params (in billions) from a transformers config, with
-// MoE-aware decomposition and a guard against nonsense values. Prefers the
-// authoritative safetensors total when available.
-function parseParams(cfg: any, totalRaw?: number): { total: number; active: number } {
-  const hidden = Number(cfg.hidden_size ?? 0);
-  const layers = Number(cfg.num_hidden_layers ?? cfg.num_layers ?? 0);
-  const vocab = Number(cfg.vocab_size ?? 0);
-  const localExperts = Number(cfg.num_experts ?? cfg.num_local_experts ?? cfg.n_routed_experts ?? 0);
-  const expertsPerTok = Number(cfg.num_experts_per_tok ?? 0);
-  const inter = Number(cfg.moe_intermediate_size ?? cfg.intermediate_size ?? 0);
-
-  // Total from raw params if the Hub provides them.
-  const raw = Number(cfg.num_parameters ?? cfg.total_params ?? 0);
-  let total = raw > 0 ? raw / 1e9 : 0;
-  if (total <= 0 && totalRaw && totalRaw > 0) total = totalRaw / 1e9;
-
-  // Fallback estimate: 12 * params_per_layer * layers + embeddings.
-  if (total <= 0 && hidden > 0 && layers > 0 && vocab > 0) {
-    const perLayer = localExperts > 0 ? 12 * hidden * (inter || hidden * 4) * localExperts : 12 * hidden * (inter || hidden * 4);
-    total = (perLayer * layers + hidden * vocab) / 1e9;
-  }
-
-  const active = localExperts > 0 ? Math.round((total * Math.min(expertsPerTok, localExperts)) / localExperts) : total;
-  return {
-    total: Math.round(total * 10) / 10,
-    active: Math.round(active * 10) / 10,
-  };
 }

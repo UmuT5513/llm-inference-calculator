@@ -198,6 +198,7 @@
     "subtitle": "Çıkarım (Inference) Sizing • Fine-Tuning Maliyeti • Unsloth • Colab & Cloud TCO"
   },
   "model": {
+    "multimodalBadge": "MULTİMODAL",
     "capabilityAll": "Tümü",
     "capabilityFrontier": "🚀 Frontier",
     "capabilityTurkish": "🇹🇷 Türkçe",
@@ -395,6 +396,12 @@
     }
   },
   "workload": {
+    "mediaTitle": "Multimodal Ortam Girdisi",
+    "mediaImagesLabel": "İstek Başına Ortalama Görsel",
+    "mediaAudioLabel": "İstek Başına Ses (saniye)",
+    "mediaHint": "1 görsel ≈ {{img}} token · ses ≈ {{aud}} token/sn",
+    "mediaImagesShort": "Görsel / İstek",
+    "mediaAudioShort": "Ses / İstek (sn)",
     "activationOverhead": "Aktivasyon Bellek Faktörü (%)",
     "activationOverheadHint": "Ara katman aktivasyonlarının kapladığı tahmini dinamik oran.",
     "addProfile": "Yeni Kullanıcı Tipi Ekle",
@@ -588,5 +595,30 @@
   "sidebar": {
     "show": "Senaryoları Göster",
     "hide": "Senaryoları Gizle"
+  },
+  "provider": {
+    "huggingface": "Hugging Face",
+    "modelscope": "ModelScope",
+    "ollama": "Ollama"
+  },
+  "modelDetails": {
+    "title": "Model Detayları",
+    "releaseDate": "Çıkış Tarihi",
+    "unknown": "Bilinmiyor",
+    "sources": "Sağlayıcılar",
+    "multimodal": "MULTİMODAL",
+    "modalities": "Modaliteler: {{list}}",
+    "visionEncode": "Görüş enkoderi ≈ {{b}} GB (FP16)",
+    "architecture": "Mimari Özeti",
+    "layers": "Katman",
+    "heads": "Heads",
+    "headDim": "Head Boyutu",
+    "hidden": "Gizli Boyut",
+    "gqa": "GQA",
+    "context": "Bağlam",
+    "downloads": "İndirme",
+    "likes": "Beğeni",
+    "moe": "MoE ({{active}}B aktif / {{total}}B toplam)",
+    "dense": "Dense"
   }
 }

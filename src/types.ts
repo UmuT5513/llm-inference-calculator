@@ -1,7 +1,13 @@
 export type ModelCapability = 'frontier' | 'turkish';
 export type ModelTargetEnv = 'edge' | 'local' | 'hybrid' | 'server';
 export type ModelCategory = 'DeepSeek' | 'Llama' | 'Qwen' | 'Mistral' | 'Google' | 'Microsoft' | 'NVIDIA' | 'Cohere' | 'Other' | 'Turkish' | 'Custom';
-export type ModelSource = 'huggingface' | 'mirror' | 'curated' | 'unknown';
+export type ModelSource = 'huggingface' | 'modelscope' | 'ollama' | 'mirror' | 'curated' | 'unknown';
+
+export interface ModelSourceLink {
+  provider: 'huggingface' | 'modelscope' | 'ollama';
+  id: string; // repo id / model name on that provider
+  url: string;
+}
 
 export interface ModelPreset {
   id: string;
@@ -32,6 +38,15 @@ export interface ModelPreset {
   description: string;
   category: ModelCategory;
   targetEnv?: ModelTargetEnv; // 'edge': mobile/NPU/on-device, 'local': PC / Mac, 'server': Enterprise Server / Cluster, 'hybrid': Workstation or Server
+  // Multi-provider catalog fields
+  sources?: ModelSourceLink[]; // all known provider links (HF / ModelScope / Ollama)
+  releasedAt?: string; // best-known absolute release date (HF createdAt / ModelScope CreatedTime)
+  releasedLabel?: string; // relative date fallback (e.g. Ollama "~2 ay önce"), used when releasedAt is absent
+  isMultimodal?: boolean; // true when the model has a vision/audio encoder in addition to the text backbone
+  modalities?: string[]; // e.g. ['text'], ['text','image'], ['text','audio'] (Ollama capabilities)
+  visionParamsB?: number; // vision/audio tower params (GB of extra VRAM at given quant bytes/param)
+  expertIntermediateSize?: number | null; // MoE: per-expert FFN intermediate size (accurate active-params)
+  numSharedExperts?: number; // MoE: shared (always-on) expert count per layer
 }
 
 export interface QuantizationOption {
@@ -63,6 +78,8 @@ export interface UserProfile {
   userCount: number; // concurrent users for this profile
   promptLen: number; // input prompt tokens
   genLen: number; // output generation tokens
+  imagesPerRequest?: number; // multimodal: avg images per request (1 image ≈ 1024 tokens)
+  audioSecondsPerRequest?: number; // multimodal: avg speech/audio seconds per request (50 tok/s)
 }
 
 export interface InferenceEngine {
@@ -188,6 +205,13 @@ export interface CalculatorConfig {
   requestsPerMin: number; // Target query rate for monthly cost/throughput estimation
   cudaOverheadGB: number; // Overhead per GPU in GB (e.g., 1.5)
   activationOverheadPct: number; // Percentage for activations (e.g., 10%)
+
+  // Multimodal media inputs (only meaningfully used when the selected model is multimodal).
+  // Optional so old share URLs / landing scenarios without these keys still deserialize.
+  perRequestImages?: number; // avg images per request (1 image ≈ imageTokensPerImage tokens)
+  audioSecondsPerRequest?: number; // avg audio seconds per request (≈ audioTokensPerSecond tok/s)
+  imageTokensPerImage?: number; // conversion: 1 image ≈ this many tokens (default 1024)
+  audioTokensPerSecond?: number; // conversion: audio ≈ this many tokens/sec (default 50)
 
   // On-Premise & Turkey TCO Parameters
   electricityRateTryPerKwh: number; // Turkey electricity price in TL (default: 4.20 TL / kWh)

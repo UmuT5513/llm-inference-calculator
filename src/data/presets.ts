@@ -123,6 +123,8 @@ export const DEFAULT_USER_PROFILES: UserProfile[] = [
     userCount: 12,
     promptLen: 1024,
     genLen: 512,
+    imagesPerRequest: 0,
+    audioSecondsPerRequest: 0,
   },
   {
     id: 'profile-rag',
@@ -130,6 +132,8 @@ export const DEFAULT_USER_PROFILES: UserProfile[] = [
     userCount: 4,
     promptLen: 8192,
     genLen: 1024,
+    imagesPerRequest: 0,
+    audioSecondsPerRequest: 0,
   },
   {
     id: 'profile-code',
@@ -137,6 +141,8 @@ export const DEFAULT_USER_PROFILES: UserProfile[] = [
     userCount: 2,
     promptLen: 4096,
     genLen: 512,
+    imagesPerRequest: 0,
+    audioSecondsPerRequest: 0,
   },
 ];
 

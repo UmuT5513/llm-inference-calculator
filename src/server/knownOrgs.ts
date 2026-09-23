@@ -74,6 +74,11 @@ export const PRODUCERS: Array<{ term: string; producer: string; category: string
   { term: 'exaone', producer: 'LG AI Research', category: 'Other' },
   { term: 'yi', producer: '01.AI', category: 'Other' },
   { term: 'solar', producer: 'Upstage', category: 'Other' },
+  // Families that show up mainly on ModelScope/Ollama but have no dedicated
+  // producer brand of their own — attributed to "Other".
+  { term: 'internvl', producer: 'Other', category: 'Other' },
+  { term: 'minicpm', producer: 'Other', category: 'Other' },
+  { term: 'llava', producer: 'Other', category: 'Other' },
 ];
 
 export interface ProducerInfo {
@@ -204,4 +209,68 @@ export function isCandidateMirror(repoId: string, familySize: string): { allowed
 
 export function getMinParamsB(): number {
   return MIN_PARAMS_B;
+}
+
+// ---------------------------------------------------------------------------
+// Cross-provider identity: ONE real model = ONE catalog row.
+//
+// HF / ModelScope / Ollama spell the same model differently ("Llama-3.1-8B-
+// Instruct", "llama3.1:8b", "Llama 3.1 8B"). computeIdentity normalizes a repo
+// id or library name into {producer, family, sizeB} so links from every
+// provider can be merged onto a single row instead of duplicating it.
+// ---------------------------------------------------------------------------
+export interface IdentityParts {
+  producer: string;
+  family: string;
+  sizeB: number | null;
+}
+
+// Normalize any provider id/name to a provider-agnostic identity.
+// `explicitSizeB` is used when the name itself carries no size token (e.g. an
+// Ollama tag like "qwen3:8b" -> base "qwen3" + size 8, or a curated row's
+// known totalParamsB).
+export function computeIdentity(repoId: string, explicitSizeB?: number | null): IdentityParts {
+  const prod = resolveProducer(repoId);
+  let s = (repoId || '').toLowerCase();
+  s = s.split('/').pop() || s; // drop the org/namespace
+  s = s.split(':')[0]; // drop an Ollama tag
+
+  const sizeRe = /(?:^|[-_. ])(\d+(?:\.\d+)?)\s?b(?=$|[-_. ])/g;
+  const sizes: number[] = [];
+  let m: RegExpExecArray | null;
+  while ((m = sizeRe.exec(s))) sizes.push(Number(m[1]));
+  const sizeB =
+    sizes.length > 0
+      ? Math.max(...sizes)
+      : explicitSizeB && explicitSizeB > 0
+        ? explicitSizeB
+        : null;
+
+  // Strip size tokens, MoE active-param tokens (30B-A3B), and variant suffixes.
+  s = s.replace(/(?:^|[-_. ])(\d+(?:\.\d+)?)\s?b(?=$|[-_. ])/g, '-');
+  s = s.replace(/(?:^|[-_. ])a\d+(?:\.\d+)?b(?=$|[-_. ])/g, '-');
+  for (let i = 0; i < 3; i++) {
+    s = s.replace(
+      /-(instruct|it|chat|base|pt|preview|exp|think|thinking|bf16|fp16|16bit|hf|latest|dense|effective)$/g,
+      ''
+    );
+    s = s.replace(/-\d{4,6}$/g, '');
+    s = s.replace(/-v0(\.\d+)*$/g, '');
+  }
+  s = s.replace(/[^a-z0-9]/g, '');
+
+  return { producer: prod?.producer ?? 'Other', family: s, sizeB };
+}
+
+// Render a size for synthetic ids / search terms (8 -> "8", 0.5 -> "0.5").
+export function formatSizeB(sizeB: number): string {
+  return String(sizeB);
+}
+
+// Size compatibility between two identities, tolerating tag-vs-safetensors
+// differences and vision towers (a 7B text model reports ~8.3B total).
+export function sizeMatches(a: number | null, b: number | null, tolerance = 1.35): boolean {
+  if (!a || !b) return true; // unknown size matches at family level
+  const ratio = a / b;
+  return ratio >= 1 / tolerance && ratio <= tolerance;
 }
