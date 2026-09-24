@@ -368,6 +368,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   {
     id: 'llama-3.2-90b-vision',
     releasedAt: '2024-09-19',
+    isMultimodal: true,
     name: 'Meta Llama 3.2 90B Vision',
     provider: 'Meta',
     hfId: 'meta-llama/Llama-3.2-90B-Vision-Instruct',
@@ -388,6 +389,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   {
     id: 'llama-3.2-11b-vision',
     releasedAt: '2024-09-18',
+    isMultimodal: true,
     name: 'Meta Llama 3.2 11B Vision',
     provider: 'Meta',
     hfId: 'meta-llama/Llama-3.2-11B-Vision-Instruct',
@@ -492,6 +494,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   {
     id: 'meta-muse-glimmer-30b',
     releasedAt: '2026-08-09',
+    isMultimodal: true,
     name: 'Meta Muse Glimmer 30B (Agentic)',
     provider: 'Meta',
     hfId: 'meta-models/Muse-Glimmer-30B',
@@ -512,6 +515,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   {
     id: 'meta-chameleon-7b',
     releasedAt: '2024-03-26',
+    isMultimodal: true,
     name: 'Meta Chameleon 7B (Early-Fusion)',
     provider: 'Meta',
     hfId: 'facebook/chameleon-7b',
@@ -774,6 +778,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   {
     id: 'qwen-2.5-vl-72b',
     releasedAt: '2025-01-27',
+    isMultimodal: true,
     name: 'Qwen 2.5 VL 72B (Vision)',
     provider: 'Alibaba Cloud',
     hfId: 'Qwen/Qwen2.5-VL-72B-Instruct',
@@ -794,6 +799,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   {
     id: 'qwen-2.5-vl-7b',
     releasedAt: '2025-01-26',
+    isMultimodal: true,
     name: 'Qwen 2.5 VL 7B (Vision)',
     provider: 'Alibaba Cloud',
     hfId: 'Qwen/Qwen2.5-VL-7B-Instruct',
@@ -814,6 +820,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   {
     id: 'qwen-2.5-vl-3b',
     releasedAt: '2025-01-26',
+    isMultimodal: true,
     name: 'Qwen 2.5 VL 3B (Vision)',
     provider: 'Alibaba Cloud',
     hfId: 'Qwen/Qwen2.5-VL-3B-Instruct',
@@ -874,6 +881,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   {
     id: 'qwen-3.6-moe-preview',
     releasedAt: '2026-04-15',
+    isMultimodal: true,
     name: 'Qwen 3.6 35B-A3B (MoE)',
     provider: 'Alibaba Cloud',
     hfId: 'Qwen/Qwen3.6-35B-A3B',
@@ -896,6 +904,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   {
     id: 'qwen-3.5-72b',
     releasedAt: '2026-02-24',
+    isMultimodal: true,
     name: 'Qwen 3.5 122B-A10B (MoE)',
     provider: 'Alibaba Cloud',
     hfId: 'Qwen/Qwen3.5-122B-A10B',
@@ -918,6 +927,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   {
     id: 'qwen-3.5-32b',
     releasedAt: '2026-02-24',
+    isMultimodal: true,
     name: 'Qwen 3.5 35B-A3B (MoE)',
     provider: 'Alibaba Cloud',
     hfId: 'Qwen/Qwen3.5-35B-A3B',
@@ -1190,6 +1200,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   {
     id: 'gemma-3-27b',
     releasedAt: '2025-03-01',
+    isMultimodal: true,
     name: 'Google Gemma 3 27B (Multimodal)',
     provider: 'Google',
     hfId: 'google/gemma-3-27b-it',
@@ -1210,6 +1221,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   {
     id: 'gemma-3-12b',
     releasedAt: '2025-03-01',
+    isMultimodal: true,
     name: 'Google Gemma 3 12B (Multimodal)',
     provider: 'Google',
     hfId: 'google/gemma-3-12b-it',
@@ -1230,6 +1242,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   {
     id: 'gemma-3-4b',
     releasedAt: '2025-02-20',
+    isMultimodal: true,
     name: 'Google Gemma 3 4B (Multimodal)',
     provider: 'Google',
     hfId: 'google/gemma-3-4b-it',
@@ -1350,6 +1363,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   {
     id: 'paligemma-2-10b',
     releasedAt: '2024-11-21',
+    isMultimodal: true,
     name: 'Google PaliGemma 2 10B (VLM)',
     provider: 'Google',
     hfId: 'google/paligemma2-10b-pt-448',
@@ -1370,6 +1384,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   {
     id: 'paligemma-2-3b',
     releasedAt: '2024-11-21',
+    isMultimodal: true,
     name: 'Google PaliGemma 2 3B (VLM)',
     provider: 'Google',
     hfId: 'google/paligemma2-3b-pt-224',
@@ -1450,6 +1465,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   {
     id: 'gemma-4-31b',
     releasedAt: '2026-03-11',
+    isMultimodal: true,
     name: 'Google Gemma 4 31B (Multimodal)',
     provider: 'Google',
     hfId: 'google/gemma-4-31B-it',
@@ -1470,6 +1486,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   {
     id: 'gemma-4-28b',
     releasedAt: '2026-03-11',
+    isMultimodal: true,
     name: 'Google Gemma 4 28B (Multimodal Hybrid)',
     provider: 'Google',
     hfId: 'google/gemma-4-26B-A4B-it',
@@ -1490,6 +1507,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   {
     id: 'gemma-4-9b',
     releasedAt: '2026-05-23',
+    isMultimodal: true,
     name: 'Google Gemma 4 9B (Multimodal)',
     provider: 'Google',
     hfId: 'google/gemma-4-12B-it',
@@ -1510,6 +1528,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   {
     id: 'gemma-4-4b',
     releasedAt: '2026-03-02',
+    isMultimodal: true,
     name: 'Google Gemma 4 4B (On-Device Vision)',
     provider: 'Google',
     hfId: 'google/gemma-4-E4B-it',
@@ -1592,6 +1611,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   {
     id: 'pixtral-large-124b',
     releasedAt: '2024-11-14',
+    isMultimodal: true,
     name: 'Pixtral Large (124B Multimodal)',
     provider: 'Mistral AI',
     hfId: 'mistralai/Pixtral-Large-Instruct-2411',
@@ -1612,6 +1632,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   {
     id: 'pixtral-12b',
     releasedAt: '2024-09-11',
+    isMultimodal: true,
     name: 'Pixtral 12B (Multimodal Vision)',
     provider: 'Mistral AI',
     hfId: 'mistralai/Pixtral-12B-2409',
@@ -1838,6 +1859,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   {
     id: 'phi-4-multimodal-5.6b',
     releasedAt: '2025-02-24',
+    isMultimodal: true,
     name: 'Microsoft Phi-4 Multimodal (5.6B)',
     provider: 'Microsoft',
     hfId: 'microsoft/Phi-4-multimodal-instruct',
@@ -1900,6 +1922,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   {
     id: 'phi-3.5-vision-4.2b',
     releasedAt: '2024-08-16',
+    isMultimodal: true,
     name: 'Microsoft Phi-3.5 Vision (4.2B)',
     provider: 'Microsoft',
     hfId: 'microsoft/Phi-3.5-vision-instruct',
@@ -1942,6 +1965,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   {
     id: 'nvidia-nvlm-d-72b',
     releasedAt: '2024-09-30',
+    isMultimodal: true,
     name: 'NVIDIA NVLM 1.0 D 72B (Multimodal)',
     provider: 'NVIDIA',
     hfId: 'nvidia/NVLM-D-72B',
