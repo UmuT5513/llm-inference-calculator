@@ -102,21 +102,25 @@
   },
   "scenarios": {
     "title": "Scenario Management",
-    "local-ollama": {
-      "title": "Desktop / Ollama (RTX 4090)",
-      "description": "Run Llama 3.3 70B Q4_K_M or Qwen 2.5 32B on a 24GB RTX 4090."
+    "local-qwen35": {
+      "title": "Desktop / Ollama (RTX 5090)",
+      "description": "Run Qwen 3.5 35B-A3B (MoE) at Q4_K_M on a 32GB RTX 5090."
     },
-    "startup-api": {
-      "title": "Startup / SaaS API Server (1x H100)",
-      "description": "Serve Llama 3.3 70B at FP8 precision to 16 concurrent users with vLLM."
+    "local-mlx-gemma4": {
+      "title": "Apple MLX / Mac (M5 Ultra)",
+      "description": "Run multimodal Gemma 4 31B at Q4_K_M with MLX on an M5 Ultra Mac."
     },
-    "deepseek-r1-cluster": {
-      "title": "DeepSeek R1 / V3 On-Prem Cluster (8x H100)",
-      "description": "Run the 671B MoE model at FP8 precision on an 8x H100 80GB node."
+    "startup-qwen35-api": {
+      "title": "Startup / SaaS API Server (1x H200)",
+      "description": "Serve Qwen 3.5 122B-A10B (MoE) at FP8 precision to 16 concurrent users with vLLM."
     },
-    "llama-405b-enterprise": {
-      "title": "Enterprise Llama 405B Inference (16x H200)",
-      "description": "Keep the frontier-class 405B model live at high concurrency and 128k context."
+    "deepseek-v32-cluster": {
+      "title": "DeepSeek V3.2 On-Prem Cluster (8x B200)",
+      "description": "Run the 671B MoE model at FP8 precision on an 8x B200 192GB node."
+    },
+    "kimi-k2-enterprise": {
+      "title": "Enterprise Frontier Inference (Kimi K2, 16x H200)",
+      "description": "Keep the 1T-class MoE Kimi K2 model live at high concurrency and long context."
     },
     "saveSectionTitle": "Save Current Configuration ({{type}})",
     "typeInference": "Inference",
@@ -198,10 +202,16 @@
     "subtitle": "Inference Sizing • Fine-Tuning Cost • Unsloth • Colab & Cloud TCO"
   },
   "model": {
-    "multimodalBadge": "MULTIMODAL",
     "capabilityAll": "All",
-    "capabilityFrontier": "🚀 Frontier",
     "capabilityTurkish": "🇹🇷 Turkish",
+    "archTextOnly": "Text Only",
+    "archMoe": "MoE",
+    "archMultimodal": "Multimodal",
+    "architectureType": "Architecture:",
+    "sortDefault": "Default",
+    "sortNewest": "Release Date (New → Old)",
+    "sortOldest": "Release Date (Old → New)",
+    "sortTitle": "Sort",
     "communityRepo": "community repo",
     "customActiveParams": "Active Parameters (B)",
     "customHeadDim": "Head Dimension (headDim)",
@@ -251,7 +261,7 @@
     "unverifiedShort": "Not verified from HF — preset values",
     "unverifiedShortTitle": "This model's architecture info could not be verified from Hugging Face (gated/access-restricted). The shown values are stored presets.",
     "selectGuideTitle": "How to choose a model?",
-    "selectGuide": "When choosing a model: (1) Define your task (coding, Turkish, long RAG, reasoning). (2) Pick a parameter size that fits your VRAM (70B FP8 ≈ 70 GB). (3) MoE models are faster on the same VRAM (fewer active params). (4) Use the 🇹🇷 filter for Turkish and the “Hardware Type” and “Provider” filters for your setup. (5) Balance size vs quality with quantization: GGUF works with llama.cpp/Ollama/MLX, FP16/FP8/AWQ with vLLM/TensorRT/SGLang/TGI.",
+    "selectGuide": "When choosing a model: (1) Define your task (coding, Turkish, long RAG, reasoning). (2) Pick a parameter size that fits your VRAM (70B FP8 ≈ 70 GB). (3) MoE models are faster on the same VRAM (fewer active params). (4) The 🇹🇷 tab lists models produced in Turkey; use the “Hardware Type”, “Architecture” and “Provider” filters for your setup. (5) Balance size vs quality with quantization: GGUF works with llama.cpp/Ollama/MLX, FP16/FP8/AWQ with vLLM/TensorRT/SGLang/TGI.",
     "providerAll": "All Providers",
     "providerFilter": "Provider Filter",
     "customModelsTitle": "My Custom Models ({{count}})",
@@ -402,6 +412,7 @@
     "mediaHint": "1 image ≈ {{img}} tokens · audio ≈ {{aud}} tok/s",
     "mediaImagesShort": "Images / Request",
     "mediaAudioShort": "Audio / Request (s)",
+    "textOnlyNote": "This model only supports text input (MoE = mixture of experts, not audio/vision). Image and audio inputs are not included in the calculation.",
     "activationOverhead": "Activation Memory Factor (%)",
     "activationOverheadHint": "Estimated dynamic ratio of memory taken by intermediate layer activations.",
     "addProfile": "Add New User Type",
@@ -606,6 +617,7 @@
     "releaseDate": "Release Date",
     "unknown": "Unknown",
     "sources": "Sources",
+    "textOnly": "TEXT ONLY",
     "multimodal": "MULTIMODAL",
     "modalities": "Modalities: {{list}}",
     "visionEncode": "Vision encoder ≈ {{b}} GB (FP16)",

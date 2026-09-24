@@ -37,6 +37,7 @@ export async function seedModelCatalog(): Promise<number> {
          target_env = EXCLUDED.target_env,
          curated = true,
          description = EXCLUDED.description,
+         released_at = COALESCE(hf_models.released_at, EXCLUDED.released_at),
          sources = CASE
            WHEN jsonb_array_length(COALESCE(hf_models.sources, '[]'::jsonb)) = 0
            THEN EXCLUDED.sources ELSE hf_models.sources END

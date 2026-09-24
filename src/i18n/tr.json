@@ -102,21 +102,25 @@
   },
   "scenarios": {
     "title": "Senaryo Yönetimi",
-    "local-ollama": {
-      "title": "Yerel Masaüstü / Ollama (RTX 4090)",
-      "description": "RTX 4090 24GB kart üzerinde Llama 3.3 70B Q4_K_M veya Qwen 2.5 32B çalıştırma."
+    "local-qwen35": {
+      "title": "Yerel Masaüstü / Ollama (RTX 5090)",
+      "description": "Qwen 3.5 35B-A3B (MoE) modelini RTX 5090 32GB kart üzerinde Q4_K_M ile çalıştırma."
     },
-    "startup-api": {
-      "title": "Girişim / SaaS API Sunucusu (1x H100)",
-      "description": "Llama 3.3 70B FP8 hassasiyetinde vLLM ile 16 eşzamanlı kullanıcıya hizmet verme."
+    "local-mlx-gemma4": {
+      "title": "Apple MLX / Mac (M5 Ultra)",
+      "description": "Multimodal Gemma 4 31B modelini M5 Ultra bellek biriminde MLX ile Q4_K_M olarak çalıştırma."
     },
-    "deepseek-r1-cluster": {
-      "title": "DeepSeek R1 / V3 On-Prem Kümesi (8x H100)",
-      "description": "671B MoE dev modeli 8x H100 80GB düğümünde FP8 hassasiyeti ile çalıştırma."
+    "startup-qwen35-api": {
+      "title": "Girişim / SaaS API Sunucusu (1x H200)",
+      "description": "Qwen 3.5 122B-A10B (MoE) FP8 hassasiyetinde vLLM ile 16 eşzamanlı kullanıcıya hizmet verme."
     },
-    "llama-405b-enterprise": {
-      "title": "Kurumsal Llama 405B Çıkarım (16x H200)",
-      "description": "Frontier sınıfı 405B modelini yüksek eşzamanlılık ve 128k bağlam ile canlı tutma."
+    "deepseek-v32-cluster": {
+      "title": "DeepSeek V3.2 On-Prem Kümesi (8x B200)",
+      "description": "671B MoE dev modelini 8x B200 192GB düğümünde FP8 hassasiyeti ile çalıştırma."
+    },
+    "kimi-k2-enterprise": {
+      "title": "Kurumsal Frontier Çıkarım (Kimi K2, 16x H200)",
+      "description": "1T MoE sınıfı Kimi K2 modelini yüksek eşzamanlılık ve uzun bağlam ile canlı tutma."
     },
     "saveSectionTitle": "Mevcut Yapılandırmayı Kaydet ({{type}})",
     "typeInference": "Çıkarım",
@@ -198,10 +202,16 @@
     "subtitle": "Çıkarım (Inference) Sizing • Fine-Tuning Maliyeti • Unsloth • Colab & Cloud TCO"
   },
   "model": {
-    "multimodalBadge": "MULTİMODAL",
     "capabilityAll": "Tümü",
-    "capabilityFrontier": "🚀 Frontier",
     "capabilityTurkish": "🇹🇷 Türkçe",
+    "archTextOnly": "Yalnızca Metin",
+    "archMoe": "MoE",
+    "archMultimodal": "Multimodal",
+    "architectureType": "Mimari:",
+    "sortDefault": "Varsayılan",
+    "sortNewest": "Çıkış Tarihi (Yeni → Eski)",
+    "sortOldest": "Çıkış Tarihi (Eski → Yeni)",
+    "sortTitle": "Sıralama",
     "communityRepo": "topluluk reposu",
     "customActiveParams": "Aktif Parametre (B)",
     "customHeadDim": "Head Dimension (headDim)",
@@ -251,7 +261,7 @@
     "unverifiedShort": "HF'den doğrulanamadı — ön tanımlı değerler",
     "unverifiedShortTitle": "Bu modelin mimari bilgisi Hugging Face'ten doğrulanamadı (gated/erişim kısıtlı). Gösterilen değerler kayıtlı ön tanımlıdır.",
     "selectGuideTitle": "Model Nasıl Seçilir?",
-    "selectGuide": "Model seçerken: (1) Görevinizi belirleyin (kodlama, Türkçe, uzun RAG, mantık). (2) VRAM’inize uygun parametre boyutu seçin (70B FP8 ≈ 70 GB). (3) MoE modeller aynı VRAM’de daha hızlıdır (aktif parametre az). (4) Türkçe için 🇹🇷 filtresini, donanımınız için “Donanım Türü” ve “Yapımcı Kurum” filtrelerini kullanın. (5) Kuantizasyon ile boyut/kalite dengesi kurun: GGUF’lar llama.cpp/Ollama/MLX, FP16/FP8/AWQ ise vLLM/TensorRT/SGLang/TGI gerektirir.",
+    "selectGuide": "Model seçerken: (1) Görevinizi belirleyin (kodlama, Türkçe, uzun RAG, mantık). (2) VRAM’inize uygun parametre boyutu seçin (70B FP8 ≈ 70 GB). (3) MoE modeller aynı VRAM’de daha hızlıdır (aktif parametre az). (4) 🇹🇷 sekmesi Türkiye’de üretilen modelleri gösterir; donanımınız için “Donanım Türü”, mimari için “Mimari” ve kurum için “Yapımcı Kurum” filtrelerini kullanın. (5) Kuantizasyon ile boyut/kalite dengesi kurun: GGUF’lar llama.cpp/Ollama/MLX, FP16/FP8/AWQ ise vLLM/TensorRT/SGLang/TGI gerektirir.",
     "providerAll": "Tüm Kurumlar",
     "providerFilter": "Yapımcı Kurum Filtresi",
     "customModelsTitle": "Özel Modellerim ({{count}})",
@@ -402,6 +412,7 @@
     "mediaHint": "1 görsel ≈ {{img}} token · ses ≈ {{aud}} token/sn",
     "mediaImagesShort": "Görsel / İstek",
     "mediaAudioShort": "Ses / İstek (sn)",
+    "textOnlyNote": "Bu model yalnızca metin girdisi destekler (MoE = uzman karışımı, görsel/ses değil). Görsel ve ses girdileri hesaplamaya katılmaz.",
     "activationOverhead": "Aktivasyon Bellek Faktörü (%)",
     "activationOverheadHint": "Ara katman aktivasyonlarının kapladığı tahmini dinamik oran.",
     "addProfile": "Yeni Kullanıcı Tipi Ekle",
@@ -606,6 +617,7 @@
     "releaseDate": "Çıkış Tarihi",
     "unknown": "Bilinmiyor",
     "sources": "Sağlayıcılar",
+    "textOnly": "YALNIZCA METİN",
     "multimodal": "MULTİMODAL",
     "modalities": "Modaliteler: {{list}}",
     "visionEncode": "Görüş enkoderi ≈ {{b}} GB (FP16)",

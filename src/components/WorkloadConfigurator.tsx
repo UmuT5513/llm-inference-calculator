@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Users, MessageSquareText, Activity, Plus, Trash2, UserCheck, ToggleLeft, ToggleRight, Image as ImageIcon } from 'lucide-react';
+import { Users, MessageSquareText, Activity, Plus, Trash2, UserCheck, ToggleLeft, ToggleRight, Image as ImageIcon, Info } from 'lucide-react';
 import { UserProfile } from '../types';
 import { Panel } from './ui/Panel';
 import { SectionHeader } from './ui/SectionHeader';
@@ -460,6 +460,16 @@ export const WorkloadConfigurator: React.FC<WorkloadConfiguratorProps> = ({
 
           <p className="font-mono text-[10px] text-muted">
             {t('workload.mediaHint', { img: imageTokensPerImage, aud: audioTokensPerSecond })}
+          </p>
+        </div>
+      )}
+
+      {/* Text-only explanation: shown when the selected model cannot take image/audio input */}
+      {!useMultiProfile && !isMultimodal && (
+        <div className="bg-surface-2 p-3.5 border-2 border-border rounded-none">
+          <p className="font-mono text-[10px] text-muted flex items-center gap-1.5">
+            <Info className="w-3.5 h-3.5 shrink-0" />
+            <span>{t('workload.textOnlyNote')}</span>
           </p>
         </div>
       )}

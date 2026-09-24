@@ -11,10 +11,10 @@ export const MODEL_CATALOG: ModelPreset[] = [
   // ─────────────────────────── DeepSeek ───────────────────────────
   {
     id: 'deepseek-r1-v3',
+    releasedAt: '2025-01-20',
     name: 'DeepSeek R1 / V3 (671B MoE)',
     provider: 'DeepSeek',
     hfId: 'deepseek-ai/DeepSeek-R1',
-    capabilities: ['frontier'],
     totalParamsB: 671,
     activeParamsB: 37,
     numLayers: 61,
@@ -33,10 +33,10 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'deepseek-v3',
+    releasedAt: '2024-12-25',
     name: 'DeepSeek V3 (671B MoE Base/Chat)',
     provider: 'DeepSeek',
     hfId: 'deepseek-ai/DeepSeek-V3',
-    capabilities: ['frontier'],
     totalParamsB: 671,
     activeParamsB: 37,
     numLayers: 61,
@@ -55,10 +55,10 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'deepseek-v3.2',
+    releasedAt: '2025-09-29',
     name: 'DeepSeek V3.2-Exp (671B MoE)',
     provider: 'DeepSeek',
     hfId: 'deepseek-ai/DeepSeek-V3.2-Exp',
-    capabilities: ['frontier'],
     totalParamsB: 671,
     activeParamsB: 37,
     numLayers: 61,
@@ -77,10 +77,10 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'deepseek-v3.1',
+    releasedAt: '2025-08-21',
     name: 'DeepSeek V3.1 (671B MoE)',
     provider: 'DeepSeek',
     hfId: 'deepseek-ai/DeepSeek-V3.1',
-    capabilities: ['frontier'],
     totalParamsB: 671,
     activeParamsB: 37,
     numLayers: 61,
@@ -99,10 +99,10 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'deepseek-r1-0528',
+    releasedAt: '2025-05-28',
     name: 'DeepSeek R1 0528 (671B MoE)',
     provider: 'DeepSeek',
     hfId: 'deepseek-ai/DeepSeek-R1-0528',
-    capabilities: ['frontier'],
     totalParamsB: 671,
     activeParamsB: 37,
     numLayers: 61,
@@ -121,6 +121,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'deepseek-r1-distill-llama-70b',
+    releasedAt: '2025-01-20',
     name: 'DeepSeek R1 Distill Llama 70B',
     provider: 'DeepSeek',
     hfId: 'deepseek-ai/DeepSeek-R1-Distill-Llama-70B',
@@ -140,6 +141,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'deepseek-r1-distill-qwen-32b',
+    releasedAt: '2025-01-20',
     name: 'DeepSeek R1 Distill Qwen 32B',
     provider: 'DeepSeek',
     hfId: 'deepseek-ai/DeepSeek-R1-Distill-Qwen-32B',
@@ -159,6 +161,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'deepseek-r1-distill-qwen-14b',
+    releasedAt: '2025-01-20',
     name: 'DeepSeek R1 Distill Qwen 14B',
     provider: 'DeepSeek',
     hfId: 'deepseek-ai/DeepSeek-R1-Distill-Qwen-14B',
@@ -178,6 +181,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'deepseek-r1-distill-llama-8b',
+    releasedAt: '2025-01-20',
     name: 'DeepSeek R1 Distill Llama 8B',
     provider: 'DeepSeek',
     hfId: 'deepseek-ai/DeepSeek-R1-Distill-Llama-8B',
@@ -197,6 +201,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'deepseek-r1-distill-qwen-7b',
+    releasedAt: '2025-01-20',
     name: 'DeepSeek R1 Distill Qwen 7B',
     provider: 'DeepSeek',
     hfId: 'deepseek-ai/DeepSeek-R1-Distill-Qwen-7B',
@@ -216,6 +221,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'deepseek-r1-distill-qwen-1.5b',
+    releasedAt: '2025-01-20',
     name: 'DeepSeek R1 Distill Qwen 1.5B',
     provider: 'DeepSeek',
     hfId: 'deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B',
@@ -235,6 +241,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'deepseek-coder-v2-236b',
+    releasedAt: '2024-06-14',
     name: 'DeepSeek Coder V2 (236B MoE)',
     provider: 'DeepSeek',
     hfId: 'deepseek-ai/DeepSeek-Coder-V2-Instruct',
@@ -256,6 +263,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'deepseek-coder-v2-lite-16b',
+    releasedAt: '2024-06-14',
     name: 'DeepSeek Coder V2 Lite (16B MoE)',
     provider: 'DeepSeek',
     hfId: 'deepseek-ai/DeepSeek-Coder-V2-Lite-Instruct',
@@ -279,10 +287,10 @@ export const MODEL_CATALOG: ModelPreset[] = [
   // ─────────────────────────── Meta Llama ───────────────────────────
   {
     id: 'llama-3.3-70b',
+    releasedAt: '2024-11-26',
     name: 'Meta Llama 3.3 70B',
     provider: 'Meta',
     hfId: 'meta-llama/Llama-3.3-70B-Instruct',
-    capabilities: ['turkish'],
     totalParamsB: 70.6,
     activeParamsB: 70.6,
     numLayers: 80,
@@ -299,10 +307,10 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'llama-3.1-405b',
+    releasedAt: '2024-07-16',
     name: 'Meta Llama 3.1 405B',
     provider: 'Meta',
     hfId: 'meta-llama/Llama-3.1-405B-Instruct',
-    capabilities: ['frontier'],
     totalParamsB: 405,
     activeParamsB: 405,
     numLayers: 126,
@@ -319,6 +327,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'llama-3.1-70b',
+    releasedAt: '2024-07-16',
     name: 'Meta Llama 3.1 70B',
     provider: 'Meta',
     hfId: 'meta-llama/Llama-3.1-70B-Instruct',
@@ -338,10 +347,10 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'llama-3.1-8b',
+    releasedAt: '2024-07-18',
     name: 'Meta Llama 3.1 8B',
     provider: 'Meta',
     hfId: 'meta-llama/Llama-3.1-8B-Instruct',
-    capabilities: ['turkish'],
     totalParamsB: 8.0,
     activeParamsB: 8.0,
     numLayers: 32,
@@ -358,6 +367,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'llama-3.2-90b-vision',
+    releasedAt: '2024-09-19',
     name: 'Meta Llama 3.2 90B Vision',
     provider: 'Meta',
     hfId: 'meta-llama/Llama-3.2-90B-Vision-Instruct',
@@ -377,6 +387,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'llama-3.2-11b-vision',
+    releasedAt: '2024-09-18',
     name: 'Meta Llama 3.2 11B Vision',
     provider: 'Meta',
     hfId: 'meta-llama/Llama-3.2-11B-Vision-Instruct',
@@ -396,6 +407,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'llama-3.2-3b',
+    releasedAt: '2024-09-18',
     name: 'Meta Llama 3.2 3B',
     provider: 'Meta',
     hfId: 'meta-llama/Llama-3.2-3B-Instruct',
@@ -415,6 +427,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'llama-3.2-1b',
+    releasedAt: '2024-09-18',
     name: 'Meta Llama 3.2 1B',
     provider: 'Meta',
     hfId: 'meta-llama/Llama-3.2-1B-Instruct',
@@ -434,10 +447,10 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'llama-4-maverick',
+    releasedAt: '2025-04-01',
     name: 'Meta Llama 4 Maverick (17B MoE)',
     provider: 'Meta',
     hfId: 'meta-llama/Llama-4-Maverick-17B-128E-Instruct',
-    capabilities: ['frontier'],
     totalParamsB: 400,
     activeParamsB: 17,
     numLayers: 48,
@@ -456,6 +469,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'llama-4-scout',
+    releasedAt: '2025-04-02',
     name: 'Meta Llama 4 Scout (17B MoE)',
     provider: 'Meta',
     hfId: 'meta-llama/Llama-4-Scout-17B-16E-Instruct',
@@ -477,6 +491,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'meta-muse-glimmer-30b',
+    releasedAt: '2026-08-09',
     name: 'Meta Muse Glimmer 30B (Agentic)',
     provider: 'Meta',
     hfId: 'meta-models/Muse-Glimmer-30B',
@@ -496,6 +511,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'meta-chameleon-7b',
+    releasedAt: '2024-03-26',
     name: 'Meta Chameleon 7B (Early-Fusion)',
     provider: 'Meta',
     hfId: 'facebook/chameleon-7b',
@@ -517,6 +533,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   // ─────────────────────────── Qwen / Alibaba ───────────────────────────
   {
     id: 'qwq-32b',
+    releasedAt: '2025-03-05',
     name: 'Qwen QwQ 32B (Reasoning / Thinking)',
     provider: 'Alibaba Cloud',
     hfId: 'Qwen/QwQ-32B',
@@ -536,10 +553,10 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'qwen-2.5-72b',
+    releasedAt: '2024-09-16',
     name: 'Qwen 2.5 72B',
     provider: 'Alibaba Cloud',
     hfId: 'Qwen/Qwen2.5-72B-Instruct',
-    capabilities: ['turkish'],
     totalParamsB: 72.7,
     activeParamsB: 72.7,
     numLayers: 80,
@@ -556,6 +573,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'qwen-2.5-32b',
+    releasedAt: '2024-09-17',
     name: 'Qwen 2.5 32B',
     provider: 'Alibaba Cloud',
     hfId: 'Qwen/Qwen2.5-32B-Instruct',
@@ -575,6 +593,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'qwen-2.5-14b',
+    releasedAt: '2024-09-16',
     name: 'Qwen 2.5 14B',
     provider: 'Alibaba Cloud',
     hfId: 'Qwen/Qwen2.5-14B-Instruct',
@@ -594,10 +613,10 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'qwen-2.5-7b',
+    releasedAt: '2024-09-16',
     name: 'Qwen 2.5 7B',
     provider: 'Alibaba Cloud',
     hfId: 'Qwen/Qwen2.5-7B-Instruct',
-    capabilities: ['turkish'],
     totalParamsB: 7.6,
     activeParamsB: 7.6,
     numLayers: 28,
@@ -614,6 +633,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'qwen-2.5-3b',
+    releasedAt: '2024-09-17',
     name: 'Qwen 2.5 3B',
     provider: 'Alibaba Cloud',
     hfId: 'Qwen/Qwen2.5-3B-Instruct',
@@ -633,6 +653,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'qwen-2.5-1.5b',
+    releasedAt: '2024-09-17',
     name: 'Qwen 2.5 1.5B',
     provider: 'Alibaba Cloud',
     hfId: 'Qwen/Qwen2.5-1.5B-Instruct',
@@ -652,6 +673,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'qwen-2.5-0.5b',
+    releasedAt: '2024-09-16',
     name: 'Qwen 2.5 0.5B',
     provider: 'Alibaba Cloud',
     hfId: 'Qwen/Qwen2.5-0.5B-Instruct',
@@ -671,6 +693,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'qwen-2.5-coder-32b',
+    releasedAt: '2024-11-06',
     name: 'Qwen 2.5 Coder 32B',
     provider: 'Alibaba Cloud',
     hfId: 'Qwen/Qwen2.5-Coder-32B-Instruct',
@@ -690,6 +713,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'qwen-2.5-coder-14b',
+    releasedAt: '2024-11-06',
     name: 'Qwen 2.5 Coder 14B',
     provider: 'Alibaba Cloud',
     hfId: 'Qwen/Qwen2.5-Coder-14B-Instruct',
@@ -709,6 +733,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'qwen-2.5-coder-7b',
+    releasedAt: '2024-09-17',
     name: 'Qwen 2.5 Coder 7B',
     provider: 'Alibaba Cloud',
     hfId: 'Qwen/Qwen2.5-Coder-7B-Instruct',
@@ -728,6 +753,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'qwen-2.5-coder-1.5b',
+    releasedAt: '2024-09-18',
     name: 'Qwen 2.5 Coder 1.5B',
     provider: 'Alibaba Cloud',
     hfId: 'Qwen/Qwen2.5-Coder-1.5B-Instruct',
@@ -747,6 +773,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'qwen-2.5-vl-72b',
+    releasedAt: '2025-01-27',
     name: 'Qwen 2.5 VL 72B (Vision)',
     provider: 'Alibaba Cloud',
     hfId: 'Qwen/Qwen2.5-VL-72B-Instruct',
@@ -766,6 +793,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'qwen-2.5-vl-7b',
+    releasedAt: '2025-01-26',
     name: 'Qwen 2.5 VL 7B (Vision)',
     provider: 'Alibaba Cloud',
     hfId: 'Qwen/Qwen2.5-VL-7B-Instruct',
@@ -785,6 +813,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'qwen-2.5-vl-3b',
+    releasedAt: '2025-01-26',
     name: 'Qwen 2.5 VL 3B (Vision)',
     provider: 'Alibaba Cloud',
     hfId: 'Qwen/Qwen2.5-VL-3B-Instruct',
@@ -804,6 +833,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'qwen-2.5-math-72b',
+    releasedAt: '2024-09-16',
     name: 'Qwen 2.5 Math 72B',
     provider: 'Alibaba Cloud',
     hfId: 'Qwen/Qwen2.5-Math-72B-Instruct',
@@ -823,6 +853,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'qwen-2.5-math-7b',
+    releasedAt: '2024-09-19',
     name: 'Qwen 2.5 Math 7B',
     provider: 'Alibaba Cloud',
     hfId: 'Qwen/Qwen2.5-Math-7B-Instruct',
@@ -842,10 +873,10 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'qwen-3.6-moe-preview',
+    releasedAt: '2026-04-15',
     name: 'Qwen 3.6 35B-A3B (MoE)',
     provider: 'Alibaba Cloud',
     hfId: 'Qwen/Qwen3.6-35B-A3B',
-    capabilities: ['frontier'],
     totalParamsB: 36.0,
     activeParamsB: 3.0,
     numLayers: 40,
@@ -864,10 +895,10 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'qwen-3.5-72b',
+    releasedAt: '2026-02-24',
     name: 'Qwen 3.5 122B-A10B (MoE)',
     provider: 'Alibaba Cloud',
     hfId: 'Qwen/Qwen3.5-122B-A10B',
-    capabilities: ['frontier'],
     totalParamsB: 125.1,
     activeParamsB: 10.0,
     numLayers: 48,
@@ -886,10 +917,10 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'qwen-3.5-32b',
+    releasedAt: '2026-02-24',
     name: 'Qwen 3.5 35B-A3B (MoE)',
     provider: 'Alibaba Cloud',
     hfId: 'Qwen/Qwen3.5-35B-A3B',
-    capabilities: ['frontier'],
     totalParamsB: 36.0,
     activeParamsB: 3.0,
     numLayers: 40,
@@ -908,6 +939,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'qwen-3.5-14b',
+    releasedAt: '2026-02-27',
     name: 'Qwen 3.5 9B',
     provider: 'Alibaba Cloud',
     hfId: 'Qwen/Qwen3.5-9B',
@@ -927,10 +959,10 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'qwen-3.5-7b',
+    releasedAt: '2026-02-27',
     name: 'Qwen 3.5 4B',
     provider: 'Alibaba Cloud',
     hfId: 'Qwen/Qwen3.5-4B',
-    capabilities: ['turkish'],
     totalParamsB: 4.7,
     activeParamsB: 4.7,
     numLayers: 32,
@@ -947,10 +979,10 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'qwen-3-max-preview',
+    releasedAt: '2026-08-08',
     name: 'Qwen 3.8 2.4T-A95B (MoE)',
     provider: 'Alibaba Cloud',
     hfId: 'Qwen/Qwen3.8-2.4T-A95B',
-    capabilities: ['frontier'],
     totalParamsB: 2446.2,
     activeParamsB: 95,
     numLayers: 92,
@@ -969,6 +1001,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'qwen3-0.6b',
+    releasedAt: '2025-04-27',
     name: 'Qwen 3 0.6B (Ultra-Light)',
     provider: 'Alibaba Cloud',
     hfId: 'Qwen/Qwen3-0.6B',
@@ -988,6 +1021,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'qwen3-1.7b',
+    releasedAt: '2025-04-27',
     name: 'Qwen 3 1.7B (Edge)',
     provider: 'Alibaba Cloud',
     hfId: 'Qwen/Qwen3-1.7B',
@@ -1007,6 +1041,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'qwen3-4b',
+    releasedAt: '2025-04-27',
     name: 'Qwen 3 4B (Edge)',
     provider: 'Alibaba Cloud',
     hfId: 'Qwen/Qwen3-4B',
@@ -1026,6 +1061,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'qwen3-8b',
+    releasedAt: '2025-04-27',
     name: 'Qwen 3 8B',
     provider: 'Alibaba Cloud',
     hfId: 'Qwen/Qwen3-8B',
@@ -1045,6 +1081,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'qwen3-14b',
+    releasedAt: '2025-04-27',
     name: 'Qwen 3 14B',
     provider: 'Alibaba Cloud',
     hfId: 'Qwen/Qwen3-14B',
@@ -1064,6 +1101,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'qwen3-32b',
+    releasedAt: '2025-04-27',
     name: 'Qwen 3 32B',
     provider: 'Alibaba Cloud',
     hfId: 'Qwen/Qwen3-32B',
@@ -1083,10 +1121,10 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'qwen3-30b-a3b',
+    releasedAt: '2025-04-27',
     name: 'Qwen 3 30B-A3B (MoE)',
     provider: 'Alibaba Cloud',
     hfId: 'Qwen/Qwen3-30B-A3B',
-    capabilities: ['frontier'],
     totalParamsB: 30.5,
     activeParamsB: 3.3,
     numLayers: 48,
@@ -1105,10 +1143,10 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'qwen3-235b-a22b',
+    releasedAt: '2025-04-27',
     name: 'Qwen 3 235B-A22B (MoE)',
     provider: 'Alibaba Cloud',
     hfId: 'Qwen/Qwen3-235B-A22B',
-    capabilities: ['frontier'],
     totalParamsB: 235,
     activeParamsB: 22,
     numLayers: 72,
@@ -1127,10 +1165,10 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'qwen3-coder-480b-a35b',
+    releasedAt: '2025-07-22',
     name: 'Qwen 3 Coder 480B-A35B (MoE)',
     provider: 'Alibaba Cloud',
     hfId: 'Qwen/Qwen3-Coder-480B-A35B-Instruct',
-    capabilities: ['frontier'],
     totalParamsB: 480,
     activeParamsB: 35,
     numLayers: 96,
@@ -1151,10 +1189,10 @@ export const MODEL_CATALOG: ModelPreset[] = [
   // ─────────────────────────── Google Gemma ───────────────────────────
   {
     id: 'gemma-3-27b',
+    releasedAt: '2025-03-01',
     name: 'Google Gemma 3 27B (Multimodal)',
     provider: 'Google',
     hfId: 'google/gemma-3-27b-it',
-    capabilities: ['turkish'],
     totalParamsB: 27.2,
     activeParamsB: 27.2,
     numLayers: 46,
@@ -1171,6 +1209,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'gemma-3-12b',
+    releasedAt: '2025-03-01',
     name: 'Google Gemma 3 12B (Multimodal)',
     provider: 'Google',
     hfId: 'google/gemma-3-12b-it',
@@ -1190,6 +1229,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'gemma-3-4b',
+    releasedAt: '2025-02-20',
     name: 'Google Gemma 3 4B (Multimodal)',
     provider: 'Google',
     hfId: 'google/gemma-3-4b-it',
@@ -1209,6 +1249,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'gemma-3-1b',
+    releasedAt: '2025-03-10',
     name: 'Google Gemma 3 1B',
     provider: 'Google',
     hfId: 'google/gemma-3-1b-it',
@@ -1228,6 +1269,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'gemma-3n-4b',
+    releasedAt: '2025-06-03',
     name: 'Google Gemma 3n E4B (Edge)',
     provider: 'Google',
     hfId: 'google/gemma-3n-E4B-it',
@@ -1247,6 +1289,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'gemma-2-27b',
+    releasedAt: '2024-06-24',
     name: 'Google Gemma 2 27B',
     provider: 'Google',
     hfId: 'google/gemma-2-27b-it',
@@ -1266,6 +1309,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'gemma-2-9b',
+    releasedAt: '2024-06-24',
     name: 'Google Gemma 2 9B',
     provider: 'Google',
     hfId: 'google/gemma-2-9b-it',
@@ -1285,6 +1329,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'gemma-2-2b',
+    releasedAt: '2024-07-16',
     name: 'Google Gemma 2 2B',
     provider: 'Google',
     hfId: 'google/gemma-2-2b-it',
@@ -1304,6 +1349,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'paligemma-2-10b',
+    releasedAt: '2024-11-21',
     name: 'Google PaliGemma 2 10B (VLM)',
     provider: 'Google',
     hfId: 'google/paligemma2-10b-pt-448',
@@ -1323,6 +1369,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'paligemma-2-3b',
+    releasedAt: '2024-11-21',
     name: 'Google PaliGemma 2 3B (VLM)',
     provider: 'Google',
     hfId: 'google/paligemma2-3b-pt-224',
@@ -1342,6 +1389,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'codegemma-7b',
+    releasedAt: '2024-03-21',
     name: 'Google CodeGemma 7B',
     provider: 'Google',
     hfId: 'google/codegemma-7b-it',
@@ -1361,6 +1409,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'codegemma-2b',
+    releasedAt: '2024-03-21',
     name: 'Google CodeGemma 2B',
     provider: 'Google',
     hfId: 'google/codegemma-2b',
@@ -1380,6 +1429,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'recurrentgemma-9b',
+    releasedAt: '2024-06-07',
     name: 'Google RecurrentGemma 9B (Griffin)',
     provider: 'Google',
     hfId: 'google/recurrentgemma-9b-it',
@@ -1399,10 +1449,10 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'gemma-4-31b',
+    releasedAt: '2026-03-11',
     name: 'Google Gemma 4 31B (Multimodal)',
     provider: 'Google',
     hfId: 'google/gemma-4-31B-it',
-    capabilities: ['frontier'],
     totalParamsB: 31.2,
     activeParamsB: 31.2,
     numLayers: 54,
@@ -1419,6 +1469,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'gemma-4-28b',
+    releasedAt: '2026-03-11',
     name: 'Google Gemma 4 28B (Multimodal Hybrid)',
     provider: 'Google',
     hfId: 'google/gemma-4-26B-A4B-it',
@@ -1438,6 +1489,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'gemma-4-9b',
+    releasedAt: '2026-05-23',
     name: 'Google Gemma 4 9B (Multimodal)',
     provider: 'Google',
     hfId: 'google/gemma-4-12B-it',
@@ -1457,6 +1509,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'gemma-4-4b',
+    releasedAt: '2026-03-02',
     name: 'Google Gemma 4 4B (On-Device Vision)',
     provider: 'Google',
     hfId: 'google/gemma-4-E4B-it',
@@ -1476,6 +1529,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'gemma-4-1.5b',
+    releasedAt: '2026-03-02',
     name: 'Google Gemma 4 1.5B (Edge Compact)',
     provider: 'Google',
     hfId: 'google/gemma-4-E2B-it',
@@ -1497,10 +1551,10 @@ export const MODEL_CATALOG: ModelPreset[] = [
   // ─────────────────────────── Mistral ───────────────────────────
   {
     id: 'mistral-large-2',
+    releasedAt: '2024-11-14',
     name: 'Mistral Large 2 (123B)',
     provider: 'Mistral AI',
     hfId: 'mistralai/Mistral-Large-Instruct-2411',
-    capabilities: ['frontier'],
     totalParamsB: 123,
     activeParamsB: 123,
     numLayers: 88,
@@ -1517,6 +1571,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'mistral-small-3-24b',
+    releasedAt: '2025-03-11',
     name: 'Mistral Small 3 (24B Instruct)',
     provider: 'Mistral AI',
     hfId: 'mistralai/Mistral-Small-3.1-24B-Instruct-2503',
@@ -1536,6 +1591,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'pixtral-large-124b',
+    releasedAt: '2024-11-14',
     name: 'Pixtral Large (124B Multimodal)',
     provider: 'Mistral AI',
     hfId: 'mistralai/Pixtral-Large-Instruct-2411',
@@ -1555,6 +1611,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'pixtral-12b',
+    releasedAt: '2024-09-11',
     name: 'Pixtral 12B (Multimodal Vision)',
     provider: 'Mistral AI',
     hfId: 'mistralai/Pixtral-12B-2409',
@@ -1574,6 +1631,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'codestral-22b',
+    releasedAt: '2024-05-29',
     name: 'Codestral 22B (Code Specialist)',
     provider: 'Mistral AI',
     hfId: 'mistralai/Codestral-22B-v0.1',
@@ -1593,6 +1651,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'ministral-8b',
+    releasedAt: '2024-10-15',
     name: 'Ministral 8B (Edge Powerhouse)',
     provider: 'Mistral AI',
     hfId: 'mistralai/Ministral-8B-Instruct-2410',
@@ -1612,6 +1671,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'ministral-3b',
+    releasedAt: '2025-10-31',
     name: 'Ministral 3B (Ultra-Compact)',
     provider: 'Mistral AI',
     hfId: 'mistralai/Ministral-3-3B-Instruct-2512',
@@ -1631,6 +1691,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'mixtral-8x22b',
+    releasedAt: '2024-04-16',
     name: 'Mixtral 8x22B (MoE)',
     provider: 'Mistral AI',
     hfId: 'mistralai/Mixtral-8x22B-Instruct-v0.1',
@@ -1652,6 +1713,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'mixtral-8x7b',
+    releasedAt: '2023-12-10',
     name: 'Mixtral 8x7B (MoE)',
     provider: 'Mistral AI',
     hfId: 'mistralai/Mixtral-8x7B-Instruct-v0.1',
@@ -1673,10 +1735,10 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'mistral-nemo-12b',
+    releasedAt: '2024-07-17',
     name: 'Mistral NeMo 12B',
     provider: 'Mistral AI',
     hfId: 'mistralai/Mistral-Nemo-Instruct-2407',
-    capabilities: ['turkish'],
     totalParamsB: 12.2,
     activeParamsB: 12.2,
     numLayers: 40,
@@ -1693,6 +1755,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'mathstral-7b',
+    releasedAt: '2024-07-16',
     name: 'Mathstral 7B (Math Specialist)',
     provider: 'Mistral AI',
     hfId: 'mistralai/Mathstral-7B-v0.1',
@@ -1714,6 +1777,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   // ─────────────────────────── Microsoft Phi ───────────────────────────
   {
     id: 'phi-4-14b',
+    releasedAt: '2024-12-11',
     name: 'Microsoft Phi-4 (14B)',
     provider: 'Microsoft',
     hfId: 'microsoft/Phi-4',
@@ -1733,6 +1797,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'phi-4-mini-3.8b',
+    releasedAt: '2025-02-19',
     name: 'Microsoft Phi-4 Mini (3.8B)',
     provider: 'Microsoft',
     hfId: 'microsoft/Phi-4-mini-instruct',
@@ -1752,6 +1817,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'phi-4-reasoning',
+    releasedAt: '2025-04-17',
     name: 'Microsoft Phi-4 Reasoning (14B)',
     provider: 'Microsoft',
     hfId: 'microsoft/Phi-4-reasoning-plus',
@@ -1771,6 +1837,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'phi-4-multimodal-5.6b',
+    releasedAt: '2025-02-24',
     name: 'Microsoft Phi-4 Multimodal (5.6B)',
     provider: 'Microsoft',
     hfId: 'microsoft/Phi-4-multimodal-instruct',
@@ -1790,6 +1857,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'phi-3.5-moe',
+    releasedAt: '2024-08-17',
     name: 'Microsoft Phi-3.5 MoE (16x3.8B)',
     provider: 'Microsoft',
     hfId: 'microsoft/Phi-3.5-MoE-instruct',
@@ -1811,6 +1879,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'phi-3.5-mini-3.8b',
+    releasedAt: '2024-08-16',
     name: 'Microsoft Phi-3.5 Mini (3.8B)',
     provider: 'Microsoft',
     hfId: 'microsoft/Phi-3.5-mini-instruct',
@@ -1830,6 +1899,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'phi-3.5-vision-4.2b',
+    releasedAt: '2024-08-16',
     name: 'Microsoft Phi-3.5 Vision (4.2B)',
     provider: 'Microsoft',
     hfId: 'microsoft/Phi-3.5-vision-instruct',
@@ -1851,6 +1921,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   // ─────────────────────────── NVIDIA ───────────────────────────
   {
     id: 'nvidia-llama-3.1-nemotron-70b',
+    releasedAt: '2024-10-12',
     name: 'NVIDIA Llama 3.1 Nemotron 70B Instruct',
     provider: 'NVIDIA',
     hfId: 'nvidia/Llama-3.1-Nemotron-70B-Instruct',
@@ -1870,6 +1941,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'nvidia-nvlm-d-72b',
+    releasedAt: '2024-09-30',
     name: 'NVIDIA NVLM 1.0 D 72B (Multimodal)',
     provider: 'NVIDIA',
     hfId: 'nvidia/NVLM-D-72B',
@@ -1889,10 +1961,10 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'nvidia-nemotron-4-340b',
+    releasedAt: '2024-06-13',
     name: 'NVIDIA Nemotron-4 340B Instruct',
     provider: 'NVIDIA',
     hfId: 'nvidia/Nemotron-4-340B-Instruct',
-    capabilities: ['frontier'],
     totalParamsB: 340,
     activeParamsB: 340,
     numLayers: 96,
@@ -1909,6 +1981,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'nvidia-nemotron-mini-4b',
+    releasedAt: '2024-09-10',
     name: 'NVIDIA Nemotron-Mini 4B Instruct',
     provider: 'NVIDIA',
     hfId: 'nvidia/Nemotron-Mini-4B-Instruct',
@@ -1928,6 +2001,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'nvidia-nemotron-nano-9b',
+    releasedAt: '2025-03-16',
     name: 'NVIDIA Llama 3.1 Nemotron Nano 8B',
     provider: 'NVIDIA',
     hfId: 'nvidia/Llama-3.1-Nemotron-Nano-8B-v1',
@@ -1949,6 +2023,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   // ─────────────────────────── Cohere ───────────────────────────
   {
     id: 'command-r-plus',
+    releasedAt: '2024-08-21',
     name: 'Cohere Command R+ (104B)',
     provider: 'Cohere',
     hfId: 'CohereForAI/c4ai-command-r-plus-08-2024',
@@ -1968,6 +2043,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'command-r-35b',
+    releasedAt: '2024-08-19',
     name: 'Cohere Command R (35B)',
     provider: 'Cohere',
     hfId: 'CohereForAI/c4ai-command-r-08-2024',
@@ -1987,6 +2063,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'command-r7b',
+    releasedAt: '2024-12-11',
     name: 'Cohere Command R7B (7B)',
     provider: 'Cohere',
     hfId: 'CohereForAI/c4ai-command-r7b-12-2024',
@@ -2008,10 +2085,10 @@ export const MODEL_CATALOG: ModelPreset[] = [
   // ─────────────────────────── OpenAI gpt-oss ───────────────────────────
   {
     id: 'gpt-oss-120b',
+    releasedAt: '2025-08-04',
     name: 'OpenAI gpt-oss-120b (MoE)',
     provider: 'OpenAI',
     hfId: 'openai/gpt-oss-120b',
-    capabilities: ['frontier'],
     totalParamsB: 120,
     activeParamsB: 5.1,
     numLayers: 48,
@@ -2030,6 +2107,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'gpt-oss-20b',
+    releasedAt: '2025-08-04',
     name: 'OpenAI gpt-oss-20b (MoE)',
     provider: 'OpenAI',
     hfId: 'openai/gpt-oss-20b',
@@ -2053,6 +2131,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   // ─────────────────────────── Zhipu GLM ───────────────────────────
   {
     id: 'glm-4-9b',
+    releasedAt: '2024-06-04',
     name: 'Zhipu GLM-4 9B',
     provider: 'Zhipu AI',
     hfId: 'THUDM/glm-4-9b-chat',
@@ -2072,10 +2151,10 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'glm-4.5',
+    releasedAt: '2025-07-20',
     name: 'Zhipu GLM-4.5 (MoE)',
     provider: 'Zhipu AI',
     hfId: 'zai-org/GLM-4.5',
-    capabilities: ['frontier'],
     totalParamsB: 355,
     activeParamsB: 32,
     numLayers: 80,
@@ -2094,10 +2173,10 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'glm-4.6',
+    releasedAt: '2025-09-29',
     name: 'Zhipu GLM-4.6 (MoE)',
     provider: 'Zhipu AI',
     hfId: 'zai-org/GLM-4.6',
-    capabilities: ['frontier'],
     totalParamsB: 355,
     activeParamsB: 32,
     numLayers: 80,
@@ -2118,10 +2197,10 @@ export const MODEL_CATALOG: ModelPreset[] = [
   // ─────────────────────────── Moonshot Kimi / MiniMax ───────────────────────────
   {
     id: 'kimi-k2',
+    releasedAt: '2025-07-11',
     name: 'Moonshot Kimi K2 (1T MoE)',
     provider: 'Moonshot AI',
     hfId: 'moonshotai/Kimi-K2-Instruct',
-    capabilities: ['frontier'],
     totalParamsB: 1091,
     activeParamsB: 32,
     numLayers: 72,
@@ -2140,10 +2219,10 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'minimax-m1',
+    releasedAt: '2025-07-01',
     name: 'MiniMax M1 (456B MoE)',
     provider: 'MiniMax',
     hfId: 'MiniMaxAI/MiniMax-M1-80k-hf',
-    capabilities: ['frontier'],
     totalParamsB: 456,
     activeParamsB: 45.9,
     numLayers: 76,
@@ -2164,6 +2243,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   // ─────────────────────────── Diğer Açık Kaynak ───────────────────────────
   {
     id: 'exaone-3.5-32b-instruct',
+    releasedAt: '2024-12-01',
     name: 'LG EXAONE 3.5 32B Instruct',
     provider: 'LG AI Research',
     hfId: 'LGAI-EXAONE/EXAONE-3.5-32B-Instruct',
@@ -2183,6 +2263,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'exaone-3.5-7.8b-instruct',
+    releasedAt: '2024-12-01',
     name: 'LG EXAONE 3.5 7.8B Instruct',
     provider: 'LG AI Research',
     hfId: 'LGAI-EXAONE/EXAONE-3.5-7.8B-Instruct',
@@ -2202,6 +2283,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'exaone-deep-32b',
+    releasedAt: '2025-03-12',
     name: 'LG EXAONE Deep 32B (Reasoning)',
     provider: 'LG AI Research',
     hfId: 'LGAI-EXAONE/EXAONE-Deep-32B',
@@ -2221,6 +2303,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'snowflake-arctic-480b',
+    releasedAt: '2024-04-21',
     name: 'Snowflake Arctic (480B MoE)',
     provider: 'Snowflake',
     hfId: 'Snowflake/snowflake-arctic-instruct',
@@ -2242,6 +2325,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'olmo-2-13b',
+    releasedAt: '2024-11-26',
     name: 'AllenAI OLMo 2 13B',
     provider: 'AllenAI',
     hfId: 'allenai/OLMo-2-1124-13B-Instruct-preview',
@@ -2261,6 +2345,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'olmo-2-7b',
+    releasedAt: '2024-11-26',
     name: 'AllenAI OLMo 2 7B',
     provider: 'AllenAI',
     hfId: 'allenai/OLMo-2-1124-7B-Instruct-preview',
@@ -2280,6 +2365,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'yi-1.5-34b-chat',
+    releasedAt: '2024-05-10',
     name: '01.AI Yi-1.5 34B Chat',
     provider: '01.AI',
     hfId: '01-ai/Yi-1.5-34B-Chat',
@@ -2299,6 +2385,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'yi-1.5-9b-chat',
+    releasedAt: '2024-05-10',
     name: '01.AI Yi-1.5 9B Chat',
     provider: '01.AI',
     hfId: '01-ai/Yi-1.5-9B-Chat',
@@ -2318,6 +2405,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'smollm3-3b',
+    releasedAt: '2025-07-08',
     name: 'HuggingFace SmolLM3 3B',
     provider: 'HuggingFace',
     hfId: 'HuggingFaceTB/SmolLM3-3B',
@@ -2338,6 +2426,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   // ─────────────────────────── Türkçe / Ulusal Modeller ───────────────────────────
   {
     id: 'bilgem-bilge-70b',
+    releasedAt: '2026-06-13',
     name: 'TÜBİTAK BİLGEM BİLGE 70B',
     provider: 'TÜBİTAK BİLGEM',
     capabilities: ['turkish'],
@@ -2357,6 +2446,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'bilgem-bilge-14b',
+    releasedAt: '2026-03-29',
     name: 'TÜBİTAK BİLGEM BİLGE 14B',
     provider: 'TÜBİTAK BİLGEM',
     hfId: 'omerasim/bilge-14b-v1',
@@ -2377,6 +2467,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'trendyol-llm-8b-chat',
+    releasedAt: '2025-07-17',
     name: 'Trendyol LLM 8B T1 (Chat)',
     provider: 'Trendyol AI',
     hfId: 'Trendyol/Trendyol-LLM-8B-T1',
@@ -2397,6 +2488,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'trendyol-llm-7b-v0_1',
+    releasedAt: '2024-01-30',
     name: 'Trendyol LLM 7B (v0.1)',
     provider: 'Trendyol AI',
     hfId: 'Trendyol/Trendyol-LLM-7b-chat-v0.1',
@@ -2417,6 +2509,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'ytu-cosmos-llama-8b',
+    releasedAt: '2024-05-23',
     name: 'YTU Cosmos Turkish LLaMA 8B',
     provider: 'YTU Cosmos Lab',
     hfId: 'ytu-ce-cosmos/Turkish-Llama-8b-v0.1',
@@ -2437,6 +2530,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'ytu-cosmos-gemma-2-9b',
+    releasedAt: '2025-04-18',
     name: 'YTU Cosmos Turkish-Gemma 9B',
     provider: 'YTU Cosmos Lab',
     hfId: 'ytu-ce-cosmos/Turkish-Gemma-9b-v0.1',
@@ -2457,6 +2551,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 't3-vakfi-t3-llm-8b',
+    releasedAt: '2024-05-31',
     name: 'T3 Vakfı T3Q-LLM3 8B',
     provider: 'T3 Vakfı',
     hfId: 'T3Q-LLM-Product/T3Q-LLM3-Llama3-8B-v1.0',
@@ -2477,6 +2572,7 @@ export const MODEL_CATALOG: ModelPreset[] = [
   },
   {
     id: 'vngrs-kumru-2b',
+    releasedAt: '2025-09-23',
     name: 'VNGRS Kumru 2B',
     provider: 'VNGRS',
     hfId: 'vngrs-ai/Kumru-2B',

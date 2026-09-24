@@ -102,6 +102,11 @@ export const ModelDetailsPanel: React.FC<ModelDetailsPanelProps> = ({ model }) =
               {t('modelDetails.dense')}
             </Badge>
           )}
+          {!model.isMultimodal && (
+            <Badge tone="default" className="font-mono">
+              {t('modelDetails.textOnly')}
+            </Badge>
+          )}
           {unverified && (
             <Badge tone="danger" title={t('model.unverifiedShortTitle')}>
               {t('model.unverifiedShort')}

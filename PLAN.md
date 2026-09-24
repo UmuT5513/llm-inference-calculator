@@ -237,3 +237,27 @@ PR (#4). Önemli kararlar:
 - **Doğrulama:** `npm run lint` ✅, `npm run build` ✅, dev smoke (`/`, `/app`,
   `/api/models`, `/api/gpu-prices` 200; `/api/advisor` 404; landing'de modüller
   yok, yeni bölümler var), reconciliation runtime testi ✅, i18n eksik anahtar 0 ✅.
+
+## TAMAMLANDI: Model seçici iyileştirmeleri + katalog veri güncellemesi (2026-09-24)
+
+Kullanıcının `proje-gelistirme-fikirleri.txt` dosyasındaki önerileri/hata bulgusu uygulandı (dal: `feat/2026-09-24-model-selector-iyilestirmeler`). Dosya, kullanıcının takip iş akışına göre üstü çizili + tarihli olarak güncellenir — yeni fikirler altına yazılır.
+
+### Yapılanlar
+- **Model kartları sadeleştirildi** (`ModelSelector.tsx`): üst-sağ absolute rozet yığını (SEÇİLİ/DOĞRULANAMADI/AYNA/MULTİMODAL) kaldırıldı; kart 4 akış satırına oturdu (kurum + env/MoE-Dense rozetleri → isim + durum çipleri → parametre•bağlam•multimodal → açıklama). **Hardware type'a dokunulmadı** (kullanıcı kararı: kalsın).
+- **Mimari filtresi (tek seçim)**: `Tümü / Yalnızca Metin / MoE / Multimodal` — `!isMoe && !isMultimodal` / `isMoe` / `isMultimodal` mantığı; `ModelDetailsPanel`'e multimodal olmayanlar için "YALNIZCA METİN" rozeti eklendi.
+- **Çıkış tarihi sıralaması**: 124 statik modelin tamamına gerçek `releasedAt` işlendi — tarihler HF API `createdAt`'ten tek seferlik betikle çekildi (doğrulanabilir; `bilgem-bilge-70b` için HF repo yok → ilk kamuoyu tanıtımı 2026-06-13). Sıralama menüsü: Varsayılan / Yeni→Eski / Eski→Yeni; tarihsizler sonda (isimle tie-break).
+- **Seed güncellemesi** (`modelCatalogSeed.ts`): `released_at = COALESCE(hf_models.released_at, EXCLUDED.released_at)` eklendi — katalog tarihleri mevcut DB satırlarını doldurur, HF'den gelen tarihleri ezmez. (`capabilities` zaten DO UPDATE'teydi.)
+- **Frontier kaldırıldı**: sekme + tip kullanımı temizlendi; katalogdaki 22 `capabilities: ['frontier']` satırı silindi. 🇹🇷 Türkçe sekmesi = yalnızca Türkiye'de üretilen 8 model (BİLGEM 70B/14B, Trendyol 8B/7B, YTU Cosmos 8B/9B, T3 8B, VNGRS 2B); 7 yabancı modelden `turkish` etiketi söküldü (genel listede kalıyorlar).
+- **Senaryo şablonları 2026 seti** (`presets.ts` + i18n): Yerel RTX 5090 + Qwen 3.5 35B-A3B (Ollama, Q4_K_M), Apple MLX M5 Ultra + Gemma 4 31B (Q4_K_M), Girişim 1×H200 + Qwen 3.5 122B-A10B (FP8/vLLM), DeepSeek V3.2 8×B200 kümesi, Kimi K2 16×H200 kurumsal. Eski 4 şablon kaldırıldı.
+- **Hata bulgusu doğrulaması** (DeepSeek Coder V2 236B/Lite): **hata değil, doğru davranış** — MoE ≠ multimodal; modeller yalnızca-metin (encoder yok), medya girdileri `isMultimodal` kilitli (`calculator.ts` `if (!model.isMultimodal) return 0` + `WorkloadConfigurator` `isMultimodal &&`). Kafa karışıklığı için Workload adımına yalnızca-metin bilgi notu eklendi (TR: `workload.textOnlyNote`).
+- **i18n**: TR/EN yeni anahtarlar (arch*, sort*, textOnly, textOnlyNote) + kullanılmayan `capabilityFrontier`/`multimodalBadge` kaldırıldı; `selectGuide` metni güncellendi.
+
+### Doğrulama (2026-09-24)
+- `npm run lint` ✅, `npm run build` ✅ (yalnızca mevcut chunk-size uyarısı).
+- Dev smoke (DISABLE_HMR, DB canlı): `/` 200, `/app` 200, `/app?c=` 200 (hydration), `/sitemap.xml` 200, `/api/models` 304 model.
+- API verisi: `frontier` etiketli 0; `turkish` etiketli 7 (yalnızca ulusal modeller); 254/304 satırda `releasedAt`; `deepseek-coder-v2-236b` → `isMoe: true, isMultimodal: false` (bulgu onaylandı).
+- Seed: `[seed] 124 curated models upserted (1 skipped: no hfId)` — BİLGE 70B'nin hfId'si olmadığı için DB'ye girmiyor (mevcut davranış; not düşüldü).
+
+### Notlar
+- Canlı katalog preset'leri replace ettiği için capability/releasedAt değişiklikleri DB seed'den gelir; refresh çalıştırılırsa curated satırlar korunur (capabilities DO UPDATE, released_at COALESCE).
+- Geçici betikler `/tmp/opencode/`'te (fetch-model-dates.mjs, transform-catalog.mjs, model-dates.tsv) — repo'ya alınmadı.

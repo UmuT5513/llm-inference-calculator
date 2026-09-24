@@ -37,7 +37,9 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
   models,
 }) => {
   const { t } = useTranslation();
-  const [activeCapability, setActiveCapability] = useState<'all' | 'frontier' | 'turkish'>('all');
+  const [activeCapability, setActiveCapability] = useState<'all' | 'turkish'>('all');
+  const [activeArch, setActiveArch] = useState<'all' | 'text' | 'moe' | 'multimodal'>('all');
+  const [sortBy, setSortBy] = useState<'default' | 'dateNew' | 'dateOld'>('default');
   const [activeEnvFilter, setActiveEnvFilter] = useState<'all' | 'edge' | 'local' | 'hybrid' | 'server'>('all');
   const [activeProvider, setActiveProvider] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -60,8 +62,14 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
 
   const capabilityFilters = [
     { id: 'all' as const, label: t('model.capabilityAll') },
-    { id: 'frontier' as const, label: t('model.capabilityFrontier') },
     { id: 'turkish' as const, label: t('model.capabilityTurkish') },
+  ];
+
+  const archFilters = [
+    { id: 'all' as const, label: t('model.capabilityAll') },
+    { id: 'text' as const, label: t('model.archTextOnly') },
+    { id: 'moe' as const, label: t('model.archMoe') },
+    { id: 'multimodal' as const, label: t('model.archMultimodal') },
   ];
 
   const envFilters = [
@@ -78,15 +86,42 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
         activeCapability === 'all' ? true : m.capabilities?.includes(activeCapability) ?? false;
       const matchEnv = activeEnvFilter === 'all' ? true : m.targetEnv === activeEnvFilter;
       const matchProvider = activeProvider === 'all' ? true : m.provider === activeProvider;
+      const matchArch =
+        activeArch === 'all'
+          ? true
+          : activeArch === 'text'
+            ? !m.isMoe && !m.isMultimodal
+            : activeArch === 'moe'
+              ? !!m.isMoe
+              : !!m.isMultimodal;
       const matchSearch =
         searchQuery.trim() === ''
           ? true
           : m.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             m.provider.toLowerCase().includes(searchQuery.toLowerCase()) ||
             m.description.toLowerCase().includes(searchQuery.toLowerCase());
-      return matchCap && matchEnv && matchProvider && matchSearch;
+      return matchCap && matchEnv && matchProvider && matchArch && matchSearch;
     });
-  }, [catalog, activeCapability, activeEnvFilter, activeProvider, searchQuery]);
+  }, [catalog, activeCapability, activeEnvFilter, activeProvider, activeArch, searchQuery]);
+
+  // Sorting: default (catalog order) or by release date. Undated models go last.
+  const sortedModels = useMemo(() => {
+    if (sortBy === 'default') return filteredModels;
+    const list = [...filteredModels];
+    const dir = sortBy === 'dateNew' ? -1 : 1;
+    list.sort((a, b) => {
+      const da = a.releasedAt ? new Date(a.releasedAt).getTime() : NaN;
+      const db = b.releasedAt ? new Date(b.releasedAt).getTime() : NaN;
+      const hasA = !Number.isNaN(da);
+      const hasB = !Number.isNaN(db);
+      if (!hasA && !hasB) return a.name.localeCompare(b.name, 'tr');
+      if (!hasA) return 1;
+      if (!hasB) return -1;
+      const diff = (da - db) * dir;
+      return diff !== 0 ? diff : a.name.localeCompare(b.name, 'tr');
+    });
+    return list;
+  }, [filteredModels, sortBy]);
 
   const selectedModel =
     selectedModelId === 'custom'
@@ -286,6 +321,37 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
         </select>
       </div>
 
+      {/* Architecture type + Sort */}
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="text-[10px] font-semibold text-muted px-1 uppercase tracking-wide">{t('model.architectureType')}</span>
+        <div className="flex items-center gap-1 overflow-x-auto pb-1 scrollbar-none">
+          {archFilters.map((arch) => (
+            <button
+              key={arch.id}
+              onClick={() => setActiveArch(arch.id)}
+              className={`px-2.5 py-1 rounded-none text-[11px] font-medium whitespace-nowrap transition ${
+                activeArch === arch.id
+                  ? 'bg-accent text-bg font-bold'
+                  : 'bg-surface-2 text-muted hover:text-text hover:bg-surface'
+              }`}
+            >
+              {arch.label}
+            </button>
+          ))}
+        </div>
+
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+          className="px-2.5 py-1 rounded-none text-[11px] font-medium bg-surface-2 text-text border-2 border-border focus:outline-none focus:border-text cursor-pointer max-w-44"
+          title={t('model.sortTitle')}
+        >
+          <option value="default">{t('model.sortDefault')}</option>
+          <option value="dateNew">{t('model.sortNewest')}</option>
+          <option value="dateOld">{t('model.sortOldest')}</option>
+        </select>
+      </div>
+
       {/* Model Grid */}
       {filteredModels.length === 0 ? (
         <div className="p-6 text-center text-muted text-xs border border-dashed border-border rounded-none">
@@ -293,77 +359,75 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 max-h-[380px] overflow-y-auto pr-1">
-          {filteredModels.map((m) => {
+          {sortedModels.map((m) => {
             const isSelected = selectedModelId === m.id;
 
             return (
               <div
                 key={m.id}
                 onClick={() => onSelectModel(m.id)}
-                className={`cursor-pointer rounded-none p-2.5 transition border-2 text-left relative overflow-hidden flex flex-col justify-between ${
+                className={`cursor-pointer rounded-none p-2.5 transition border-2 text-left flex flex-col gap-1.5 ${
                   isSelected
                     ? 'bg-surface-2 border-accent ring-1 ring-accent/40'
                     : 'bg-surface border-border hover:border-accent/40 hover:bg-surface-2'
                 }`}
               >
-                {/* Badges */}
-                <div className="absolute top-0 right-0 flex items-center">
-                  {m.verified === false && (
-                    <Badge
-                      tone="danger"
-                      className="rounded-none"
-                      title={t('model.unverifiedBadgeTitle')}
-                    >
-                      {t('model.unverifiedBadge')}
-                    </Badge>
-                  )}
-                  {m.source === 'mirror' && m.verified !== false && (
-                    <Badge
-                      tone="default"
-                      className="rounded-none"
-                      title={t('model.mirrorBadgeTitle', { mirrorHfId: m.mirrorHfId || t('model.communityRepo') })}
-                    >
-                      {t('model.mirrorBadge')}
-                    </Badge>
-                  )}
+                {/* Row 1: provider (left) + hardware type & MoE/Dense badges (right, untouched) */}
+                <div className="flex items-center justify-between gap-1 min-w-0">
+                  <span className="text-[9px] font-bold text-muted uppercase tracking-wider truncate">
+                    {m.provider}
+                  </span>
+                  <div className="flex items-center gap-1 shrink-0">
+                    {getEnvBadge(m.targetEnv)}
+                    {m.isMoe ? (
+                      <Badge tone="accent" className="font-mono">{`MoE (${m.activeParamsB}B)`}</Badge>
+                    ) : (
+                      <Badge tone="default" className="font-mono">Dense</Badge>
+                    )}
+                  </div>
+                </div>
+
+                {/* Row 2: Model name + status chips (SEÇİLİ / HF'DEN DOĞRULANAMADI / AYNA) */}
+                <div className="flex items-center gap-1 min-w-0">
+                  <span className="text-xs font-bold text-text truncate">{m.name}</span>
+                  <div className="flex items-center gap-1 shrink-0">
+                    {isSelected && (
+                      <span className="bg-accent text-bg text-[8px] font-bold px-1.5 py-0.5 rounded-none">
+                        {t('model.selectedBadge')}
+                      </span>
+                    )}
+                    {m.verified === false && (
+                      <Badge
+                        tone="danger"
+                        className="rounded-none"
+                        title={t('model.unverifiedBadgeTitle')}
+                      >
+                        {t('model.unverifiedBadge')}
+                      </Badge>
+                    )}
+                    {m.source === 'mirror' && m.verified !== false && (
+                      <Badge
+                        tone="default"
+                        className="rounded-none"
+                        title={t('model.mirrorBadgeTitle', { mirrorHfId: m.mirrorHfId || t('model.communityRepo') })}
+                      >
+                        {t('model.mirrorBadge')}
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+
+                {/* Row 3: Params • Context • Multimodal */}
+                <div className="flex items-center gap-2 text-[10px] text-muted font-mono">
+                  <span>{t('model.totalParams')} <strong className="text-accent">{m.totalParamsB}B</strong></span>
+                  <span>Context: <strong className="text-text">{(m.maxContextLen / 1024).toFixed(0)}k</strong></span>
                   {m.isMultimodal && (
-                    <Badge tone="accent" className="rounded-none">
-                      {t('model.multimodalBadge')}
-                    </Badge>
-                  )}
-                  {isSelected && (
-                    <div className="bg-accent text-bg text-[8px] font-bold px-1.5 py-0.5 rounded-none">
-                      {t('model.selectedBadge')}
-                    </div>
+                    <span className="text-accent font-bold">{t('model.archMultimodal')}</span>
                   )}
                 </div>
 
-                <div>
-                  <div className="flex items-center justify-between gap-1 mb-1">
-                    <span className="text-[10px] font-bold text-muted uppercase tracking-wider line-clamp-1">
-                      {m.provider}
-                    </span>
-                    <div className="flex items-center gap-1">
-                      {getEnvBadge(m.targetEnv)}
-                      {m.isMoe ? (
-                        <Badge tone="accent" className="font-mono">{`MoE (${m.activeParamsB}B)`}</Badge>
-                      ) : (
-                        <Badge tone="default" className="font-mono">Dense</Badge>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="text-xs font-bold text-text mb-1 line-clamp-1 flex items-center gap-1">
-                    <span>{m.name}</span>
-                  </div>
-
-                  <div className="flex items-center gap-2 text-[10px] text-muted font-mono mb-1.5">
-                    <span>{t('model.totalParams')} <strong className="text-accent">{m.totalParamsB}B</strong></span>
-                    <span>Context: <strong className="text-text">{(m.maxContextLen / 1024).toFixed(0)}k</strong></span>
-                  </div>
-
-                  <p className="text-[10px] text-muted line-clamp-2 leading-relaxed">{m.description}</p>
-                </div>
+                {/* Row 4: Description */}
+                <p className="text-[10px] text-muted line-clamp-2 leading-relaxed">{m.description}</p>
               </div>
             );
           })}
