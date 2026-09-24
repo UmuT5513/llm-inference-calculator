@@ -11,3 +11,4 @@ coverage/
 !.env.example
 .superpowers/
 .worktrees/
+proje-gelistirme-fikirleri.txt
